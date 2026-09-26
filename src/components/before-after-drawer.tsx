@@ -19,7 +19,7 @@ export function BeforeAfterDrawer() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-28 right-4 z-40 inline-flex items-center gap-2 rounded-full border border-border-strong bg-card px-4 py-2.5 text-xs font-semibold text-foreground shadow-[var(--shadow-card)] transition-colors hover:border-cyan"
+        className="fixed bottom-28 right-4 z-30 inline-flex items-center gap-2 rounded-full border border-border-strong bg-card px-4 py-2.5 text-xs font-semibold text-foreground shadow-[var(--shadow-card)] transition-colors hover:border-cyan"
       >
         <Info className="h-4 w-4 text-cyan" />
         Before vs After — Manual vs Apex

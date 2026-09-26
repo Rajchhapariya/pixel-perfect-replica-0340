@@ -772,7 +772,7 @@ function StickyBar({
 }) {
   if (step === 5) return null;
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 backdrop-blur">
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
         <div>
           <p className="font-mono text-[11px] text-dim">
