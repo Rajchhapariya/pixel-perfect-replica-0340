@@ -16,8 +16,13 @@ import {
   X,
 } from "lucide-react";
 
-import { supabase } from "@/integrations/supabase/client";
 import { DEPOSIT, money, relativeTime } from "@/lib/booking";
+import {
+  executeStormReschedule,
+  getHudAuditFeed,
+  getHudBookings,
+  updateBookingStatus,
+} from "@/lib/bookings.functions";
 
 export const Route = createFileRoute("/hud")({
   head: () => ({
@@ -65,30 +70,12 @@ interface AuditEntry {
 
 const bookingsQuery = queryOptions({
   queryKey: ["hud", "bookings"],
-  queryFn: async (): Promise<Booking[]> => {
-    const { data, error } = await supabase
-      .from("bookings")
-      .select(
-        "id, created_at, ref_code, customer_name, vehicle_model, package_name, total_price, zip_code, sector_name, slot_datetime, status",
-      )
-      .order("created_at", { ascending: false })
-      .limit(50);
-    if (error) throw error;
-    return (data ?? []) as Booking[];
-  },
+  queryFn: async (): Promise<Booking[]> => (await getHudBookings()) as Booking[],
 });
 
 const auditQuery = queryOptions({
   queryKey: ["hud", "audit"],
-  queryFn: async (): Promise<AuditEntry[]> => {
-    const { data, error } = await supabase
-      .from("audit_log")
-      .select("id, created_at, event_type, booking_ref, message, source")
-      .order("created_at", { ascending: false })
-      .limit(6);
-    if (error) throw error;
-    return (data ?? []) as AuditEntry[];
-  },
+  queryFn: async (): Promise<AuditEntry[]> => (await getHudAuditFeed()) as AuditEntry[],
 });
 
 function Hud() {
@@ -109,17 +96,21 @@ function Hud() {
   }
 
   async function updateStatus(booking: Booking, status: string, label: string) {
-    const { error } = await supabase.from("bookings").update({ status }).eq("id", booking.id);
-    if (error) {
+    try {
+      await updateBookingStatus({
+        data: {
+          id: booking.id,
+          status: status as "en_route" | "in_progress" | "completed",
+          label,
+          ref_code: booking.ref_code,
+          vehicle_label: booking.vehicle_model ?? booking.package_name,
+          zip_code: booking.zip_code,
+        },
+      });
+    } catch {
       toast.error("Status update failed.");
       return;
     }
-    await supabase.from("audit_log").insert({
-      event_type: "SMS_DISPATCHED",
-      booking_ref: booking.ref_code,
-      message: `${label} status set for ${booking.vehicle_model ?? booking.package_name} at ${booking.zip_code}. Client SMS dispatched automatically.`,
-      source: "system",
-    });
     toast.success(`Status updated to "${label}". SMS dispatched to client automatically.`);
     refresh();
   }
@@ -130,21 +121,24 @@ function Hud() {
       return;
     }
     setDispatching(true);
-    const ids = affected.map((b) => b.id);
-    const { error } = await supabase.from("bookings").update({ status: "rescheduled" }).in("id", ids);
-    if (error) {
+    try {
+      await executeStormReschedule({
+        data: {
+          bookings: affected.map((b) => ({
+            id: b.id,
+            ref_code: b.ref_code,
+            customer_name: b.customer_name,
+            slot_datetime: b.slot_datetime,
+            sector_name: b.sector_name,
+            zip_code: b.zip_code,
+          })),
+        },
+      });
+    } catch {
       setDispatching(false);
       toast.error("Reschedule dispatch failed.");
       return;
     }
-    await supabase.from("audit_log").insert(
-      affected.map((b) => ({
-        event_type: "RAIN_RESCHEDULE",
-        booking_ref: b.ref_code,
-        message: `Travis County rain trigger — ${b.customer_name ?? "Client"} sent a priority reschedule link for the ${b.slot_datetime} slot in ${b.sector_name ?? b.zip_code}.`,
-        source: "system",
-      })),
-    );
     setDispatching(false);
     setStormOpen(false);
     toast.success(
