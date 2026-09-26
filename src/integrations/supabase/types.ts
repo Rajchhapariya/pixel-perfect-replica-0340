@@ -14,7 +14,123 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audit_log: {
+        Row: {
+          booking_ref: string | null
+          created_at: string
+          event_type: string
+          id: string
+          message: string
+          source: string
+        }
+        Insert: {
+          booking_ref?: string | null
+          created_at?: string
+          event_type: string
+          id?: string
+          message: string
+          source?: string
+        }
+        Update: {
+          booking_ref?: string | null
+          created_at?: string
+          event_type?: string
+          id?: string
+          message?: string
+          source?: string
+        }
+        Relationships: []
+      }
+      bookings: {
+        Row: {
+          addons_price: number
+          base_price: number
+          created_at: string
+          customer_name: string | null
+          customer_phone: string | null
+          deposit_held: boolean
+          duration_minutes: number
+          green_route: boolean
+          id: string
+          package_name: string
+          pre_flight_passed: boolean
+          ref_code: string
+          sector_name: string | null
+          slot_datetime: string
+          status: string
+          total_price: number
+          vehicle_class: string
+          vehicle_model: string | null
+          zip_code: string
+        }
+        Insert: {
+          addons_price?: number
+          base_price: number
+          created_at?: string
+          customer_name?: string | null
+          customer_phone?: string | null
+          deposit_held?: boolean
+          duration_minutes: number
+          green_route?: boolean
+          id?: string
+          package_name: string
+          pre_flight_passed?: boolean
+          ref_code: string
+          sector_name?: string | null
+          slot_datetime: string
+          status?: string
+          total_price: number
+          vehicle_class: string
+          vehicle_model?: string | null
+          zip_code: string
+        }
+        Update: {
+          addons_price?: number
+          base_price?: number
+          created_at?: string
+          customer_name?: string | null
+          customer_phone?: string | null
+          deposit_held?: boolean
+          duration_minutes?: number
+          green_route?: boolean
+          id?: string
+          package_name?: string
+          pre_flight_passed?: boolean
+          ref_code?: string
+          sector_name?: string | null
+          slot_datetime?: string
+          status?: string
+          total_price?: number
+          vehicle_class?: string
+          vehicle_model?: string | null
+          zip_code?: string
+        }
+        Relationships: []
+      }
+      route_zones: {
+        Row: {
+          discount_active: boolean
+          green_route_day: string
+          id: string
+          sector_name: string
+          zip_code: string
+        }
+        Insert: {
+          discount_active?: boolean
+          green_route_day: string
+          id?: string
+          sector_name: string
+          zip_code: string
+        }
+        Update: {
+          discount_active?: boolean
+          green_route_day?: string
+          id?: string
+          sector_name?: string
+          zip_code?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
