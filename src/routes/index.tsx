@@ -1,10 +1,7 @@
-import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import { ArrowRight, Instagram, MapPinned, ShieldCheck, Timer } from "lucide-react";
 
 export const Route = createFileRoute("/")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    src: typeof search["src"] === "string" ? (search["src"] as string) : undefined,
-  }),
   head: () => ({
     meta: [
       { title: "Apex Detail Works — Book Your Austin Mobile Detail in 90 Seconds" },
@@ -48,7 +45,8 @@ const PROOF = [
 ] as const;
 
 function Landing() {
-  const { src } = useSearch({ from: "/" });
+  const search = useRouterState({ select: (s) => s.location.search as Record<string, unknown> });
+  const src = typeof search["src"] === "string" ? search["src"] : undefined;
 
   return (
     <main className="mx-auto max-w-6xl px-4 pb-32 pt-10 sm:px-6">
