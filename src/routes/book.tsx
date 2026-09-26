@@ -17,7 +17,7 @@ import {
   Wallet,
 } from "lucide-react";
 
-import { supabase } from "@/integrations/supabase/client";
+import { createBooking, lookupZone } from "@/lib/bookings.functions";
 import {
   ADDONS,
   DEPOSIT,
@@ -128,19 +128,18 @@ function BookingWizard() {
       return;
     }
     setChecking(true);
-    const { data, error } = await supabase
-      .from("route_zones")
-      .select("zip_code, sector_name, green_route_day")
-      .eq("zip_code", zip)
-      .maybeSingle();
-    setChecking(false);
-    setZoneChecked(true);
-    setSlotId("");
-
-    if (error) {
+    let data: ZoneMatch | null = null;
+    try {
+      data = (await lookupZone({ data: { zip } })) as ZoneMatch | null;
+    } catch {
+      setChecking(false);
+      setZoneChecked(true);
       toast.error("Could not check route clusters. Try again.");
       return;
     }
+    setChecking(false);
+    setZoneChecked(true);
+    setSlotId("");
     if (data) {
       setZone(data as ZoneMatch);
       toast.success(
@@ -156,38 +155,33 @@ function BookingWizard() {
     const refCode = `ADW-${zipCode.trim()}-${Math.floor(Math.random() * 90) + 10}`;
     const vehicleLabel = vehicleModel.trim() || vehicle?.title || "Vehicle";
 
-    const { error } = await supabase.from("bookings").insert({
-      ref_code: refCode,
-      customer_name: customerName.trim(),
-      customer_phone: customerPhone.trim(),
-      vehicle_class: vehicleClass ?? "sedan",
-      vehicle_model: vehicleModel.trim() || null,
-      package_name: pkg.name,
-      base_price: basePrice,
-      addons_price: addonsPrice,
-      total_price: total,
-      duration_minutes: duration,
-      zip_code: zipCode.trim(),
-      sector_name: zone?.sector_name ?? null,
-      slot_datetime: selectedSlot?.label ?? "",
-      green_route: greenRoute,
-      pre_flight_passed: preFlightPassed,
-      deposit_held: true,
-      status: "confirmed",
-    });
-
-    if (error) {
+    try {
+      await createBooking({
+        data: {
+          ref_code: refCode,
+          customer_name: customerName.trim(),
+          customer_phone: customerPhone.trim(),
+          vehicle_class: vehicleClass ?? "sedan",
+          vehicle_model: vehicleModel.trim() || null,
+          package_name: pkg.name,
+          base_price: basePrice,
+          addons_price: addonsPrice,
+          total_price: total,
+          duration_minutes: duration,
+          zip_code: zipCode.trim(),
+          sector_name: zone?.sector_name ?? null,
+          slot_datetime: selectedSlot?.label ?? "",
+          green_route: greenRoute,
+          pre_flight_passed: preFlightPassed,
+          deposit_held: true,
+          audit_message: `${vehicleLabel} booked in ${zone?.sector_name ?? zipCode.trim()}. ${pkg.name}. ${money(total)} total. $${DEPOSIT} deposit captured.`,
+        },
+      });
+    } catch {
       setSubmitting(false);
       toast.error("Booking could not be locked. Please try again.");
       return;
     }
-
-    await supabase.from("audit_log").insert({
-      event_type: "BOOKING_CONFIRMED",
-      booking_ref: refCode,
-      message: `${vehicleLabel} booked in ${zone?.sector_name ?? zipCode.trim()}. ${pkg.name}. ${money(total)} total. $${DEPOSIT} deposit captured.`,
-      source: "direct_link",
-    });
 
     setSubmitting(false);
     setConfirmed({
