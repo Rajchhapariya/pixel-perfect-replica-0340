@@ -809,12 +809,12 @@ function ConfirmationPass({
 }) {
   return (
     <main className="mx-auto max-w-2xl px-4 pb-32 pt-12 sm:px-6">
-      <div className="surface overflow-hidden">
+      <div className="surface confirm-card overflow-hidden">
         <div className="h-1 w-full bg-gradient-to-r from-cyan to-emerald" />
         <div className="p-7 text-center">
-          <CheckCircle2 className="mx-auto h-14 w-14 text-emerald" strokeWidth={1.6} />
+          <CheckCircle2 className="confirm-check mx-auto h-14 w-14 text-emerald" strokeWidth={1.6} />
           <h1 className="mt-5 text-3xl font-black tracking-tight">You&apos;re Booked.</h1>
-          <p className="mt-3 font-mono text-sm text-cyan">Reference: {data.refCode}</p>
+          <p className="confirm-ref mt-3 font-mono text-sm text-cyan">Reference: {data.refCode}</p>
 
           <dl className="mt-7 grid grid-cols-2 gap-3 text-left">
             <Cell label="Vehicle" value={data.vehicle} />

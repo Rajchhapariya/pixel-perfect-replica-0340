@@ -273,7 +273,13 @@ function Hud() {
         </div>
 
         <div className="lg:col-span-2">
-          <h2 className="text-base font-bold">Inbound Triage Feed</h2>
+          <h2 className="flex items-center gap-2 text-base font-bold">
+            Inbound Triage Feed
+            <span className="inline-flex items-center gap-1.5">
+              <span className="live-dot" aria-hidden="true" />
+              <span className="live-label">LIVE</span>
+            </span>
+          </h2>
           <p className="mt-1 text-xs text-muted-foreground">
             Bookings captured while Cole is polishing. Zero gloves off.
           </p>
