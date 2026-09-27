@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowDown, ArrowRight, CheckCircle2, MapPin, ShieldCheck, Sparkles, Star, Zap } from "lucide-react";
+import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
+import { ArrowDown, ArrowRight, CheckCircle2, MapPin, ShieldCheck, Sparkles, Star, X, Zap } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -141,8 +141,44 @@ function ReviewCard({ name, vehicle, text, zip }: { name: string; vehicle: strin
 
 /* ─── Landing page ─── */
 function Landing() {
+  const search = useRouterState({ select: (s) => s.location.search as Record<string, unknown> | undefined });
+  const isFromInstagram = search?.["src"] === "instagram";
+  const [igBannerDismissed, setIgBannerDismissed] = useState(false);
+  const showIgBanner = isFromInstagram && !igBannerDismissed;
+  const igBannerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showIgBanner) return;
+    document.body.classList.add("ig-banner-open");
+    if (igBannerRef.current) {
+      document.documentElement.style.setProperty("--ig-banner-h", `${igBannerRef.current.offsetHeight}px`);
+    }
+    return () => {
+      document.body.classList.remove("ig-banner-open");
+      document.documentElement.style.removeProperty("--ig-banner-h");
+    };
+  }, [showIgBanner]);
+
   return (
     <main className="landing-root">
+      {/* ── INSTAGRAM SOURCE BANNER ── */}
+      {showIgBanner && (
+        <div className="ig-banner" ref={igBannerRef} role="status">
+          <p className="ig-banner-text">
+            You clicked from Instagram. Cole is mid-job right now — this form books you directly
+            without any phone tag.
+          </p>
+          <button
+            type="button"
+            className="ig-banner-close"
+            aria-label="Dismiss banner"
+            onClick={() => setIgBannerDismissed(true)}
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
+
       {/* ── HERO ── */}
       <section className="hero-section">
         {/* Noise texture overlay */}
@@ -233,7 +269,12 @@ function Landing() {
 
           {/* CTA */}
           <div className="hero-cta-wrap">
-            <Link to="/book" className="cta-btn" id="hero-cta-btn">
+            <Link
+              to="/book"
+              search={isFromInstagram ? { src: "instagram" } : {}}
+              className="cta-btn"
+              id="hero-cta-btn"
+            >
               <span className="cta-btn-shine" aria-hidden="true" />
               Get My Free Quote in 90 Seconds
               <ArrowRight className="h-4 w-4" />

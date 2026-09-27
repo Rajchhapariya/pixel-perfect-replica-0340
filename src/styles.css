@@ -414,6 +414,49 @@
   border-bottom-right-radius: 4px;
 }
 
+/* Instagram source banner — pinned above the header when ?src=instagram */
+.ig-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: oklch(0.8 0.16 80 / 0.1);
+  border-bottom: 1px solid var(--amber);
+}
+
+.ig-banner-text {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--amber);
+  text-align: center;
+}
+
+.ig-banner-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 24px;
+  width: 24px;
+  border-radius: 6px;
+  color: var(--amber);
+  transition: background 0.15s ease;
+}
+
+.ig-banner-close:hover {
+  background: oklch(0.8 0.16 80 / 0.15);
+}
+
+body.ig-banner-open header.sticky {
+  top: var(--ig-banner-h, 41px);
+}
+
 .dm-strip-arrow {
   display: flex;
   justify-content: center;
