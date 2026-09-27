@@ -26,7 +26,7 @@ export const Route = createFileRoute("/")({
     ],
   }),
   component: Landing,
-} as Parameters<typeof createFileRoute<"/", {}>>[0]);
+});
 
 /* ─── Animated counter hook ─── */
 function useCounter(target: number, duration = 1800) {
@@ -35,7 +35,7 @@ function useCounter(target: number, duration = 1800) {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting) return;
+        if (!entry?.isIntersecting) return;
         observer.disconnect();
         const start = performance.now();
         const step = (now: number) => {
