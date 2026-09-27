@@ -271,7 +271,7 @@ function Landing() {
           <div className="hero-cta-wrap">
             <Link
               to="/book"
-              search={isFromInstagram ? { src: "instagram" } : undefined}
+              search={isFromInstagram ? { src: "instagram" } : {}}
               className="cta-btn"
               id="hero-cta-btn"
             >
