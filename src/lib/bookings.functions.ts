@@ -66,7 +66,10 @@ export const getHudBookings = createServerFn({ method: "GET" }).handler(async ()
     )
     .order("created_at", { ascending: false })
     .limit(50);
-  if (error) throw new Error("Could not load bookings");
+  if (error) {
+    console.error("getHudBookings failed", error);
+    throw new Error("Could not load bookings");
+  }
   return data ?? [];
 });
 
