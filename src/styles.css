@@ -743,3 +743,19 @@
   max-width: 480px;
   position: relative;
 }
+
+/* ── Mobile responsiveness (<640px) ───────────── */
+
+@media (max-width: 640px) {
+  .hero-headline {
+    font-size: clamp(2rem, 8vw, 3rem);
+  }
+
+  .stats-section {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-pills {
+    flex-wrap: wrap;
+  }
+}

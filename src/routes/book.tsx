@@ -636,7 +636,7 @@ function ProgressBar({ step }: { step: number }) {
                 {done ? <Check className="h-4 w-4" /> : num}
               </span>
               <span
-                className={`hidden text-[11px] sm:block ${active ? "text-foreground" : "text-dim"}`}
+                className={`text-[11px] ${active ? "block text-foreground" : "hidden text-dim"} sm:block ${!active ? "sm:text-dim" : ""}`}
               >
                 {label}
               </span>
@@ -767,19 +767,19 @@ function StickyBar({
   if (step === 5) return null;
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4 text-[13px] sm:px-6 sm:text-sm">
         <div>
           <p className="font-mono text-[11px] text-dim">
             Estimated Time: {formatDuration(duration)}
           </p>
-          <p className="font-mono text-lg font-bold text-cyan">Total: {money(total)}</p>
+          <p className="font-mono text-base font-bold text-cyan sm:text-lg">Total: {money(total)}</p>
         </div>
         <div className="flex items-center gap-2">
           {step > 1 ? (
             <button
               type="button"
               onClick={onBack}
-              className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+              className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-[13px] font-semibold text-muted-foreground transition-colors hover:text-foreground sm:text-sm"
             >
               <ArrowLeft className="h-4 w-4" />
               Back
@@ -789,7 +789,7 @@ function StickyBar({
             type="button"
             disabled={!canContinue}
             onClick={onNext}
-            className="btn-primary hover:btn-primary-hover inline-flex items-center gap-2 px-6 py-3 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+            className="btn-primary hover:btn-primary-hover inline-flex items-center gap-2 px-6 py-3 text-[13px] disabled:cursor-not-allowed disabled:opacity-40 sm:text-sm"
           >
             Continue
             <ArrowRight className="h-4 w-4" />
