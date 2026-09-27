@@ -142,7 +142,7 @@ function ReviewCard({ name, vehicle, text, zip }: { name: string; vehicle: strin
 /* ─── Landing page ─── */
 function Landing() {
   const search = useRouterState({ select: (s) => s.location.search as Record<string, unknown> | undefined });
-  const isFromInstagram = search?.src === "instagram";
+  const isFromInstagram = search?.["src"] === "instagram";
   const [igBannerDismissed, setIgBannerDismissed] = useState(false);
   const showIgBanner = isFromInstagram && !igBannerDismissed;
   const igBannerRef = useRef<HTMLDivElement>(null);
