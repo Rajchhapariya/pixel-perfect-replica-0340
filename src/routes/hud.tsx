@@ -158,7 +158,7 @@ function Hud() {
         </p>
       </div>
 
-      <section className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <Kpi
           accent="cyan"
           Icon={Inbox}
@@ -189,12 +189,12 @@ function Hud() {
         />
       </section>
 
-      <section className="surface mt-5 flex flex-col gap-4 border-amber/50 p-5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-start gap-3">
-          <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber" />
-          <div>
-            <h2 className="text-sm font-bold">Austin Weather Alert Trigger</h2>
-            <p className="mt-1 text-xs text-muted-foreground">
+      <section className="surface mt-5 flex items-center justify-between gap-3 border-amber/50 p-4">
+        <div className="flex min-w-0 items-center gap-3">
+          <AlertTriangle className="h-5 w-5 shrink-0 text-amber" />
+          <div className="min-w-0">
+            <h2 className="truncate text-sm font-bold">Austin Weather Alert Trigger</h2>
+            <p className="mt-1 hidden text-xs text-muted-foreground md:block">
               Ceramic coatings and paint corrections cannot cure in rain or high humidity.
             </p>
           </div>
@@ -205,7 +205,8 @@ function Hud() {
           className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-amber px-4 py-2.5 text-xs font-bold text-background transition-opacity hover:opacity-90"
         >
           <CloudRain className="h-4 w-4" />
-          Simulate Flash Storm
+          <span className="hidden sm:inline">Simulate Flash Storm</span>
+          <span className="sm:hidden">Trigger</span>
         </button>
       </section>
 
