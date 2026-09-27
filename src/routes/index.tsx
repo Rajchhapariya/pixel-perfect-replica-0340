@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, MapPin, ShieldCheck, Sparkles, Star, Zap } from "lucide-react";
+import { ArrowDown, ArrowRight, CheckCircle2, MapPin, ShieldCheck, Sparkles, Star, Zap } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
