@@ -216,6 +216,21 @@ function Landing() {
             <ServicePill icon={MapPin} text="Austin Metro Only" />
           </div>
 
+          {/* Instagram DM simulation strip */}
+          <div className="dm-strip" aria-label="Instagram DM simulation">
+            <p className="dm-strip-label">What happens when you DM @apexdetailworks</p>
+            <div className="dm-bubble dm-bubble-in">
+              Hey Cole, do you have anything open this week? Need a full detail on my F-150
+            </div>
+            <div className="dm-bubble dm-bubble-out">
+              Hey! I don't answer DMs mid-job but my booking link handles it — price, slot,
+              everything. Done in 90 seconds.
+            </div>
+            <div className="dm-strip-arrow" aria-hidden="true">
+              <ArrowDown className="h-4 w-4" />
+            </div>
+          </div>
+
           {/* CTA */}
           <div className="hero-cta-wrap">
             <Link to="/book" className="cta-btn" id="hero-cta-btn">

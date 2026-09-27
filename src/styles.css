@@ -367,6 +367,71 @@
   border-color: oklch(0.72 0.14 208 / 0.5);
 }
 
+/* Instagram DM simulation strip */
+.dm-strip {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0.85rem 0.9rem 0.75rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px oklch(0 0 0 / 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+.dm-strip-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+  margin-bottom: 0.15rem;
+}
+
+.dm-bubble {
+  max-width: 88%;
+  padding: 0.55rem 0.8rem;
+  border-radius: 14px;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.dm-bubble-in {
+  align-self: flex-start;
+  background: var(--muted);
+  color: var(--foreground);
+  border-bottom-left-radius: 4px;
+}
+
+.dm-bubble-out {
+  align-self: flex-end;
+  background: oklch(0.72 0.14 208 / 0.16);
+  border: 1px solid oklch(0.72 0.14 208 / 0.35);
+  color: var(--cyan);
+  border-bottom-right-radius: 4px;
+}
+
+.dm-strip-arrow {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.1rem;
+  color: var(--cyan);
+  animation: dm-arrow-bob 1.6s ease-in-out infinite;
+}
+
+@keyframes dm-arrow-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+}
+
 /* CTA wrap */
 .hero-cta-wrap {
   display: flex;
