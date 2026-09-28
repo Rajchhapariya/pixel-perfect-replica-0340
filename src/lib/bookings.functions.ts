@@ -435,3 +435,88 @@ export const resetHudDemoData = createServerFn({ method: "POST" })
 
     return { ok: true, count: memoryBookings.length };
   });
+
+export const getBookingForReschedule = createServerFn({ method: "GET" })
+  .validator((data: { ref_code?: string }) => ({
+    ref_code: typeof data?.ref_code === "string" ? data.ref_code.trim() : "",
+  }))
+  .handler(async ({ data }) => {
+    const code = data.ref_code;
+    if (!code) {
+      return memoryBookings[0] ?? null;
+    }
+
+    try {
+      const client = await getSupabase();
+      if (client) {
+        const { data: remoteData, error } = await client
+          .from("bookings")
+          .select("*")
+          .eq("ref_code", code)
+          .maybeSingle();
+        if (!error && remoteData) {
+          return remoteData;
+        }
+      }
+    } catch {
+      // fallback to memory
+    }
+
+    const local = memoryBookings.find((b) => b.ref_code.toLowerCase() === code.toLowerCase());
+    return local ?? memoryBookings[0] ?? null;
+  });
+
+export const confirmReschedule = createServerFn({ method: "POST" })
+  .validator((data) =>
+    z
+      .object({
+        ref_code: z.string().trim().min(1).max(40),
+        new_slot_datetime: z.string().trim().min(1).max(80),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }) => {
+    const target = memoryBookings.find(
+      (b) => b.ref_code.toLowerCase() === data.ref_code.toLowerCase(),
+    );
+    if (target) {
+      target.status = "confirmed";
+      target.slot_datetime = data.new_slot_datetime;
+    }
+
+    const clientName = target?.customer_name ?? "Client";
+    const auditMessage = `Rain delay reschedule confirmed: ${clientName} shifted to ${data.new_slot_datetime} (${data.ref_code}). $50 deposit maintained.`;
+
+    memoryAudit.unshift({
+      id: `a${Date.now()}-${Math.floor(Math.random() * 100000)}`,
+      created_at: new Date().toISOString(),
+      event_type: "BOOKING_CONFIRMED",
+      booking_ref: data.ref_code,
+      message: auditMessage,
+      source: "client_reschedule",
+    });
+
+    try {
+      const client = await getSupabase();
+      if (client) {
+        await client
+          .from("bookings")
+          .update({
+            status: "confirmed",
+            slot_datetime: data.new_slot_datetime,
+          })
+          .eq("ref_code", data.ref_code);
+
+        await client.from("audit_log").insert({
+          event_type: "BOOKING_CONFIRMED",
+          booking_ref: data.ref_code,
+          message: auditMessage,
+          source: "client_reschedule",
+        });
+      }
+    } catch (err) {
+      console.warn("confirmReschedule remote notice:", err);
+    }
+
+    return { ok: true, slot_datetime: data.new_slot_datetime };
+  });

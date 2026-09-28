@@ -41,9 +41,16 @@ The application consists of three dedicated routes:
 
 - **Van 01 Telemetry:** Real-time monitoring of equipment levels (85-gallon deionized pure water tank, 94% battery inverter bank, 52 dB whisper generator, active geographic corridor, and simulated time-saved ticker).
 - **Today's Sequenced Route Deck:** Visual stops clustered to eliminate cross-town MoPac traffic, complete with arrival windows, pricing, and 1-click status actions (_En Route SMS_, _Job Started_, _Complete & Invoice_) that trigger toast notifications.
-- **Austin Weather Contingency:** Dedicated _Simulate Flash Storm_ trigger opening a Travis County precipitation warning dialog with a 1-click batch reschedule dispatch.
+- **Austin Weather Contingency:** Dedicated _Simulate Flash Storm_ trigger opening a Travis County precipitation warning dialog with a 1-click batch reschedule dispatch and direct customer reschedule preview links.
 - **Live Inbound Triage Feed:** Continuous audit stream logging confirmed bookings, status changes, and automated SMS dispatches.
 - **Demo Controls:** One-click demo state reset restoring baseline Austin appointments and audit stream.
+
+### 4. Customer Weather Reschedule Portal (`/reschedule/$refCode`)
+
+- **Context-Aware Weather Hold:** Displays Travis County flash precipitation advisories explaining that exterior ceramic coatings cannot bond in high humidity or rain.
+- **Deterministic Slot Replacement:** Lets the affected client choose an available replacement arrival window with zero scheduling friction.
+- **100% Deposit Preservation:** Visual verification that the client's $50 deposit is protected and transferred to the new appointment with no penalty.
+- **Calendar Integration:** Post-confirmation screen provides instant one-click **Add to Google Calendar** event creation and route status links.
 
 ---
 
@@ -108,7 +115,7 @@ node e2e-audit.cjs
 
 | Suite                       | Status             | Details                                                        |
 | :-------------------------- | :----------------- | :------------------------------------------------------------- |
-| **Playwright E2E Suite**    | **39 / 39 PASSED** | 100% deterministic test pass across all core workflows         |
+| **Playwright E2E Suite**    | **48 / 48 PASSED** | 100% deterministic test pass across all core workflows         |
 | **TypeScript Typecheck**    | **PASSED**         | 0 type errors with strict checking                             |
 | **ESLint (`npm run lint`)** | **PASSED**         | 0 lint errors, 0 warnings                                      |
 | **Production Build**        | **PASSED**         | Full Nitro server & SSR client bundle generated in < 2 seconds |
@@ -117,7 +124,7 @@ node e2e-audit.cjs
 
 ## Responsive Viewport Coverage
 
-The application has been verified across 7 responsive device breakpoints with automated assertions ensuring **zero horizontal overflow** (`document.documentElement.scrollWidth <= window.innerWidth`) on `/`, `/book`, and `/hud`:
+The application has been verified across 7 responsive device breakpoints with automated assertions ensuring **zero horizontal overflow** (`document.documentElement.scrollWidth <= window.innerWidth`) on `/`, `/book`, `/hud`, and `/reschedule/ADW-78704-89`:
 
 - **320 × 800** — Compact Mobile (iPhone SE)
 - **375 × 812** — Standard Mobile (iPhone Mini)

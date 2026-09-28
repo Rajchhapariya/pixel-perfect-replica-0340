@@ -480,9 +480,84 @@ async function runTest(category, name, fn, browser, options = {}) {
     );
 
     // -------------------------------------------------------------
-    // SECTION 4: RESPONSIVE VIEWPORT AUDIT (Zero Horizontal Overflow)
+    // SECTION 4: CUSTOMER WEATHER RESCHEDULE FLOW (/reschedule/$refCode)
     // -------------------------------------------------------------
-    console.log("\n--> Category: 4. Responsive Viewport Audit (Zero Horizontal Overflow)");
+    console.log("\n--> Category: 4. Customer Weather Reschedule Flow (/reschedule/$refCode)");
+
+    await runTest(
+      "Reschedule Flow",
+      "Storm modal generates customer link and navigation resolves to working reschedule portal",
+      async (page) => {
+        await page.goto(`${BASE_URL}/hud`, { waitUntil: "networkidle" });
+        await page.click("button:has-text('Simulate Flash Storm')");
+        await page.waitForSelector("h2:has-text('Travis County Precipitation Warning')", {
+          timeout: 5000,
+        });
+
+        // Click the generated customer reschedule link
+        const rescheduleLink = page.locator("a[href*='/reschedule/']").first();
+        await rescheduleLink.click();
+        await page.waitForURL("**/reschedule/**", { timeout: 6000 });
+
+        // Verify page loaded with priority weather advisory
+        await page.waitForSelector("text=Travis County Flash Rain Advisory", { timeout: 5000 });
+        const bookingCard = await page.textContent("main");
+        if (!bookingCard || !bookingCard.includes("Affected Appointment")) {
+          throw new Error("Reschedule portal missing affected appointment card");
+        }
+      },
+      browser,
+    );
+
+    await runTest(
+      "Reschedule Flow",
+      "Customer views affected booking, selects replacement slot, confirms reschedule, and verifies deposit preservation",
+      async (page) => {
+        await page.goto(`${BASE_URL}/reschedule/ADW-78704-89`, { waitUntil: "networkidle" });
+
+        // Check affected appointment details
+        await page.waitForSelector("text=ADW-78704-89", { timeout: 5000 });
+        await page.waitForSelector("text=Select Priority Replacement Slot", { timeout: 5000 });
+
+        // Verify deposit protection notice
+        const depositNotice = await page.textContent("main");
+        if (!depositNotice || !depositNotice.includes("$50 deposit")) {
+          throw new Error("Missing $50 deposit protection notice");
+        }
+
+        // Select the second replacement slot (Friday afternoon)
+        const slotButtons = page.locator("button:has-text('Friday'), button:has-text('Saturday')");
+        const count = await slotButtons.count();
+        if (count < 2) throw new Error(`Expected at least 2 replacement slots, found ${count}`);
+        await slotButtons.nth(1).click();
+
+        // Click Confirm Replacement Slot
+        const confirmBtn = page.locator("button:has-text('Confirm Replacement Slot')");
+        await confirmBtn.click();
+
+        // Verify Confirmed State
+        await page.waitForSelector('h1:has-text("Replacement Slot Confirmed")', { timeout: 8000 });
+        const confirmedText = await page.textContent("main");
+        if (!confirmedText || !confirmedText.includes("ADW-78704-89")) {
+          throw new Error("Confirmation pass missing booking reference code");
+        }
+        if (!confirmedText || !confirmedText.includes("Deposit Successfully Transferred")) {
+          throw new Error("Confirmation pass missing deposit transfer verification");
+        }
+
+        // Check Google Calendar action exists on confirmation
+        const gcalBtn = page.locator("button:has-text('Add to Google Calendar')");
+        const gcalExists = await gcalBtn.isVisible();
+        if (!gcalExists)
+          throw new Error("Google Calendar button missing on reschedule confirmation pass");
+      },
+      browser,
+    );
+
+    // -------------------------------------------------------------
+    // SECTION 5: RESPONSIVE VIEWPORT AUDIT (Zero Horizontal Overflow)
+    // -------------------------------------------------------------
+    console.log("\n--> Category: 5. Responsive Viewport Audit (Zero Horizontal Overflow)");
 
     const viewports = [
       { width: 320, height: 800, label: "320x800 (Compact Mobile)" },
@@ -494,7 +569,7 @@ async function runTest(category, name, fn, browser, options = {}) {
       { width: 1440, height: 900, label: "1440x900 (Large Desktop)" },
     ];
 
-    const testRoutes = ["/", "/book", "/hud"];
+    const testRoutes = ["/", "/book", "/hud", "/reschedule/ADW-78704-89"];
 
     for (const vp of viewports) {
       for (const route of testRoutes) {
@@ -525,9 +600,9 @@ async function runTest(category, name, fn, browser, options = {}) {
     }
 
     // -------------------------------------------------------------
-    // SECTION 5: TECHNICAL SEO & STRUCTURED DATA VERIFICATION
+    // SECTION 6: TECHNICAL SEO & STRUCTURED DATA VERIFICATION
     // -------------------------------------------------------------
-    console.log("\n--> Category: 5. Technical SEO & Schema Verification");
+    console.log("\n--> Category: 6. Technical SEO & Schema Verification");
 
     await runTest(
       "SEO & Schema",

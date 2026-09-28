@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as HudRouteImport } from './routes/hud'
+import { Route as RescheduleRefCodeRouteImport } from './routes/reschedule.$refCode'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,44 @@ const HudRoute = HudRouteImport.update({
   path: '/hud',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RescheduleRefCodeRoute = RescheduleRefCodeRouteImport.update({
+  id: '/reschedule/$refCode',
+  path: '/reschedule/$refCode',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/book': typeof BookRoute
   '/hud': typeof HudRoute
+  '/reschedule/$refCode': typeof RescheduleRefCodeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/book': typeof BookRoute
   '/hud': typeof HudRoute
+  '/reschedule/$refCode': typeof RescheduleRefCodeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/book': typeof BookRoute
   '/hud': typeof HudRoute
+  '/reschedule/$refCode': typeof RescheduleRefCodeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/book' | '/hud'
+  fullPaths: '/' | '/book' | '/hud' | '/reschedule/$refCode'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/book' | '/hud'
-  id: '__root__' | '/' | '/book' | '/hud'
+  to: '/' | '/book' | '/hud' | '/reschedule/$refCode'
+  id: '__root__' | '/' | '/book' | '/hud' | '/reschedule/$refCode'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BookRoute: typeof BookRoute
   HudRoute: typeof HudRoute
+  RescheduleRefCodeRoute: typeof RescheduleRefCodeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HudRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reschedule/$refCode': {
+      id: '/reschedule/$refCode'
+      path: '/reschedule/$refCode'
+      fullPath: '/reschedule/$refCode'
+      preLoaderRoute: typeof RescheduleRefCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BookRoute: BookRoute,
   HudRoute: HudRoute,
+  RescheduleRefCodeRoute: RescheduleRefCodeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

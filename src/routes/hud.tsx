@@ -598,7 +598,14 @@ function Hud() {
                   <span className="text-xs text-foreground truncate">
                     {b.customer_name ?? "Client"} — {b.vehicle_model ?? b.package_name}
                   </span>
-                  <span className="font-mono text-[11px] text-cyan shrink-0">{b.ref_code}</span>
+                  <Link
+                    to="/reschedule/$refCode"
+                    params={{ refCode: b.ref_code }}
+                    className="font-mono text-[11px] text-cyan hover:underline shrink-0"
+                    title={`Customer reschedule link for ${b.ref_code}`}
+                  >
+                    {b.ref_code} ↗
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -606,8 +613,18 @@ function Hud() {
             <div className="mt-4 rounded-lg border border-border bg-background/80 p-3 sm:p-4 font-mono text-[11px] leading-relaxed text-muted-foreground break-all sm:break-normal">
               Hi {affected[0]?.customer_name ?? "[customer_name]"}, Cole from Apex Detail Works.
               Heavy rain is forecasted for Austin on Thursday — ceramic coatings cannot bond in wet
-              conditions. Tap your exclusive priority slot link to reschedule:
-              apexdetail.works/reschedule/{affected[0]?.ref_code ?? "[ref_code]"}
+              conditions. Tap your exclusive priority slot link to reschedule:{" "}
+              {affected[0] ? (
+                <Link
+                  to="/reschedule/$refCode"
+                  params={{ refCode: affected[0].ref_code }}
+                  className="text-cyan underline hover:text-cyan-hover"
+                >
+                  apexdetail.works/reschedule/{affected[0].ref_code}
+                </Link>
+              ) : (
+                "apexdetail.works/reschedule/[ref_code]"
+              )}
             </div>
 
             <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:justify-end">
