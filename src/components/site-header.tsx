@@ -7,7 +7,7 @@ export function SiteHeader() {
 
   return (
     <header className="relative z-30 w-full border-b border-border bg-background/95 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-2 xs:px-4 sm:px-6 sm:py-2.5">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-2.5 xs:px-4 sm:px-6 sm:py-3.5">
         {/* Left — Brand Logo */}
         <Link
           to="/"
@@ -19,9 +19,9 @@ export function SiteHeader() {
             <img
               src="/brand/apex-logo.png"
               alt="Apex Detail Works"
-              className="h-9 xs:h-11 sm:h-[50px] w-auto max-w-[135px] xs:max-w-[190px] sm:max-w-[250px] object-contain drop-shadow-[0_2px_14px_rgba(0,0,0,0.9)] transition-transform duration-200 group-hover:scale-[1.02] mix-blend-screen"
-              width={138}
-              height={50}
+              className="h-10 xs:h-12 sm:h-[58px] md:h-[60px] w-auto max-w-[155px] xs:max-w-[210px] sm:max-w-[290px] md:max-w-[305px] object-contain drop-shadow-[0_2px_14px_rgba(0,0,0,0.9)] transition-transform duration-200 group-hover:scale-[1.02] mix-blend-screen"
+              width={165}
+              height={60}
               loading="eager"
               decoding="async"
             />
@@ -29,9 +29,9 @@ export function SiteHeader() {
         </Link>
 
         {/* Right controls */}
-        <div className="flex items-center gap-1.5 xs:gap-2.5 sm:gap-3 shrink-0">
+        <div className="flex items-center gap-2 xs:gap-2.5 sm:gap-3.5 shrink-0">
           {/* Van 01 live status badge */}
-          <span className="hidden items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 font-mono text-[11px] font-semibold text-slate-300 md:flex">
+          <span className="hidden items-center gap-2 rounded-full border border-border bg-card px-4 py-2 font-mono text-xs font-semibold text-slate-300 md:flex">
             <span className="relative flex h-2 w-2">
               <span
                 className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${isHud ? "bg-amber" : "bg-emerald"}`}
@@ -46,12 +46,12 @@ export function SiteHeader() {
           {/* View switcher */}
           <nav
             aria-label="Views"
-            className="flex items-center rounded-lg border border-border bg-card p-0.5 xs:p-1 text-[11px] xs:text-xs font-semibold"
+            className="flex items-center rounded-lg border border-border bg-card p-1 text-xs sm:text-[12.5px] font-semibold"
           >
             <Link
               to="/"
               aria-current={!isHud && !isBook ? "page" : undefined}
-              className={`rounded-md px-2 py-1 xs:px-3 xs:py-1.5 transition-colors ${
+              className={`rounded-md px-2.5 py-1.5 xs:px-3.5 xs:py-2 transition-colors ${
                 !isHud && !isBook
                   ? "bg-secondary text-cyan"
                   : "text-muted-foreground hover:text-foreground"
@@ -63,7 +63,7 @@ export function SiteHeader() {
             <Link
               to="/hud"
               aria-current={isHud ? "page" : undefined}
-              className={`rounded-md px-2 py-1 xs:px-3 xs:py-1.5 transition-colors ${
+              className={`rounded-md px-2.5 py-1.5 xs:px-3.5 xs:py-2 transition-colors ${
                 isHud ? "bg-secondary text-amber" : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -75,7 +75,7 @@ export function SiteHeader() {
           {/* Book CTA */}
           <Link
             to="/book"
-            className="btn-primary hover:btn-primary-hover hidden sm:inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg shadow-md"
+            className="btn-primary hover:btn-primary-hover hidden sm:inline-flex items-center gap-1.5 px-5 py-2.5 text-[13px] font-bold rounded-xl shadow-md min-h-[40px]"
           >
             Book Van 01
           </Link>
