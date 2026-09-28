@@ -512,13 +512,13 @@ function Landing() {
       {showBanner && <InstagramBanner onDismiss={() => setBannerDismissed(true)} />}
       <section className="apex-hero-v2">
         <div className="apex-grid-floor" aria-hidden="true" />
-        <div className="relative z-10 flex flex-col items-center w-full max-w-5xl mx-auto px-3 sm:px-0">
-          <div className="flex items-center gap-2 xs:gap-3 mb-2.5">
-            <span className="hidden xs:block w-8 sm:w-10 h-px bg-gradient-to-r from-transparent to-red-500" />
-            <span className="font-mono text-[10px] xs:text-[11px] font-bold uppercase tracking-[0.12em] xs:tracking-[0.2em] text-red-400 text-center">
+        <div className="relative z-10 flex flex-col items-center w-full max-w-[1140px] mx-auto px-4 sm:px-6">
+          <div className="flex items-center gap-2 xs:gap-3 mb-3 sm:mb-4">
+            <span className="hidden xs:block w-8 sm:w-12 h-px bg-gradient-to-r from-transparent to-red-500" />
+            <span className="font-mono text-[10.5px] xs:text-xs font-bold uppercase tracking-[0.14em] xs:tracking-[0.22em] text-red-400 text-center">
               Austin Metro · Van 01 · Zero Hookups
             </span>
-            <span className="hidden xs:block w-8 sm:w-10 h-px bg-gradient-to-l from-transparent to-red-500" />
+            <span className="hidden xs:block w-8 sm:w-12 h-px bg-gradient-to-l from-transparent to-red-500" />
           </div>
           <h1 className="apex-display">
             <span className="block">Austin&apos;s Mobile</span>
@@ -533,18 +533,18 @@ function Landing() {
             <Link
               to="/book"
               search={fromInstagram ? { src: "instagram" } : {}}
-              className="btn-primary hover:btn-primary-hover inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 text-sm font-bold rounded-xl shadow-xl transition-all min-h-[44px]"
+              className="btn-primary hover:btn-primary-hover inline-flex items-center justify-center gap-2.5 w-full sm:w-auto px-7 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-bold rounded-xl shadow-xl transition-all min-h-[46px] sm:min-h-[54px]"
               id="hero-cta-btn"
             >
               <span>Book Your Slot — 90 Seconds</span>
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
             </Link>
             <Link
               to="/hud"
-              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto rounded-xl border border-white/10 bg-white/4 px-5 py-3 font-mono text-xs font-semibold text-slate-400 backdrop-blur-sm transition-colors hover:border-cyan/50 hover:text-white min-h-[44px]"
+              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto rounded-xl border border-white/10 bg-white/4 px-6 sm:px-7 py-3.5 sm:py-4 font-mono text-xs sm:text-[13px] font-semibold text-slate-300 backdrop-blur-sm transition-colors hover:border-cyan/50 hover:text-white min-h-[46px] sm:min-h-[54px]"
             >
               <span>Cole&apos;s Operations HUD</span>
-              <ArrowRight className="h-3 w-3" />
+              <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </Link>
           </div>
           <div className="apex-stat-strip">
