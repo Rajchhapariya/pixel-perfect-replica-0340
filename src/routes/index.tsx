@@ -407,7 +407,7 @@ function Landing() {
       <section className="apex-hero-v2">
         <div className="apex-grid-floor" aria-hidden="true" />
         <div className="relative z-10 flex flex-col items-center w-full max-w-5xl mx-auto">
-          <div className="flex items-center gap-3 mb-3.5">
+          <div className="flex items-center gap-3 mb-4.5">
             <span className="block w-10 h-px bg-gradient-to-r from-transparent to-red-500" />
             <span className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-red-400">
               Austin Metro · Van 01 · Zero Hookups
@@ -427,7 +427,7 @@ function Landing() {
             <Link
               to="/book"
               search={fromInstagram ? { src: "instagram" } : {}}
-              className="btn-primary hover:btn-primary-hover inline-flex items-center justify-center gap-2 px-6 py-3 text-xs sm:text-sm font-bold rounded-xl shadow-xl transition-all"
+              className="btn-primary hover:btn-primary-hover inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-bold rounded-xl shadow-xl transition-all"
               id="hero-cta-btn"
             >
               <span>Book Your Slot — 90 Seconds</span>
@@ -435,7 +435,7 @@ function Landing() {
             </Link>
             <Link
               to="/hud"
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/4 px-5 py-3 font-mono text-xs font-semibold text-slate-400 backdrop-blur-sm transition-colors hover:border-cyan/50 hover:text-white"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/4 px-6 py-3.5 font-mono text-xs font-semibold text-slate-400 backdrop-blur-sm transition-colors hover:border-cyan/50 hover:text-white"
             >
               <span>Cole&apos;s Operations HUD</span>
               <ArrowRight className="h-3 w-3" />
