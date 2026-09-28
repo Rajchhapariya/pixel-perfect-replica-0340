@@ -183,11 +183,76 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+const APEX_SCHEMA_JSON = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "AutoRepair",
+  name: "Apex Detail Works",
+  image: "https://pixel-perfect-replica-0340.lovable.app/brand/apex-og.png",
+  logo: "https://pixel-perfect-replica-0340.lovable.app/brand/apex-logo.png",
+  url: "https://pixel-perfect-replica-0340.lovable.app/",
+  telephone: "+1-512-555-0142",
+  description:
+    "Austin's premier autonomous mobile auto detailing rig. On-site paint correction, 9H ceramic coatings, and interior extraction with onboard deionized water and power.",
+  areaServed: [
+    { "@type": "AdministrativeArea", name: "Austin, Texas" },
+    { "@type": "PostalCode", postalCode: "78701" },
+    { "@type": "PostalCode", postalCode: "78704" },
+    { "@type": "PostalCode", postalCode: "78746" },
+    { "@type": "PostalCode", postalCode: "78759" },
+    { "@type": "PostalCode", postalCode: "78738" },
+  ],
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Austin",
+    addressRegion: "TX",
+    addressCountry: "US",
+  },
+  priceRange: "$$$",
+  founder: {
+    "@type": "Person",
+    name: "Cole Ramsey",
+  },
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Austin Mobile Detailing Packages",
+    itemListElement: [
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "Interior Deep Clean + Steam Extraction",
+          description:
+            "Full interior steam sanitization, leather conditioning, hot-water carpet extraction, and zero-chemical glass.",
+        },
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "Express Foam & Seal",
+          description:
+            "0-TDS deionized spot-free wash, iron decontamination, clay mitt, and ceramic spray sealant.",
+        },
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "Full Paint Correction + Ceramic",
+          description:
+            "Multi-stage rotary compound and jeweled polish removing 85%+ swirls, topped with 9H ceramic bond.",
+        },
+      },
+    ],
+  },
+});
+
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
         <HeadContent />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: APEX_SCHEMA_JSON }} />
       </head>
       <body>
         {children}
