@@ -1,25 +1,41 @@
 import { useEffect, useRef, useState } from "react";
-import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
-import { ArrowDown, ArrowRight, CheckCircle2, MapPin, ShieldCheck, Sparkles, Star, X, Zap } from "lucide-react";
+import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
+import {
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  Car,
+  Check,
+  CloudRain,
+  MapPin,
+  Phone,
+  Route as RouteIcon,
+  Star,
+  Truck,
+  Video,
+  X,
+  Zap,
+} from "lucide-react";
+import { PACKAGES, VEHICLE_OPTIONS, formatDuration, money, type VehicleClass } from "@/lib/booking";
 
 export const Route = createFileRoute("/")({
+  validateSearch: (search: Record<string, unknown>) => {
+    const src = typeof search["src"] === "string" ? search["src"] : undefined;
+    return src !== undefined ? { src } : {};
+  },
   head: () => ({
     meta: [
-      {
-        title: "Apex Detail Works — Book Your Austin Mobile Detail in 90 Seconds",
-      },
+      { title: "Apex Detail Works — Austin Mobile Auto Detailing" },
       {
         name: "description",
         content:
-          "Cole's mobile detailing van serves Austin metro. Scope your vehicle, lock your price, hold your slot — no phone tag, no callbacks.",
+          "Cole Ramsey's autonomous mobile detailing rig for Austin, TX. 90-second booking, MoPac route clustering, zero phone tag, $50 locked deposit hold.",
       },
-      {
-        property: "og:title",
-        content: "Apex Detail Works — Austin Mobile Detailing",
-      },
+      { property: "og:title", content: "Apex Detail Works — Austin Mobile Detailing" },
       {
         property: "og:description",
-        content: "Scope your vehicle, lock your price, hold your slot in 90 seconds. No callbacks required.",
+        content:
+          "Scope your vehicle, lock your price, hold your slot in 90 seconds. No callbacks required.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -28,350 +44,886 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-/* ─── Animated counter hook ─── */
-function useCounter(target: number, duration = 1800) {
+/** Counts from 0 to `target` over `duration` ms once the ref enters the viewport. */
+function useCountUp(target: number, duration = 1800) {
   const [count, setCount] = useState(0);
-  const ref = useRef<HTMLSpanElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
+  const started = useRef(false);
+
   useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (!entry?.isIntersecting) return;
-        observer.disconnect();
-        const start = performance.now();
-        const step = (now: number) => {
-          const progress = Math.min((now - start) / duration, 1);
-          const eased = 1 - Math.pow(1 - progress, 4);
-          setCount(Math.floor(eased * target));
-          if (progress < 1) requestAnimationFrame(step);
-        };
-        requestAnimationFrame(step);
+        if (entry?.isIntersecting && !started.current) {
+          started.current = true;
+          const start = performance.now();
+          const tick = (now: number) => {
+            const elapsed = now - start;
+            const progress = Math.min(elapsed / duration, 1);
+            // ease-out cubic
+            const eased = 1 - Math.pow(1 - progress, 3);
+            setCount(Math.round(eased * target));
+            if (progress < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        }
       },
       { threshold: 0.3 },
     );
-    if (ref.current) observer.observe(ref.current);
+    observer.observe(el);
     return () => observer.disconnect();
   }, [target, duration]);
+
   return { count, ref };
 }
 
-/* ─── Stat card ─── */
-function StatCard({
-  value,
-  unit,
-  prefix,
-  label,
-  sub,
-  accent,
-  watermark,
-}: {
-  value: number;
-  unit?: string;
-  prefix?: string;
-  label: string;
-  sub: string;
-  accent: "cyan" | "emerald" | "amber";
-  watermark: string;
-}) {
-  const { count, ref } = useCounter(value);
-  const glowColors = {
-    cyan: "var(--cyan)",
-    emerald: "var(--emerald)",
-    amber: "var(--amber)",
-  };
-  const softColors = {
-    cyan: "var(--cyan-soft)",
-    emerald: "var(--emerald-soft)",
-    amber: "var(--amber-soft)",
-  };
+// 6 phases: 0=idle, 1=customer msg, 2=seen tick, 3=typing dots, 4=reply, 5=second customer reaction
+type DmPhase = 0 | 1 | 2 | 3 | 4 | 5;
+
+function DmSimulator() {
+  const [phase, setPhase] = useState<DmPhase>(0);
+  const [loopKey, setLoopKey] = useState(0); // triggers re-mount for infinite loop
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase(1), 800);
+    const t2 = setTimeout(() => setPhase(2), 2200);
+    const t3 = setTimeout(() => setPhase(3), 3600);
+    const t4 = setTimeout(() => setPhase(4), 5200);
+    const t5 = setTimeout(() => setPhase(5), 7500);
+    const tReset = setTimeout(() => {
+      setPhase(0);
+      setLoopKey((k) => k + 1);
+    }, 10500);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
+      clearTimeout(t5);
+      clearTimeout(tReset);
+    };
+  }, [loopKey]);
+
   return (
-    <article
-      ref={ref as React.RefObject<HTMLElement>}
-      className="stat-card"
-      style={
-        {
-          "--accent-color": glowColors[accent],
-          "--accent-soft": softColors[accent],
-        } as React.CSSProperties
-      }
+    <div
+      className="w-full rounded-[44px] border-[3px] border-[#2a2a2a] bg-black p-2.5 shadow-[0_40px_80px_rgba(0,0,0,0.98),0_0_60px_rgba(239,68,68,0.10)] ring-1 ring-white/6"
+      aria-label="Instagram DM simulation"
     >
-      <div className="stat-card-watermark" aria-hidden="true">
-        {watermark}
+      {/* Dynamic Island */}
+      <div className="mx-auto mb-2 flex h-[18px] w-[90px] items-center justify-center rounded-full bg-black border border-[#1a1a1a]">
+        <span className="h-[7px] w-[7px] rounded-full bg-[#111] ring-1 ring-white/5" />
       </div>
-      <div className="stat-card-top-bar" />
-      <p className="stat-card-value">
-        {prefix}
-        {count}
-        {unit}
-      </p>
-      <h3 className="stat-card-label">{label}</h3>
-      <p className="stat-card-sub">{sub}</p>
-    </article>
-  );
-}
 
-/* ─── Service pill ─── */
-function ServicePill({ icon: Icon, text }: { icon: React.ElementType; text: string }) {
-  return (
-    <span className="service-pill">
-      <Icon className="h-3.5 w-3.5" />
-      {text}
-    </span>
-  );
-}
+      {/* Instagram DM Screen */}
+      <div className="rounded-[36px] bg-black overflow-hidden">
+        <div className="flex items-center justify-between px-3 pt-3 pb-2">
+          <button type="button" className="p-1 text-white" aria-label="Back">
+            <ArrowLeft className="h-5 w-5" />
+          </button>
 
-/* ─── Review card ─── */
-function ReviewCard({ name, vehicle, text, zip }: { name: string; vehicle: string; text: string; zip: string }) {
-  return (
-    <div className="review-card">
-      <div className="review-stars">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Star key={i} className="h-3.5 w-3.5 fill-amber text-amber" />
-        ))}
-      </div>
-      <p className="review-text">"{text}"</p>
-      <div className="review-meta">
-        <span className="review-name">{name}</span>
-        <span className="review-vehicle">
-          {vehicle} · {zip}
-        </span>
+          <div className="flex flex-col items-center">
+            <div className="relative">
+              <div
+                className="h-9 w-9 rounded-full p-[2px]"
+                style={{
+                  background: "linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)",
+                }}
+              >
+                <div className="h-full w-full rounded-full bg-black p-[2px]">
+                  <div className="h-full w-full rounded-full bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] flex items-center justify-center">
+                    <span className="text-[8px] font-black text-white tracking-tight">ADW</span>
+                  </div>
+                </div>
+              </div>
+              <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-[#20c15e] border-2 border-black" />
+            </div>
+            <p className="text-white text-[11px] font-bold mt-0.5">apexdetailworks</p>
+            <p className="text-[#8e8e8e] text-[9px]">Active now</p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button type="button" className="text-white" aria-label="Voice call">
+              <Phone className="h-[18px] w-[18px]" />
+            </button>
+            <button type="button" className="text-white" aria-label="Video call">
+              <Video className="h-[18px] w-[18px]" />
+            </button>
+          </div>
+        </div>
+
+        <div className="h-px bg-[#1c1c1c] mx-3" />
+
+        <div className="px-3 pt-3 pb-2 flex flex-col gap-1.5 min-h-[170px] justify-end">
+          {/* Timestamp */}
+          {phase >= 1 && (
+            <p className="dm-animate-in text-center text-[9px] text-[#8e8e8e] mb-0.5">
+              Today 9:14 AM
+            </p>
+          )}
+
+          {/* Customer message 1 — conversational, lowercase, typo-free but casual */}
+          {phase >= 1 && (
+            <div className="dm-animate-in flex items-end gap-1.5 max-w-[82%]">
+              <div className="h-[18px] w-[18px] rounded-full flex-shrink-0 bg-gradient-to-br from-blue-700 to-blue-900 flex items-center justify-center mb-px">
+                <span className="text-[6px] font-bold text-white">JR</span>
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <div
+                  className="rounded-[16px] rounded-bl-[4px] px-3 py-2 text-[11px] text-white leading-[1.45]"
+                  style={{ background: "#262626" }}
+                >
+                  hey do you have anything open this week? need a full detail on my F-150 before the
+                  weekend 🙏
+                </div>
+                {/* Seen receipt — appears at phase 2 */}
+                {phase >= 2 && (
+                  <p className="dm-animate-in text-[9px] text-[#8e8e8e] pl-1 leading-none">
+                    Seen · 9:14 AM ✓✓
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Typing indicator — Cole's bot is processing */}
+          {phase === 3 && (
+            <div className="dm-animate-out flex justify-end items-end gap-1.5">
+              <div className="flex flex-col items-end gap-0.5">
+                <div
+                  className="rounded-[16px] rounded-br-[4px] px-4 py-[10px]"
+                  style={{ background: "linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)" }}
+                >
+                  <div className="apex-typing-dots">
+                    <span style={{ background: "rgba(255,255,255,0.9)" }} />
+                    <span style={{ background: "rgba(255,255,255,0.9)" }} />
+                    <span style={{ background: "rgba(255,255,255,0.9)" }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Cole's auto-reply — right side, IG gradient */}
+          {phase >= 4 && (
+            <div className="dm-animate-out flex justify-end max-w-[84%] ml-auto">
+              <div className="flex flex-col items-end gap-0.5">
+                <div
+                  className="rounded-[16px] rounded-br-[4px] px-3 py-2 text-[11px] text-white leading-[1.45]"
+                  style={{
+                    background: "linear-gradient(135deg,#833ab4 0%,#fd1d1d 55%,#fcb045 100%)",
+                  }}
+                >
+                  hey! gloves on all day — can&apos;t stop to text mid-job 🧤 use my booking link
+                  below, takes 90 sec, price locked, slot held. no back-and-forth needed
+                </div>
+                <p className="text-[8.5px] text-[#8e8e8e] pr-1">
+                  ⚡ Automated · Apex Booking Engine
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Customer replies — relieved, natural */}
+          {phase >= 5 && (
+            <div className="dm-animate-in flex items-end gap-1.5 max-w-[72%]">
+              <div className="h-[18px] w-[18px] rounded-full flex-shrink-0 bg-gradient-to-br from-blue-700 to-blue-900 flex items-center justify-center mb-px">
+                <span className="text-[6px] font-bold text-white">JR</span>
+              </div>
+              <div
+                className="rounded-[16px] rounded-bl-[4px] px-3 py-2 text-[11px] text-white leading-[1.45]"
+                style={{ background: "#262626" }}
+              >
+                ok booking now, thanks 🤙
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="px-3 pb-3 pt-1">
+          <div className="flex items-center gap-2">
+            <button type="button" aria-label="Camera" className="text-[#8e8e8e] flex-shrink-0">
+              <svg
+                viewBox="0 0 24 24"
+                className="h-[22px] w-[22px]"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 0 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                <circle cx="12" cy="13" r="4" />
+              </svg>
+            </button>
+            <Link
+              to="/book"
+              className="flex-1 rounded-full border border-[#363636] bg-transparent px-3.5 py-1.5 text-[11px] text-[#8e8e8e] flex items-center justify-between"
+            >
+              <span>Book your slot · 90 seconds</span>
+              <span
+                className="text-[10px] font-bold"
+                style={{
+                  background: "linear-gradient(90deg,#833ab4,#fd1d1d,#fcb045)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
+              >
+                Book
+              </span>
+            </Link>
+            <button type="button" aria-label="Like" className="text-[#8e8e8e] flex-shrink-0">
+              <svg
+                viewBox="0 0 24 24"
+                className="h-[22px] w-[22px]"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-/* ─── Landing page ─── */
-function Landing() {
-  const search = useRouterState({ select: (s) => s.location.search as Record<string, unknown> | undefined });
-  const isFromInstagram = search?.["src"] === "instagram";
-  const [igBannerDismissed, setIgBannerDismissed] = useState(false);
-  const showIgBanner = isFromInstagram && !igBannerDismissed;
-  const igBannerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!showIgBanner) return;
-    document.body.classList.add("ig-banner-open");
-    if (igBannerRef.current) {
-      document.documentElement.style.setProperty("--ig-banner-h", `${igBannerRef.current.offsetHeight}px`);
-    }
-    return () => {
-      document.body.classList.remove("ig-banner-open");
-      document.documentElement.style.removeProperty("--ig-banner-h");
-    };
-  }, [showIgBanner]);
-
+function EditorialReview({
+  name,
+  vehicle,
+  text,
+  zip,
+  service,
+  initials,
+  avatarColor,
+}: {
+  name: string;
+  vehicle: string;
+  text: string;
+  zip: string;
+  service: string;
+  initials: string;
+  avatarColor: string;
+}) {
   return (
-    <main className="landing-root">
-      {/* ── INSTAGRAM SOURCE BANNER ── */}
-      {showIgBanner && (
-        <div className="ig-banner" ref={igBannerRef} role="status">
-          <p className="ig-banner-text">
-            You clicked from Instagram. Cole is mid-job right now — this form books you directly
-            without any phone tag.
-          </p>
-          <button
-            type="button"
-            className="ig-banner-close"
-            aria-label="Dismiss banner"
-            onClick={() => setIgBannerDismissed(true)}
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
+    <div className="rounded-2xl border border-white/8 bg-[#0c121e]/70 p-6 flex flex-col justify-between transition-colors hover:border-cyan/40 backdrop-blur-sm shadow-xl">
+      <div>
+        <div className="flex items-center justify-between gap-2 border-b border-white/8 pb-3">
+          <div className="flex items-center gap-1">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star key={i} className="h-3 w-3 fill-amber-400 text-amber-400" />
+            ))}
+          </div>
+          <span className="font-mono text-[10px] uppercase text-cyan font-bold tracking-wider">
+            {service}
+          </span>
         </div>
-      )}
-
-      {/* ── HERO ── */}
-      <section className="hero-section">
-        {/* Noise texture overlay */}
-        <div className="hero-noise" aria-hidden="true" />
-
-        {/* Car silhouette SVG ghost */}
-        <div className="hero-car-ghost" aria-hidden="true">
-          <svg viewBox="0 0 900 280" fill="none" xmlns="http://www.w3.org/2000/svg" className="hero-car-svg">
-            <path
-              d="M80 200 L120 160 L220 120 L360 100 L500 105 L620 115 L700 140 L760 165 L820 175 L820 200 Z"
-              fill="url(#carBody)"
-            />
-            <path d="M220 120 L260 80 L400 68 L520 72 L580 80 L620 115 Z" fill="url(#carRoof)" />
-            <circle cx="220" cy="207" r="38" fill="url(#wheelGrad)" />
-            <circle cx="220" cy="207" r="22" fill="url(#rimGrad)" />
-            <circle cx="660" cy="207" r="38" fill="url(#wheelGrad)" />
-            <circle cx="660" cy="207" r="22" fill="url(#rimGrad)" />
-            <defs>
-              <linearGradient id="carBody" x1="80" y1="160" x2="820" y2="200" gradientUnits="userSpaceOnUse">
-                <stop stopColor="var(--cyan)" stopOpacity="0.22" />
-                <stop offset="1" stopColor="var(--cyan)" stopOpacity="0.04" />
-              </linearGradient>
-              <linearGradient id="carRoof" x1="220" y1="68" x2="620" y2="115" gradientUnits="userSpaceOnUse">
-                <stop stopColor="var(--cyan)" stopOpacity="0.16" />
-                <stop offset="1" stopColor="var(--cyan)" stopOpacity="0.04" />
-              </linearGradient>
-              <radialGradient id="wheelGrad" cx="50%" cy="50%" r="50%">
-                <stop stopColor="var(--cyan)" stopOpacity="0.12" />
-                <stop offset="1" stopColor="transparent" />
-              </radialGradient>
-              <radialGradient id="rimGrad" cx="50%" cy="50%" r="50%">
-                <stop stopColor="var(--cyan)" stopOpacity="0.07" />
-                <stop offset="1" stopColor="transparent" />
-              </radialGradient>
-            </defs>
-          </svg>
-        </div>
-
-        {/* Laser grid floor */}
-        <div className="hero-grid" aria-hidden="true" />
-
-        <div className="hero-content">
-          {/* Eyebrow */}
-          <div className="hero-eyebrow">
-            <span className="eyebrow-rule" />
-            <span className="eyebrow-text">Austin Mobile Detailing — No Callbacks</span>
-            <span className="eyebrow-rule" />
-          </div>
-
-          {/* Headline */}
-          <h1 className="hero-headline">
-            <span className="headline-plain">Book Your Detail.</span>
-            <br />
-            <span className="headline-gradient">No Phone Tag.</span>
-            <br />
-            <span className="headline-plain">No Waiting.</span>
-          </h1>
-
-          {/* Sub */}
-          <p className="hero-sub">
-            Cole&apos;s booked solid — but this form confirms your slot in 90 seconds.
-            <br className="hidden sm:block" />
-            Vehicle scoped. Price locked. Deposit held. Done.
-          </p>
-
-          {/* Service pills */}
-          <div className="hero-pills">
-            <ServicePill icon={Zap} text="Maintenance Wash" />
-            <ServicePill icon={ShieldCheck} text="Paint Correction" />
-            <ServicePill icon={Sparkles} text="Ceramic Coating" />
-            <ServicePill icon={MapPin} text="Austin Metro Only" />
-          </div>
-
-          {/* Instagram DM simulation strip */}
-          <div className="dm-strip" aria-label="Instagram DM simulation">
-            <p className="dm-strip-label">What happens when you DM @apexdetailworks</p>
-            <div className="dm-bubble dm-bubble-in">
-              Hey Cole, do you have anything open this week? Need a full detail on my F-150
-            </div>
-            <div className="dm-bubble dm-bubble-out">
-              Hey! I don't answer DMs mid-job but my booking link handles it — price, slot,
-              everything. Done in 90 seconds.
-            </div>
-            <div className="dm-strip-arrow" aria-hidden="true">
-              <ArrowDown className="h-4 w-4" />
-            </div>
-          </div>
-
-          {/* CTA */}
-          <div className="hero-cta-wrap">
-            <Link
-              to="/book"
-              search={isFromInstagram ? { src: "instagram" } : {}}
-              className="cta-btn"
-              id="hero-cta-btn"
-            >
-              <span className="cta-btn-shine" aria-hidden="true" />
-              Get My Free Quote in 90 Seconds
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <p className="cta-footnote">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald" />
-              <span>Average completion: 1 min 28 sec · $50 deposit holds your slot</span>
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ── TRUST STRIP ── */}
-      <div className="trust-strip">
-        <p className="trust-strip-text">
-          Trusted by Porsche, BMW, Tesla &amp; Rivian owners across Austin&apos;s{" "}
-          <span className="trust-zone">78701</span> · <span className="trust-zone">78704</span> ·{" "}
-          <span className="trust-zone">78746</span> · <span className="trust-zone">78759</span> corridors
+        <p className="mt-4 text-xs sm:text-sm text-slate-300 leading-relaxed">
+          &ldquo;{text}&rdquo;
         </p>
       </div>
-
-      {/* ── STATS ── */}
-      <section className="stats-section">
-        <StatCard
-          value={18}
-          label="Inquiries Auto-Booked This Week"
-          sub="0 manual texts sent by Cole"
-          accent="cyan"
-          watermark="18"
-        />
-        <StatCard
-          value={7}
-          unit=".2 hrs"
-          label="Transit Hours Saved"
-          sub="Route clustering keeps Cole in your neighborhood"
-          accent="emerald"
-          watermark="7"
-        />
-        <StatCard
-          value={0}
-          prefix="$"
-          label="No-Show Revenue Lost"
-          sub="$50 deposit hold on every confirmed slot"
-          accent="amber"
-          watermark="$0"
-        />
-      </section>
-
-      {/* ── BEFORE / AFTER TEASE ── */}
-      <div className="before-after-tease">
-        <button
-          type="button"
-          className="baf-tease-btn"
-          onClick={() => {
-            const btn = document.querySelector<HTMLButtonElement>("button[class*='fixed'][class*='bottom']");
-            btn?.click();
-          }}
-        >
-          See what Apex replaced — manual DMs vs. the engine
-          <ArrowRight className="h-4 w-4" />
-        </button>
+      <div className="mt-6 pt-3 border-t border-white/8 flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <div
+            className="h-8 w-8 rounded-full flex items-center justify-center text-[11px] font-black text-white shrink-0"
+            style={{ background: avatarColor }}
+          >
+            {initials}
+          </div>
+          <div>
+            <p className="text-xs font-bold text-white">{name}</p>
+            <p className="font-mono text-[10px] text-slate-500">{vehicle}</p>
+          </div>
+        </div>
+        <span className="font-mono text-[10px] text-slate-600">{zip}</span>
       </div>
+    </div>
+  );
+}
 
-      {/* ── REVIEWS ── */}
-      <section className="reviews-section">
-        <ReviewCard
-          name="Marcus T."
-          vehicle="2024 Ford F-150"
-          text="Booked in two minutes. Cole showed up on time, the truck looks like it just rolled off the lot."
-          zip="78704"
-        />
-        <ReviewCard
-          name="Devin R."
-          vehicle="2021 BMW M3"
-          text="Paint correction was flawless. The online booking flow is the cleanest I've seen for any service."
-          zip="78701"
-        />
-        <ReviewCard
-          name="Priya S."
-          vehicle="2023 Porsche Macan S"
-          text="No back-and-forth texting. Price was locked the second I clicked. Exactly what I needed."
-          zip="78746"
-        />
+function InstagramBanner({ onDismiss }: { onDismiss: () => void }) {
+  return (
+    <div
+      role="alert"
+      className="flex items-center justify-between gap-3 border-b border-amber/30 bg-amber/10 px-4 py-3 text-[0.8rem] text-amber-300"
+    >
+      <div className="flex items-center gap-2 min-w-0">
+        <AlertCircle className="h-4 w-4 shrink-0 text-amber-400" />
+        <span>
+          You clicked from Instagram.{" "}
+          <strong className="font-semibold text-amber-200">Cole is mid-job right now</strong> — this
+          form books you directly. No phone tag, no callback.
+        </span>
+      </div>
+      <button
+        onClick={onDismiss}
+        aria-label="Dismiss Instagram banner"
+        className="shrink-0 rounded p-0.5 text-amber-400 hover:text-amber-200 transition-colors"
+      >
+        <X className="h-4 w-4" />
+      </button>
+    </div>
+  );
+}
+
+function StatCell({
+  target,
+  suffix,
+  em,
+  label,
+}: {
+  target: number;
+  suffix?: string;
+  em: string;
+  label: string;
+}) {
+  const { count, ref } = useCountUp(target);
+  return (
+    <div ref={ref} className="apex-stat-cell">
+      <div className="apex-stat-num">
+        {suffix}
+        {count}
+        <em>{em}</em>
+      </div>
+      <div className="apex-stat-label">{label}</div>
+    </div>
+  );
+}
+
+function Landing() {
+  const { src } = useSearch({ from: "/" });
+  const fromInstagram = src === "instagram";
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+  const showBanner = fromInstagram && !bannerDismissed;
+
+  const [previewTier, setPreviewTier] = useState<VehicleClass>("sedan");
+  const selectedVehicleTier =
+    VEHICLE_OPTIONS.find((v) => v.id === previewTier) ?? VEHICLE_OPTIONS[0]!;
+
+  return (
+    <main className="bg-background text-foreground overflow-hidden">
+      {showBanner && <InstagramBanner onDismiss={() => setBannerDismissed(true)} />}
+      <section className="apex-hero-v2">
+        <div className="apex-grid-floor" aria-hidden="true" />
+        <div className="relative z-10 flex flex-col items-center w-full max-w-5xl mx-auto">
+          <div className="flex items-center gap-3 mb-6">
+            <span className="block w-10 h-px bg-gradient-to-r from-transparent to-red-500" />
+            <span className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-red-400">
+              Austin Metro · Van 01 · Zero Hookups
+            </span>
+            <span className="block w-10 h-px bg-gradient-to-l from-transparent to-red-500" />
+          </div>
+          <h1 className="apex-display">
+            <span className="block">Austin&apos;s Mobile</span>
+            <span className="apex-display-accent">Detailing Rig.</span>
+            <span className="block">Comes to You.</span>
+          </h1>
+          <p className="apex-hero-sub">
+            Cole Ramsey arrives with 85 gallons of pure deionized water and onboard power. Scoped to
+            your vehicle, price locked, slot held in 90 seconds. No phone tag required.
+          </p>
+          <div className="apex-cta-row">
+            <Link
+              to="/book"
+              search={fromInstagram ? { src: "instagram" } : {}}
+              className="btn-primary hover:btn-primary-hover inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-bold rounded-xl shadow-xl transition-all"
+              id="hero-cta-btn"
+            >
+              <span>Book Your Slot — 90 Seconds</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              to="/hud"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/4 px-6 py-4 font-mono text-xs font-semibold text-slate-400 backdrop-blur-sm transition-colors hover:border-cyan/50 hover:text-white"
+            >
+              <span>Cole&apos;s Operations HUD</span>
+              <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
+          <div className="apex-stat-strip">
+            <StatCell target={18} em=" leads" label="Auto-triaged this week" />
+            <StatCell target={0} suffix="$" em=" lost" label="No-show revenue lost" />
+            <StatCell target={90} em="s" label="Average booking time" />
+          </div>
+        </div>
       </section>
 
-      {/* ── FINAL CTA ── */}
-      <section className="final-cta-section">
-        <div className="final-cta-glow" aria-hidden="true" />
-        <p className="final-cta-eyebrow">Ready to book?</p>
-        <h2 className="final-cta-headline">Your slot is waiting.</h2>
-        <p className="final-cta-sub">Confirmed in 90 seconds. No phone tag. No surprises on arrival.</p>
-        <Link to="/book" className="cta-btn" id="footer-cta-btn">
-          <span className="cta-btn-shine" aria-hidden="true" />
-          Book Now — Lock Your Price
-          <ArrowRight className="h-4 w-4" />
-        </Link>
+      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+        <div className="grid lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-7 space-y-6">
+            <span className="apex-eyebrow">The Problem Cole Solved</span>
+            <h2 className="apex-section-h2">
+              Why 85% of mobile detailing leads die in the Instagram DMs.
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-xl">
+              When Cole is wet-sanding or applying 9H ceramic coating, chemical gloves stay on for 4
+              hours straight. Touching a phone transfers abrasive compound grit to client paint. By
+              the time he texts back at 8 PM, the client already booked elsewhere.
+            </p>
+            <div className="space-y-4 pt-4 border-t border-white/8">
+              {[
+                {
+                  num: "01",
+                  title: "Glove Lockout",
+                  desc: "Customer texts asking for a weekend slot. Cole cannot touch the phone mid-compound.",
+                },
+                {
+                  num: "02",
+                  title: "Instant Autonomous Reply",
+                  desc: "Apex auto-replies in 3 seconds with a direct, vehicle-scoped booking engine. Zero haggling.",
+                },
+                {
+                  num: "03",
+                  title: "Route Cluster + Card Hold",
+                  desc: "Customer picks an arrival window matching Cole's geographic route, authorizes a $50 deposit, and receives an Apple Wallet pass.",
+                },
+              ].map((step) => (
+                <div key={step.num} className="flex gap-4 items-start">
+                  <span className="font-mono text-xs font-bold text-cyan rounded-md border border-cyan/30 bg-cyan/8 px-2.5 py-1 shrink-0">
+                    {step.num}
+                  </span>
+                  <div>
+                    <h4 className="text-sm font-bold text-foreground">{step.title}</h4>
+                    <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                      {step.desc}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Inline Before / After Comparison — always visible */}
+            <div className="pt-4 border-t border-white/8">
+              <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono font-bold uppercase tracking-widest mb-2">
+                <span className="text-rose-400">Before — Manual</span>
+                <span className="text-emerald-400">After — Apex Engine</span>
+              </div>
+              <div className="space-y-1.5">
+                {[
+                  ["8–10 DMs over 48 hrs", "90 sec from IG tap to confirmed"],
+                  ["Price haggled via text", "Dynamic quote, no negotiation"],
+                  ["Cross-town MoPac zig-zag", "Geo-clustered within 5mi sector"],
+                  ["1 hr texting when rain hits", "1-click batch reschedule"],
+                  ["No-show, no recourse", "$50 card hold every slot"],
+                ].map(([before, after]) => (
+                  <div key={before} className="grid grid-cols-2 gap-1.5">
+                    <p className="rounded-lg border border-rose-500/20 bg-rose-500/8 px-2.5 py-2 text-[11px] text-rose-300/80">
+                      {before}
+                    </p>
+                    <p className="rounded-lg border border-emerald-500/20 bg-emerald-500/8 px-2.5 py-2 text-[11px] text-emerald-300/80">
+                      {after}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new CustomEvent("apex:open-drawer"))}
+                className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-secondary/50 px-3 py-1.5 font-mono text-[11px] font-semibold text-muted-foreground transition-colors hover:border-cyan hover:text-foreground"
+              >
+                <span>Open Full Comparison Drawer</span>
+                <ArrowRight className="h-3 w-3 text-cyan" />
+              </button>
+            </div>
+          </div>
+          <div className="lg:col-span-5 flex justify-center">
+            <div className="w-full max-w-[300px] drop-shadow-[0_40px_60px_rgba(0,0,0,0.9)]">
+              <DmSimulator />
+            </div>
+          </div>
+        </div>
       </section>
+
+      <hr className="apex-hr mx-4 sm:mx-6" />
+
+      <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div>
+            <span className="apex-eyebrow">Transparent Vehicle Scoping</span>
+            <h2 className="apex-section-h2">Mobile Detailing Packages.</h2>
+            <p className="mt-2 text-sm text-muted-foreground max-w-lg">
+              Prices scale with vehicle surface area. No on-site haggling, no unexpected add-ons.
+            </p>
+          </div>
+          <div className="flex items-center rounded-xl border border-white/8 bg-[#0c121e]/90 p-1.5 backdrop-blur-md shrink-0">
+            {VEHICLE_OPTIONS.map((v) => {
+              const active = previewTier === v.id;
+              return (
+                <button
+                  key={v.id}
+                  type="button"
+                  onClick={() => setPreviewTier(v.id)}
+                  className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-mono text-xs font-semibold transition-all ${active ? "bg-cyan text-[#07090e] shadow-md" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  {v.id === "suv_full" ? (
+                    <Truck className="h-3.5 w-3.5" />
+                  ) : (
+                    <Car className="h-3.5 w-3.5" />
+                  )}
+                  <span>{v.title.split("&")[0]}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div className="grid md:grid-cols-3 gap-6">
+          {PACKAGES.map((pkg) => {
+            const calculatedPrice = Math.round(pkg.price * selectedVehicleTier.multiplier);
+            const calculatedMinutes = Math.round(pkg.minutes * selectedVehicleTier.multiplier);
+            const isFeatured = pkg.id === "ceramic";
+            return (
+              <div
+                key={pkg.id}
+                className={`relative rounded-2xl border p-6 flex flex-col justify-between backdrop-blur-md transition-all ${isFeatured ? "border-cyan bg-[#0c121e] shadow-[0_0_40px_rgba(239,68,68,0.15)] ring-1 ring-cyan" : "border-white/8 bg-[#0a0e18]/80 hover:border-white/18"}`}
+              >
+                {isFeatured && (
+                  <span className="absolute -top-3 right-6 rounded-md bg-cyan px-2.5 py-0.5 font-mono text-[10px] font-bold text-[#07090e] uppercase tracking-wider">
+                    Signature Finish
+                  </span>
+                )}
+                <div>
+                  <div className="flex items-center justify-between gap-2 border-b border-white/8 pb-4">
+                    <div>
+                      <h3 className="text-base font-bold text-foreground">{pkg.name}</h3>
+                      <p className="font-mono text-xs text-muted-foreground mt-0.5">
+                        {formatDuration(calculatedMinutes)} runtime
+                      </p>
+                    </div>
+                  </div>
+                  <div className="my-5 flex items-baseline gap-1.5">
+                    <span className="font-mono text-4xl font-black text-white">
+                      {money(calculatedPrice)}
+                    </span>
+                    <span className="font-mono text-xs text-slate-500">
+                      / {selectedVehicleTier.tag}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{pkg.description}</p>
+                  <div className="mt-6 pt-4 border-t border-white/8 space-y-2 text-xs font-mono text-slate-300">
+                    {(
+                      pkg.features ?? [
+                        "0-TDS Deionized Water Wash",
+                        "Onboard Battery Rig (No Hookup)",
+                        "Austin Geo-Clustered Arrival",
+                      ]
+                    ).map((feat) => (
+                      <div key={feat} className="flex items-center gap-2">
+                        <Check className="h-3.5 w-3.5 text-cyan shrink-0" />
+                        <span>{feat}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="mt-8 pt-4 border-t border-white/8">
+                  <Link
+                    to="/book"
+                    search={{
+                      package: pkg.id,
+                      vehicle: previewTier,
+                      ...(fromInstagram ? { src: "instagram" } : {}),
+                    }}
+                    className={`inline-flex items-center justify-center gap-2 w-full rounded-xl py-3 text-xs font-bold transition-all ${isFeatured ? "btn-primary hover:btn-primary-hover shadow-lg" : "border border-white/12 bg-secondary/60 text-foreground hover:border-cyan hover:text-cyan"}`}
+                  >
+                    <span>{pkg.ctaLabel ?? `Book ${pkg.name.split(" ")[0]}`}</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <hr className="apex-hr mx-4 sm:mx-6" />
+
+      <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
+        <div className="grid lg:grid-cols-2 gap-10 items-center">
+          <div className="space-y-5">
+            <span className="apex-eyebrow">Built for the Business Owner</span>
+            <h2 className="apex-section-h2">
+              Cole&apos;s Operations Cockpit.
+              <br />
+              <span className="text-cyan">Van 01 Command HUD.</span>
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-lg">
+              A live dashboard built for Cole — not the customer. Route deck auto-clustered by
+              Austin zip sector, one-click weather storm reschedule for all affected ceramic
+              appointments, deposit tracking, and a live inbound audit stream. Zero phone calls
+              required.
+            </p>
+            <ul className="space-y-3 text-sm font-mono">
+              {[
+                {
+                  icon: RouteIcon,
+                  text: "MoPac geo-clustered route deck — stops sequenced to cut drive time",
+                  color: "text-cyan",
+                },
+                {
+                  icon: CloudRain,
+                  text: "1-click Travis County flash storm reschedule dispatch",
+                  color: "text-amber-400",
+                },
+                {
+                  icon: Zap,
+                  text: "Live inbound triage feed — auto-syncs every 30 seconds",
+                  color: "text-emerald-400",
+                },
+                {
+                  icon: MapPin,
+                  text: "Status controls: En Route SMS, Job Started, Complete & Invoice",
+                  color: "text-slate-400",
+                },
+              ].map(({ icon: Icon, text, color }) => (
+                <li key={text} className="flex items-start gap-3">
+                  <Icon className={`h-4 w-4 mt-0.5 shrink-0 ${color}`} />
+                  <span className="text-xs text-muted-foreground leading-relaxed">{text}</span>
+                </li>
+              ))}
+            </ul>
+            <Link
+              to="/hud"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-secondary/60 px-5 py-3 font-mono text-xs font-semibold text-muted-foreground transition-colors hover:border-cyan hover:text-foreground"
+            >
+              <span>Open Owner Operations Cockpit</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+          <Link to="/hud" className="apex-hud-showcase block group">
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/8">
+              <div className="flex items-center gap-2.5">
+                <img
+                  src="/brand/apex-mark.png"
+                  alt="Apex Detail Works"
+                  className="h-7 w-7 object-contain drop-shadow-[0_2px_10px_rgba(6,182,212,0.4)]"
+                  width={28}
+                  height={28}
+                />
+                <span className="font-mono text-xs font-bold uppercase tracking-widest text-amber-400">
+                  Field Operations Console · Van 01
+                </span>
+              </div>
+              <span className="font-mono text-[10px] text-slate-500 border border-white/8 rounded-full px-2 py-0.5">
+                LIVE
+              </span>
+            </div>
+            <div className="grid grid-cols-3 border-b border-white/8">
+              {[
+                { label: "Confirmed", val: "3", accent: "text-cyan" },
+                { label: "Revenue", val: "$1,340", accent: "text-emerald-400" },
+                { label: "Deposit Held", val: "$150", accent: "text-amber-400" },
+              ].map(({ label, val, accent }) => (
+                <div key={label} className="px-4 py-4 border-r border-white/8 last:border-r-0">
+                  <p className="font-mono text-[9px] uppercase tracking-widest text-slate-500">
+                    {label}
+                  </p>
+                  <p className={`font-mono text-xl font-black mt-1 ${accent}`}>{val}</p>
+                </div>
+              ))}
+            </div>
+            <div className="p-4 space-y-2">
+              {[
+                {
+                  time: "9:00 AM",
+                  name: "Marcus T.",
+                  zip: "78704 · SoCo",
+                  pkg: "Full Paint Correction",
+                  price: "$480",
+                },
+                {
+                  time: "1:30 PM",
+                  name: "Devin R.",
+                  zip: "78701 · Downtown",
+                  pkg: "Stage-2 Ceramic",
+                  price: "$560",
+                },
+                {
+                  time: "4:00 PM",
+                  name: "Priya S.",
+                  zip: "78746 · Westlake",
+                  pkg: "Interior + Quartz",
+                  price: "$300",
+                },
+              ].map((stop, i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between gap-3 rounded-lg border border-white/6 bg-white/2 px-3.5 py-3"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="font-mono text-[10px] text-cyan shrink-0 font-bold">
+                      {stop.time}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-foreground truncate">{stop.name}</p>
+                      <p className="font-mono text-[10px] text-slate-500 truncate">
+                        {stop.pkg} · {stop.zip}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="font-mono text-xs font-bold text-foreground shrink-0">
+                    {stop.price}
+                  </span>
+                </div>
+              ))}
+              <div className="pt-2 text-center">
+                <span className="font-mono text-[10px] text-slate-500 group-hover:text-cyan transition-colors">
+                  Click to open full Operations HUD ?
+                </span>
+              </div>
+            </div>
+          </Link>
+        </div>
+      </section>
+
+      <hr className="apex-hr mx-4 sm:mx-6" />
+
+      <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+          <div>
+            <span className="apex-eyebrow">Field Verified</span>
+            <h2 className="apex-section-h2">Austin owners who skip the callbacks.</h2>
+          </div>
+          <span className="font-mono text-xs text-slate-600">
+            Serving 78701 · 78704 · 78746 · 78759 · MoPac Corridors
+          </span>
+        </div>
+        <div className="grid md:grid-cols-3 gap-6">
+          <EditorialReview
+            name="Marcus T."
+            vehicle="2024 Ford F-150"
+            zip="Austin · 78704"
+            service="Full Paint Correction"
+            initials="MT"
+            avatarColor="linear-gradient(135deg,#1e3a5f,#2563eb)"
+            text="Booked in two minutes on a Wednesday. Cole showed up on time in Van 01, and the black clearcoat looks deeper than the day I bought it from the dealer."
+          />
+          <EditorialReview
+            name="Devin R."
+            vehicle="2021 BMW M3"
+            zip="Downtown · 78701"
+            service="Stage-2 Ceramic Finish"
+            initials="DR"
+            avatarColor="linear-gradient(135deg,#3b0764,#7c3aed)"
+            text="The online booking engine is the cleanest system I've used for any trade service. Price was locked the instant I clicked, and the no-show deposit gave total peace of mind."
+          />
+          <EditorialReview
+            name="Priya S."
+            vehicle="2023 Porsche Macan S"
+            zip="Westlake · 78746"
+            service="Interior + Quartz Matrix"
+            initials="PS"
+            avatarColor="linear-gradient(135deg,#7f1d1d,#dc2626)"
+            text="Zero back-and-forth texting. Cole arrived with 85 gallons of deionized water and his own power — didn't even need my hose. Flawless execution."
+          />
+        </div>
+      </section>
+
+      <section className="border-t border-white/8 bg-gradient-to-b from-[#05070c] to-[#07090e] py-24 px-4 sm:px-6 text-center">
+        <div className="mx-auto max-w-3xl space-y-5">
+          <span className="apex-eyebrow">Austin Metro Field Allocation</span>
+          <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
+            Your Van 01 slot is waiting.
+          </h2>
+          <p className="text-sm sm:text-base text-muted-foreground max-w-xl mx-auto">
+            Confirmed in 90 seconds. Vehicle scoped. Price locked. $50 deposit held. Zero phone tag.
+          </p>
+          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              to="/book"
+              search={fromInstagram ? { src: "instagram" } : {}}
+              className="btn-primary hover:btn-primary-hover inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-bold shadow-xl rounded-xl"
+              id="footer-cta-btn"
+            >
+              <span>Book Now — Lock Your Price</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              to="/hud"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-card/60 px-6 py-4 font-mono text-xs font-semibold text-muted-foreground transition-colors hover:border-cyan hover:text-foreground"
+            >
+              <span>View Cole&apos;s Operations HUD</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t border-white/8 bg-[#04060a] pt-14 pb-16 text-xs text-muted-foreground">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start justify-between">
+            <div className="md:col-span-6 space-y-4">
+              <Link
+                to="/"
+                className="inline-block transition-opacity hover:opacity-95"
+                aria-label="Apex Detail Works Home"
+              >
+                <img
+                  src="/brand/apex-logo.png"
+                  alt="Apex Detail Works"
+                  className="h-11 sm:h-14 w-auto max-w-[220px] sm:max-w-[270px] object-contain drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)] transition-transform duration-200 hover:scale-[1.02]"
+                  height={56}
+                />
+              </Link>
+              <p className="max-w-md text-xs leading-relaxed text-muted-foreground">
+                Autonomous booking, MoPac route clustering, and high-gloss multi-stage paint
+                correction for Austin&apos;s most discerning vehicle owners.
+              </p>
+              <div className="flex flex-wrap items-center gap-2 font-mono text-[11px] text-slate-600">
+                <span className="relative flex items-center gap-1.5 font-semibold text-foreground">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#20c15e] opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#20c15e]" />
+                  </span>
+                  Van 01 Active
+                </span>
+                <span>·</span>
+                <span>Austin, TX Metro</span>
+                <span>·</span>
+                <span>(512) 555-0142</span>
+              </div>
+            </div>
+            <div className="md:col-span-6 grid grid-cols-2 gap-8 font-mono text-xs sm:gap-12">
+              <div>
+                <p className="font-bold uppercase tracking-wider text-foreground">Navigation</p>
+                <ul className="mt-3 space-y-2">
+                  <li>
+                    <Link to="/" className="hover:text-cyan transition-colors">
+                      Customer Experience
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/book" className="hover:text-cyan transition-colors">
+                      Book Service (90s)
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/hud" className="hover:text-cyan transition-colors">
+                      Operations Cockpit (HUD)
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <p className="font-bold uppercase tracking-wider text-foreground">
+                  Service Clusters
+                </p>
+                <ul className="mt-3 space-y-2 text-slate-600">
+                  <li>Central &amp; Downtown (78701)</li>
+                  <li>South Congress &amp; SoCo (78704)</li>
+                  <li>Westlake Hills (78746)</li>
+                  <li>Domain &amp; North Austin</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/8 pt-6 text-[11px] text-slate-600 font-mono">
+            <p>
+              &copy; {new Date().getFullYear()} Apex Detail Works LLC · All Rights Reserved · Built
+              for Austin, TX
+            </p>
+            <p className="text-right">Autonomous Booking &amp; Weather-Aware Operations Engine</p>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }

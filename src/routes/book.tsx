@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import confetti from "canvas-confetti";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
@@ -30,8 +31,31 @@ import {
   money,
   type VehicleClass,
 } from "@/lib/booking";
+import { VehiclePresetDropdown } from "@/components/vehicle-preset-dropdown";
+import { VisualBookingCalendar } from "@/components/visual-booking-calendar";
+
+interface BookSearch {
+  package?: string;
+  vehicle?: VehicleClass;
+  src?: string;
+}
 
 export const Route = createFileRoute("/book")({
+  validateSearch: (search: Record<string, unknown>): BookSearch => {
+    const pkg = typeof search["package"] === "string" ? search["package"] : undefined;
+    const vehicle =
+      search["vehicle"] === "sedan" ||
+      search["vehicle"] === "suv_mid" ||
+      search["vehicle"] === "suv_full"
+        ? (search["vehicle"] as VehicleClass)
+        : undefined;
+    const src = typeof search["src"] === "string" ? search["src"] : undefined;
+    return {
+      ...(pkg ? { package: pkg } : {}),
+      ...(vehicle ? { vehicle } : {}),
+      ...(src ? { src } : {}),
+    };
+  },
   head: () => ({
     meta: [
       { title: "Book a Detail — Apex Detail Works Austin" },
@@ -60,21 +84,44 @@ interface ZoneMatch {
   green_route_day: string;
 }
 
+function formatElapsed(s: number) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return m > 0 ? `${m}m ${sec}s` : `${s}s`;
+}
+
 function BookingWizard() {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
+  const search = Route.useSearch();
+  const initialVehicle = search.vehicle ?? null;
+  const initialPackage =
+    search.package && PACKAGES.some((p) => p.id === search.package) ? search.package : "interior";
+
+  const [step, setStep] = useState(initialVehicle ? 2 : 1);
+  const [stepDir, setStepDir] = useState<"forward" | "back">("forward");
   const [submitting, setSubmitting] = useState(false);
+  const startTime = useRef<number>(Date.now());
+  const [elapsed, setElapsed] = useState(0);
   const [confirmed, setConfirmed] = useState<null | {
     refCode: string;
     vehicle: string;
     packageName: string;
     slot: string;
     total: number;
+    bookedInSeconds: number;
   }>(null);
 
-  const [vehicleClass, setVehicleClass] = useState<VehicleClass | null>(null);
+  useEffect(() => {
+    if (confirmed) return;
+    const interval = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - startTime.current) / 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [confirmed]);
+
+  const [vehicleClass, setVehicleClass] = useState<VehicleClass | null>(initialVehicle);
   const [vehicleModel, setVehicleModel] = useState("");
-  const [packageId, setPackageId] = useState("interior");
+  const [packageId, setPackageId] = useState(initialPackage);
   const [addonIds, setAddonIds] = useState<string[]>([]);
 
   const [zipCode, setZipCode] = useState("");
@@ -102,31 +149,28 @@ function BookingWizard() {
   const selectedSlot = slots.find((s) => s.id === slotId) ?? null;
 
   const multiplier = vehicle?.multiplier ?? 1;
-  const basePrice = pkg.price * multiplier;
-  const addonsPrice = activeAddons.reduce((sum, a) => sum + a.price, 0) + (useTank ? TANK_SURCHARGE : 0);
+  const basePrice = Math.round(pkg.price * multiplier);
+  const addonsPrice =
+    activeAddons.reduce((sum, a) => sum + a.price, 0) + (useTank ? TANK_SURCHARGE : 0);
   const travelFee = zoneChecked && !greenRoute ? TRAVEL_SURCHARGE : 0;
-  const total = basePrice + addonsPrice + travelFee;
+  const total = Math.round(basePrice + addonsPrice + travelFee);
   const duration =
     Math.round(pkg.minutes * multiplier) + activeAddons.reduce((sum, a) => sum + a.minutes, 0);
 
   const preFlightPassed = preFlight.level && preFlight.water && preFlight.access;
+  const isPhoneValid = /^\d{10}$/.test(customerPhone.trim());
 
   const canContinue =
     (step === 1 && vehicleClass !== null) ||
     (step === 2 && Boolean(packageId)) ||
     (step === 3 && zoneChecked && Boolean(slotId)) ||
-    (step === 4 && preFlightPassed && customerName.trim() !== "" && customerPhone.trim() !== "");
+    (step === 4 && preFlightPassed && customerName.trim() !== "" && isPhoneValid);
 
   function toggleAddon(id: string) {
     setAddonIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   }
 
-  async function checkZip() {
-    const zip = zipCode.trim();
-    if (zip.length < 5) {
-      toast.error("Enter a 5-digit Austin area zip code.");
-      return;
-    }
+  async function checkZipDirect(zip: string) {
     setChecking(true);
     let data: ZoneMatch | null = null;
     try {
@@ -148,6 +192,15 @@ function BookingWizard() {
     } else {
       setZone(null);
     }
+  }
+
+  async function checkZip() {
+    const zip = zipCode.trim();
+    if (zip.length < 5) {
+      toast.error("Enter a 5-digit Austin area zip code.");
+      return;
+    }
+    await checkZipDirect(zip);
   }
 
   async function confirmBooking() {
@@ -183,6 +236,7 @@ function BookingWizard() {
       return;
     }
 
+    const bookedInSeconds = Math.floor((Date.now() - startTime.current) / 1000);
     setSubmitting(false);
     setConfirmed({
       refCode,
@@ -190,9 +244,10 @@ function BookingWizard() {
       packageName: pkg.name,
       slot: selectedSlot?.label ?? "",
       total,
+      bookedInSeconds,
     });
     toast.success(
-      `Appointment ${refCode} locked. $${DEPOSIT} authorization held. Cole will SMS you 30 minutes before arrival.`,
+      `Appointment ${refCode} locked in ${formatElapsed(bookedInSeconds)}. $${DEPOSIT} authorization held.`,
     );
   }
 
@@ -215,19 +270,40 @@ function BookingWizard() {
     setCardExpiry("");
     setCardCvc("");
     setCardName("");
-    void navigate({ to: "/book" });
+    void navigate({ to: "/book", search: {} });
   }
 
   if (confirmed) {
     return <ConfirmationPass data={confirmed} onReset={resetAll} />;
   }
 
+  function goNext() {
+    setStepDir("forward");
+    setStep((s) => Math.min(5, s + 1));
+  }
+  function goBack() {
+    setStepDir("back");
+    setStep((s) => Math.max(1, s - 1));
+  }
+
   return (
-    <main className="mx-auto max-w-5xl px-4 pb-44 pt-8 sm:px-6">
+    <main className="mx-auto max-w-5xl px-4 pb-44 pt-10 sm:px-6">
       <ProgressBar step={step} />
 
+      <div className="hidden sm:flex items-center gap-2 mt-4 rounded-lg border border-white/8 bg-card/40 px-4 py-2.5 text-xs text-muted-foreground">
+        <span>📱</span>
+        <span>
+          Built for the customer tapping your Instagram bio on their phone —{" "}
+          <strong className="text-foreground font-semibold">works flawlessly on mobile</strong>.
+          Full booking in under 90 seconds, no calling, no texting.
+        </span>
+      </div>
+
       {step === 1 ? (
-        <section className="mt-10">
+        <section
+          key={step}
+          className={`mt-10 ${stepDir === "forward" ? "step-enter-right" : "step-enter-left"}`}
+        >
           <StepHeading
             title="What are we working on today?"
             sub="Size determines chemical volume and rotary polishing time — no surprises on arrival."
@@ -240,39 +316,56 @@ function BookingWizard() {
                   key={option.id}
                   type="button"
                   onClick={() => setVehicleClass(option.id)}
-                  className={`surface p-5 text-left transition-all hover:border-border-strong ${active ? "surface-active" : ""}`}
+                  className={`surface apex-vehicle-card relative p-5 text-left transition-all hover:border-border-strong ${
+                    active ? "surface-active active ring-1 ring-cyan" : ""
+                  }`}
                 >
-                  {option.id === "suv_full" ? (
-                    <Truck className="h-5 w-5 text-cyan" />
-                  ) : (
-                    <Car className="h-5 w-5 text-cyan" />
-                  )}
-                  <h3 className="mt-3 text-base font-bold">{option.title}</h3>
+                  <div className="flex items-center justify-between">
+                    <div className="rounded-lg border border-border bg-secondary/70 p-2.5 text-cyan">
+                      {option.id === "suv_full" ? (
+                        <Truck className="h-6 w-6" />
+                      ) : (
+                        <Car className="h-6 w-6" />
+                      )}
+                    </div>
+                    <span
+                      className={`rounded-full px-2.5 py-1 font-mono text-[11px] font-semibold ${
+                        active
+                          ? "border border-cyan bg-cyan-soft text-cyan"
+                          : "border border-border bg-secondary text-dim"
+                      }`}
+                    >
+                      {option.tag}
+                    </span>
+                  </div>
+
+                  <h3 className="mt-4 text-base font-bold text-foreground">{option.title}</h3>
                   <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
                     {option.examples}
                   </p>
-                  <span className="mt-4 inline-block rounded-full border border-border bg-secondary px-2.5 py-1 font-mono text-[11px] text-dim">
-                    {option.tag}
-                  </span>
+
+                  <div className="mt-4 flex items-center gap-1.5 font-mono text-[11px] text-dim">
+                    <span className="text-cyan font-bold tracking-wider">SCALE:</span>
+                    <span>{option.multiplier}x base</span>
+                  </div>
                 </button>
               );
             })}
           </div>
 
-          <label className="mt-8 block">
-            <span className="text-sm font-semibold">Vehicle Year, Make &amp; Model (optional)</span>
-            <input
-              value={vehicleModel}
-              onChange={(e) => setVehicleModel(e.target.value)}
-              placeholder="e.g. 2023 Porsche Macan S"
-              className="mt-2 w-full rounded-lg border border-border bg-card px-4 py-3 font-mono text-sm outline-none transition-colors placeholder:text-dim focus:border-cyan"
-            />
-          </label>
+          <VehiclePresetDropdown
+            vehicleModel={vehicleModel}
+            onChangeModel={setVehicleModel}
+            onSelectClass={(cls) => setVehicleClass(cls)}
+          />
         </section>
       ) : null}
 
       {step === 2 ? (
-        <section className="mt-10">
+        <section
+          key={step}
+          className={`mt-10 ${stepDir === "forward" ? "step-enter-right" : "step-enter-left"}`}
+        >
           <StepHeading
             title="Choose your service package."
             sub="Prices update in real time as you flag vehicle conditions — no surprise charges on arrival."
@@ -280,23 +373,33 @@ function BookingWizard() {
           <div className="mt-6 space-y-3">
             {PACKAGES.map((option) => {
               const active = packageId === option.id;
+              const pkgAdjusted = Math.round(option.price * multiplier);
               return (
                 <button
                   key={option.id}
                   type="button"
                   onClick={() => setPackageId(option.id)}
-                  className={`surface flex w-full items-start gap-4 p-5 text-left transition-all hover:border-border-strong ${active ? "surface-active" : ""}`}
+                  className={`surface flex w-full items-start gap-4 p-5 text-left transition-all hover:border-border-strong ${
+                    active ? "surface-active ring-1 ring-cyan" : ""
+                  }`}
                 >
                   <span
-                    className={`mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${active ? "border-cyan bg-cyan" : "border-border-strong"}`}
+                    className={`mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors ${
+                      active ? "border-cyan bg-cyan" : "border-border-strong bg-secondary"
+                    }`}
                   >
-                    {active ? <Check className="h-3 w-3 text-background" strokeWidth={3} /> : null}
+                    {active ? (
+                      <Check className="h-3.5 w-3.5 text-background" strokeWidth={3} />
+                    ) : null}
                   </span>
                   <span className="flex-1">
                     <span className="flex flex-wrap items-baseline justify-between gap-2">
-                      <span className="text-base font-bold">{option.name}</span>
-                      <span className="font-mono text-sm text-cyan">
-                        {money(option.price)} · {option.minutes} mins
+                      <span className="text-base font-bold text-foreground">{option.name}</span>
+                      <span className="font-mono text-sm text-cyan font-semibold">
+                        {money(pkgAdjusted)}{" "}
+                        <span className="text-xs text-muted-foreground font-normal">
+                          · {Math.round(option.minutes * multiplier)} mins
+                        </span>
                       </span>
                     </span>
                     <span className="mt-2 block text-xs leading-relaxed text-muted-foreground">
@@ -310,7 +413,7 @@ function BookingWizard() {
 
           <div className="my-8 flex items-center gap-4">
             <span className="h-px flex-1 bg-border" />
-            <span className="text-[11px] font-bold uppercase tracking-widest text-dim">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-dim font-mono">
               Real-World Condition Flags (toggle all that apply)
             </span>
             <span className="h-px flex-1 bg-border" />
@@ -322,20 +425,26 @@ function BookingWizard() {
               return (
                 <div
                   key={addon.id}
-                  className={`surface flex items-start justify-between gap-4 p-5 ${active ? "surface-active" : ""}`}
+                  className={`surface flex items-start justify-between gap-4 p-5 transition-all ${
+                    active ? "surface-active" : ""
+                  }`}
                 >
                   <div className="flex-1">
-                    <p className="text-sm font-bold">
+                    <p className="text-sm font-bold text-foreground">
                       {addon.name}{" "}
-                      <span className="font-mono text-cyan">
-                        +{money(addon.price)}, +{addon.minutes} mins
+                      <span className="font-mono text-cyan ml-2 text-xs">
+                        +{money(addon.price)} · +{addon.minutes} min
                       </span>
                     </p>
                     <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
                       {addon.description}
                     </p>
                   </div>
-                  <Switch checked={active} onChange={() => toggleAddon(addon.id)} label={addon.name} />
+                  <Switch
+                    checked={active}
+                    onChange={() => toggleAddon(addon.id)}
+                    label={addon.name}
+                  />
                 </div>
               );
             })}
@@ -344,13 +453,47 @@ function BookingWizard() {
       ) : null}
 
       {step === 3 ? (
-        <section className="mt-10">
+        <section
+          key={step}
+          className={`mt-10 ${stepDir === "forward" ? "step-enter-right" : "step-enter-left"}`}
+        >
           <StepHeading
             title="Where are you located?"
             sub="Cole's van operates in geographic sectors to cut cross-town MoPac and I-35 transit. Booking in his active sector waives the $15 travel surcharge."
           />
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <span className="font-mono text-[11px] text-dim">Quick Austin Sectors:</span>
+            {[
+              { zip: "78704", name: "South Congress" },
+              { zip: "78701", name: "Downtown" },
+              { zip: "78746", name: "Westlake Hills" },
+              { zip: "78759", name: "Domain" },
+              { zip: "78738", name: "Lakeway" },
+            ].map((sector) => (
+              <button
+                key={sector.zip}
+                type="button"
+                onClick={() => {
+                  setZipCode(sector.zip);
+                  setZoneChecked(false);
+                  setZone(null);
+                  setTimeout(() => {
+                    void checkZipDirect(sector.zip);
+                  }, 50);
+                }}
+                className={`rounded-full border px-2.5 py-1 font-mono text-[11px] transition-colors ${
+                  zipCode === sector.zip
+                    ? "border-cyan bg-cyan-soft text-cyan"
+                    : "border-border bg-secondary/60 text-muted-foreground hover:border-cyan/40 hover:text-foreground"
+                }`}
+              >
+                {sector.zip} · {sector.name}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
             <div className="relative flex-1">
               <MapPin className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-dim" />
               <input
@@ -361,7 +504,7 @@ function BookingWizard() {
                   setZone(null);
                 }}
                 inputMode="numeric"
-                placeholder="78704"
+                placeholder="Enter 5-digit zip (e.g. 78704)"
                 className="w-full rounded-lg border border-border bg-card py-4 pl-11 pr-4 font-mono text-lg outline-none transition-colors placeholder:text-dim focus:border-cyan focus:shadow-[var(--shadow-glow)]"
               />
             </div>
@@ -375,60 +518,52 @@ function BookingWizard() {
               ) : (
                 <Search className="h-4 w-4" />
               )}
-              Check Availability
+              Check Cluster
             </button>
           </div>
 
           {zoneChecked && zone ? (
-            <div className="mt-4 rounded-xl border border-emerald/40 bg-emerald-soft p-4 text-sm text-emerald">
-              Route Cluster Match — {zone.sector_name}. Cole&apos;s van is already servicing your
-              neighborhood on {zone.green_route_day}. $15 travel surcharge waived automatically.
+            <div className="mt-4 rounded-xl border border-emerald/40 bg-emerald-soft p-4 text-sm text-emerald flex items-start gap-3">
+              <CheckCircle2 className="h-5 w-5 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-bold">Route Cluster Match — {zone.sector_name}</span>
+                <p className="mt-0.5 text-xs text-emerald/90">
+                  Cole's van is already servicing your neighborhood on {zone.green_route_day}. The
+                  $15 cross-town travel surcharge is waived automatically.
+                </p>
+              </div>
             </div>
           ) : null}
           {zoneChecked && !zone ? (
-            <div className="mt-4 rounded-xl border border-amber/40 bg-amber-soft p-4 text-sm text-amber">
-              Your area is outside Cole&apos;s current cluster zones. Standard $15 travel buffer
-              applies. Slots still available.
+            <div className="mt-4 rounded-xl border border-amber/40 bg-amber-soft p-4 text-sm text-amber flex items-start gap-3">
+              <MapPin className="h-5 w-5 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-bold">Outside Primary Cluster Zone</span>
+                <p className="mt-0.5 text-xs text-amber/90">
+                  Standard $15 MoPac/I-35 travel buffer applies. Slots are still available for
+                  booking.
+                </p>
+              </div>
             </div>
           ) : null}
 
           {zoneChecked ? (
-            <div className="mt-8">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-dim">
-                Available arrival windows
-              </h3>
-              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {slots.map((slot) => {
-                  const active = slotId === slot.id;
-                  return (
-                    <button
-                      key={slot.id}
-                      type="button"
-                      onClick={() => setSlotId(slot.id)}
-                      className={`surface p-4 text-left transition-all hover:border-border-strong ${active ? "surface-active" : ""}`}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <p className="font-mono text-sm text-foreground">{slot.label}</p>
-                        {active ? <Check className="h-4 w-4 shrink-0 text-cyan" /> : null}
-                      </div>
-                      {slot.green ? (
-                        <span className="mt-3 inline-block rounded-full border border-emerald/40 bg-emerald-soft px-2 py-1 text-[10px] font-semibold text-emerald">
-                          Green Route — Travel Fee Waived
-                        </span>
-                      ) : (
-                        <span className="mt-3 inline-block text-[11px] text-dim">Standard</span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            <VisualBookingCalendar
+              slots={slots}
+              slotId={slotId}
+              onSelectSlot={setSlotId}
+              greenRouteDay={zone?.green_route_day}
+              sectorName={zone?.sector_name}
+            />
           ) : null}
         </section>
       ) : null}
 
       {step === 4 ? (
-        <section className="mt-10">
+        <section
+          key={step}
+          className={`mt-10 ${stepDir === "forward" ? "step-enter-right" : "step-enter-left"}`}
+        >
           <StepHeading
             title="Quick site readiness check."
             sub="Cole drives up to 35 minutes per appointment. These 3 points prevent wasted arrival trips."
@@ -491,13 +626,23 @@ function BookingWizard() {
                   className="w-full bg-transparent px-4 py-3 font-mono text-sm outline-none placeholder:text-dim"
                 />
               </div>
+              {customerPhone.length > 0 && customerPhone.length < 10 ? (
+                <span className="mt-1.5 block font-mono text-[11px] text-amber">
+                  10-digit number required ({customerPhone.length}/10 digits entered)
+                </span>
+              ) : null}
             </label>
           </div>
         </section>
       ) : null}
 
       {step === 5 ? (
-        <section className="mt-10 grid gap-6 lg:grid-cols-[1fr_360px]">
+        <section
+          key={step}
+          className={`mt-10 grid gap-6 lg:grid-cols-[1fr_360px] ${
+            stepDir === "forward" ? "step-enter-right" : "step-enter-left"
+          }`}
+        >
           <div className="order-2 lg:order-1">
             <StepHeading
               title="Secure $50 Hold — No Charge Until Service Day"
@@ -560,7 +705,11 @@ function BookingWizard() {
                 onClick={() => void confirmBooking()}
                 className="btn-primary hover:btn-primary-hover mt-2 inline-flex w-full items-center justify-center gap-2 px-6 py-4 text-sm disabled:opacity-60"
               >
-                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wallet className="h-4 w-4" />}
+                {submitting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Wallet className="h-4 w-4" />
+                )}
                 Authorize $50 &amp; Lock My Slot
               </button>
             </div>
@@ -574,9 +723,15 @@ function BookingWizard() {
               {activeAddons.map((a) => (
                 <Line key={a.id} label={a.name} value={`+${money(a.price)}`} />
               ))}
-              {useTank ? <Line label="Onboard water tank" value={`+${money(TANK_SURCHARGE)}`} /> : null}
+              {useTank ? (
+                <Line label="Onboard water tank" value={`+${money(TANK_SURCHARGE)}`} />
+              ) : null}
               {greenRoute ? (
-                <Line label="Green Route discount" value={`-${money(TRAVEL_SURCHARGE)}`} accent="emerald" />
+                <Line
+                  label="Green Route discount"
+                  value={`-${money(TRAVEL_SURCHARGE)}`}
+                  accent="emerald"
+                />
               ) : (
                 <Line label="Travel buffer" value={`+${money(TRAVEL_SURCHARGE)}`} accent="amber" />
               )}
@@ -597,9 +752,11 @@ function BookingWizard() {
         step={step}
         duration={duration}
         total={total}
+        elapsed={elapsed}
+        elapsedStr={formatElapsed(elapsed)}
         canContinue={Boolean(canContinue)}
-        onBack={() => setStep((s) => Math.max(1, s - 1))}
-        onNext={() => setStep((s) => Math.min(5, s + 1))}
+        onBack={goBack}
+        onNext={goNext}
       />
     </main>
   );
@@ -608,7 +765,7 @@ function BookingWizard() {
 function StepHeading({ title, sub }: { title: string; sub: string }) {
   return (
     <div>
-      <h1 className="text-2xl font-black tracking-tight sm:text-3xl">{title}</h1>
+      <h1 className="text-3xl font-black tracking-tight sm:text-4xl">{title}</h1>
       <p className="mt-2 max-w-3xl text-sm text-muted-foreground">{sub}</p>
     </div>
   );
@@ -636,7 +793,7 @@ function ProgressBar({ step }: { step: number }) {
                 {done ? <Check className="h-4 w-4" /> : num}
               </span>
               <span
-                className={`text-[11px] ${active ? "block text-foreground" : "hidden text-dim"} sm:block ${!active ? "sm:text-dim" : ""}`}
+                className={`text-[11px] block ${active ? "text-foreground font-semibold" : "text-dim"}`}
               >
                 {label}
               </span>
@@ -753,6 +910,8 @@ function StickyBar({
   step,
   duration,
   total,
+  elapsed,
+  elapsedStr,
   canContinue,
   onBack,
   onNext,
@@ -760,39 +919,56 @@ function StickyBar({
   step: number;
   duration: number;
   total: number;
+  elapsed: number;
+  elapsedStr: string;
   canContinue: boolean;
   onBack: () => void;
   onNext: () => void;
 }) {
   if (step === 5) return null;
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4 text-[13px] sm:px-6 sm:text-sm">
-        <div>
-          <p className="font-mono text-[11px] text-dim">
-            Estimated Time: {formatDuration(duration)}
-          </p>
-          <p className="font-mono text-base font-bold text-cyan sm:text-lg">Total: {money(total)}</p>
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur-md">
+      <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-3 py-3 text-[12px] sm:gap-4 sm:px-6 sm:py-4 sm:text-sm">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span
+              className={`font-mono text-[10px] sm:text-[11px] truncate ${
+                elapsed > 90 ? "text-amber" : "text-emerald"
+              }`}
+            >
+              ⏱ {elapsedStr} elapsed
+            </span>
+            <span className="font-mono text-[10px] text-dim hidden sm:inline">·</span>
+            <span className="font-mono text-[10px] text-dim hidden sm:inline truncate">
+              Est: {formatDuration(duration)}
+            </span>
+            {elapsed <= 90 && (
+              <span className="font-mono text-[10px] text-emerald hidden sm:inline">
+                · on track ✓
+              </span>
+            )}
+          </div>
+          <p className="font-mono text-sm font-bold text-cyan sm:text-lg">Total: {money(total)}</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           {step > 1 ? (
             <button
               type="button"
               onClick={onBack}
-              className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-[13px] font-semibold text-muted-foreground transition-colors hover:text-foreground sm:text-sm"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground sm:px-4 sm:py-2.5 sm:text-sm"
             >
-              <ArrowLeft className="h-4 w-4" />
-              Back
+              <ArrowLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span>Back</span>
             </button>
           ) : null}
           <button
             type="button"
             disabled={!canContinue}
             onClick={onNext}
-            className="btn-primary hover:btn-primary-hover inline-flex items-center gap-2 px-6 py-3 text-[13px] disabled:cursor-not-allowed disabled:opacity-40 sm:text-sm"
+            className="btn-primary hover:btn-primary-hover inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40 sm:px-6 sm:py-2.5 sm:text-sm shadow-md"
           >
-            Continue
-            <ArrowRight className="h-4 w-4" />
+            <span>Continue</span>
+            <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </button>
         </div>
       </div>
@@ -804,17 +980,81 @@ function ConfirmationPass({
   data,
   onReset,
 }: {
-  data: { refCode: string; vehicle: string; packageName: string; slot: string; total: number };
+  data: {
+    refCode: string;
+    vehicle: string;
+    packageName: string;
+    slot: string;
+    total: number;
+    bookedInSeconds: number;
+  };
   onReset: () => void;
 }) {
+  const [showWalletModal, setShowWalletModal] = useState(false);
+
+  useEffect(() => {
+    const colors = ["#ef4444", "#10b981", "#f59e0b", "#ffffff"];
+    const end = Date.now() + 1400;
+    (function frame() {
+      confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors,
+        gravity: 1.1,
+        scalar: 0.85,
+      });
+      confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors,
+        gravity: 1.1,
+        scalar: 0.85,
+      });
+      if (Date.now() < end) requestAnimationFrame(frame);
+    })();
+  }, []);
+
+  function handleGoogleCalendar() {
+    const title = `Apex Detail Works — ${data.packageName}`;
+    const details = `Cole Ramsey — Apex Detail Works Van 01.\nReference Code: ${data.refCode}\nVehicle: ${data.vehicle}\nPackage: ${data.packageName}\nArrival Window: ${data.slot}\nDeposit Held: $${DEPOSIT}\nBalance Due on Completion: ${money(data.total - DEPOSIT)}\nContact: (512) 555-0142`;
+    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+      title,
+    )}&details=${encodeURIComponent(details)}&location=${encodeURIComponent("Austin, TX Metro")}`;
+    window.open(url, "_blank");
+    toast.success("Google Calendar event link opened.");
+  }
+
+  function handleWalletPass() {
+    setShowWalletModal(true);
+    toast.success("Digital Apple Wallet pass ready.");
+  }
+
   return (
-    <main className="mx-auto max-w-2xl px-4 pb-32 pt-12 sm:px-6">
-      <div className="surface confirm-card overflow-hidden">
-        <div className="h-1 w-full bg-gradient-to-r from-cyan to-emerald" />
+    <main className="mx-auto max-w-2xl px-4 pb-32 pt-10 sm:px-6">
+      <div className="surface confirm-card overflow-hidden relative">
+        <div className="h-[6px] w-full bg-gradient-to-r from-red-600 via-red-400 to-rose-500" />
+        <span className="absolute top-4 right-5 font-mono text-[10px] text-dim">
+          #{data.refCode}
+        </span>
         <div className="p-7 text-center">
-          <CheckCircle2 className="confirm-check mx-auto h-14 w-14 text-emerald" strokeWidth={1.6} />
-          <h1 className="mt-5 text-3xl font-black tracking-tight">You&apos;re Booked.</h1>
-          <p className="confirm-ref mt-3 font-mono text-sm text-cyan">Reference: {data.refCode}</p>
+          <CheckCircle2
+            className="confirm-check mx-auto h-14 w-14 text-emerald"
+            strokeWidth={1.6}
+          />
+          <h1 className="mt-5 text-3xl font-black tracking-tight text-foreground">
+            You&apos;re Booked.
+          </h1>
+          <p className="mt-2 font-mono text-[11px] text-emerald tracking-wide">
+            ⚡ Confirmed in {formatElapsed(data.bookedInSeconds)}
+            {data.bookedInSeconds <= 90 ? " — under 90s goal ✓" : ""}
+          </p>
+          <p className="confirm-ref mt-1 font-mono text-sm text-cyan font-bold tracking-wide">
+            Reference: {data.refCode}
+          </p>
 
           <dl className="mt-7 grid grid-cols-2 gap-3 text-left">
             <Cell label="Vehicle" value={data.vehicle} />
@@ -826,14 +1066,16 @@ function ConfirmationPass({
           <div className="mt-7 grid gap-2 sm:grid-cols-3">
             <button
               type="button"
-              className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-secondary/50 px-3 py-2.5 text-xs font-semibold transition-colors hover:border-cyan"
+              onClick={handleGoogleCalendar}
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-secondary/50 px-3 py-2.5 text-xs font-semibold text-foreground transition-colors hover:border-cyan"
             >
               <CalendarPlus className="h-4 w-4 text-cyan" />
               Add to Google Calendar
             </button>
             <button
               type="button"
-              className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-secondary/50 px-3 py-2.5 text-xs font-semibold transition-colors hover:border-cyan"
+              onClick={handleWalletPass}
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-secondary/50 px-3 py-2.5 text-xs font-semibold text-foreground transition-colors hover:border-cyan"
             >
               <Wallet className="h-4 w-4 text-cyan" />
               Save to Apple Wallet
@@ -843,31 +1085,130 @@ function ConfirmationPass({
               disabled
               className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-secondary/30 px-3 py-2.5 text-xs font-semibold text-dim"
             >
-              <MessageSquare className="h-4 w-4" />
+              <MessageSquare className="h-4 w-4 text-emerald" />
               SMS Confirmation Sent
             </button>
           </div>
 
-          <p className="mt-6 text-xs text-muted-foreground">
-            Cole will text you 30 minutes before arrival. Any changes? Text directly:{" "}
-            <span className="font-mono text-foreground">(512) 555-0142</span>
+          <div className="mt-5 rounded-lg border border-border bg-secondary/30 p-3 text-left">
+            <p className="font-mono text-[10px] text-dim mb-1 uppercase tracking-widest">
+              Before vs After
+            </p>
+            <div className="flex flex-col gap-1">
+              <span className="font-mono text-[10px] text-rose line-through">
+                Old way: 48hrs · 10 DMs · no deposit · 1-in-3 no-show
+              </span>
+              <span className="font-mono text-[10px] text-emerald">
+                → Apex: {formatElapsed(data.bookedInSeconds)} · confirmed · $50 held · 0 no-shows
+              </span>
+            </div>
+          </div>
+
+          <p className="mt-4 text-xs text-muted-foreground">
+            Cole will text you 30 minutes before arrival. Changes? Text directly:{" "}
+            <span className="font-mono text-foreground font-semibold">(512) 555-0142</span>
           </p>
 
-          <button
-            type="button"
-            onClick={onReset}
-            className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-cyan hover:underline"
-          >
-            View another booking
-            <ArrowRight className="h-4 w-4" />
-          </button>
-          <div className="mt-3">
-            <Link to="/hud" className="text-xs text-dim hover:text-muted-foreground">
-              Open Cole&apos;s operations HUD
+          <div className="mt-8 flex flex-col items-center gap-3">
+            <button
+              type="button"
+              onClick={onReset}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-cyan hover:underline"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Book another vehicle
+            </button>
+            <Link
+              to="/hud"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border-strong bg-card px-4 py-2 text-xs font-mono text-dim transition-colors hover:border-cyan hover:text-foreground"
+            >
+              <span>Switch to Cole's Operations Cockpit (HUD)</span>
+              <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
         </div>
       </div>
+
+      {showWalletModal ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <button
+            type="button"
+            aria-label="Close pass"
+            onClick={() => setShowWalletModal(false)}
+            className="absolute inset-0 bg-background/85 backdrop-blur-sm"
+          />
+          <div className="relative w-full max-w-sm rounded-2xl border border-cyan/40 bg-[#0a0f1d] p-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-border/70 pb-3">
+              <div className="flex items-center gap-2">
+                <img
+                  src="/brand/apex-mark.png"
+                  alt="Apex Detail Works"
+                  className="h-6 w-6 object-contain drop-shadow-[0_2px_8px_rgba(239,68,68,0.5)]"
+                  width={24}
+                  height={24}
+                />
+                <span className="font-mono text-xs font-bold uppercase tracking-widest text-cyan">
+                  APEX DETAIL WORKS
+                </span>
+              </div>
+              <span className="font-mono text-[10px] uppercase tracking-wider text-emerald border-l border-emerald/40 pl-2.5 font-bold">
+                Confirmed Pass
+              </span>
+            </div>
+
+            <div className="my-5 space-y-3 font-mono text-xs">
+              <div>
+                <p className="text-[10px] uppercase text-dim">Customer Reference</p>
+                <p className="text-base font-bold text-foreground">{data.refCode}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <p className="text-[10px] uppercase text-dim">Vehicle</p>
+                  <p className="text-foreground truncate">{data.vehicle}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase text-dim">Deposit Hold</p>
+                  <p className="text-emerald font-bold">$50.00 (Secured)</p>
+                </div>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase text-dim">Service Package</p>
+                <p className="text-cyan">{data.packageName}</p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase text-dim">Arrival Window</p>
+                <p className="text-foreground">{data.slot}</p>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-border bg-secondary/40 p-4 text-center">
+              <div className="flex items-center justify-center gap-[1px] h-10 px-2">
+                {Array.from({ length: 52 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-foreground/75 rounded-[0.5px]"
+                    style={{
+                      width: [1, 2, 1, 3, 1, 2, 1, 1, 3, 2][i % 10],
+                      height: i % 7 === 0 ? "100%" : "75%",
+                    }}
+                  />
+                ))}
+              </div>
+              <p className="mt-2 font-mono text-[9px] text-dim tracking-[0.3em]">
+                {data.refCode} · AUSTIN TX
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowWalletModal(false)}
+              className="btn-primary hover:btn-primary-hover mt-5 w-full py-2.5 text-xs"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }
@@ -875,8 +1216,10 @@ function ConfirmationPass({
 function Cell({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-border bg-secondary/40 p-3">
-      <dt className="text-[10px] font-bold uppercase tracking-widest text-dim">{label}</dt>
-      <dd className="mt-1.5 font-mono text-xs text-foreground">{value}</dd>
+      <dt className="text-[10px] font-bold uppercase tracking-widest text-dim font-mono">
+        {label}
+      </dt>
+      <dd className="mt-1.5 font-mono text-xs text-foreground font-semibold">{value}</dd>
     </div>
   );
 }

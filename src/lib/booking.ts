@@ -38,6 +38,8 @@ export interface PackageOption {
   price: number;
   minutes: number;
   description: string;
+  features?: string[];
+  ctaLabel?: string;
 }
 
 export const PACKAGES: PackageOption[] = [
@@ -48,6 +50,12 @@ export const PACKAGES: PackageOption[] = [
     minutes: 90,
     description:
       "Decontamination wash, wheel clean, tire dress, exterior spray seal. Paint does not get touched.",
+    features: [
+      "Touchless Snow Foam & Hand Wash",
+      "Wheel Decon & Tire Dressing",
+      "3-Month Hydrophobic Polymer Seal",
+    ],
+    ctaLabel: "Book Express Wash",
   },
   {
     id: "interior",
@@ -56,14 +64,26 @@ export const PACKAGES: PackageOption[] = [
     minutes: 150,
     description:
       "Hot water extraction, leather conditioning, ozone deodorization, carpet shampoo, door jambs.",
+    features: [
+      "Hot Water Extraction & Shampoo",
+      "Heated Leather Steam & Conditioning",
+      "Ozone Odor & Anti-Bacterial Purge",
+    ],
+    ctaLabel: "Book Interior Detail",
   },
   {
     id: "ceramic",
-    name: "1-Stage Paint Correction + 2-Year Ceramic Coating",
+    name: "1-Stage Paint Correction + Ceramic Coating",
     price: 450,
     minutes: 240,
     description:
       "Machine compound swirl removal, rotary polish, iron decontamination, 9H ceramic hydrophobic bond.",
+    features: [
+      "Machine Compound Swirl & Scratch Polish",
+      "9H Hydrophobic Ceramic Bond (2-Year)",
+      "Iron Decontamination & Clay Bar Prep",
+    ],
+    ctaLabel: "Book Ceramic Coating",
   },
 ];
 
@@ -97,8 +117,7 @@ export const ADDONS: AddonOption[] = [
     name: "Hard Water Spot & Glass Mineral Removal",
     price: 65,
     minutes: 40,
-    description:
-      "Citric acid treatment followed by clay bar decontamination and glass polish.",
+    description: "Citric acid treatment followed by clay bar decontamination and glass polish.",
   },
 ];
 

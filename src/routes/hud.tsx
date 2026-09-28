@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -10,6 +10,7 @@ import {
   Inbox,
   Navigation,
   Radio,
+  RotateCcw,
   Route as RouteIcon,
   Send,
   Wrench,
@@ -21,6 +22,9 @@ import {
   executeStormReschedule,
   getHudAuditFeed,
   getHudBookings,
+  INITIAL_SEED_AUDIT,
+  INITIAL_SEED_BOOKINGS,
+  resetHudDemoData,
   updateBookingStatus,
 } from "@/lib/bookings.functions";
 
@@ -76,7 +80,35 @@ const bookingsQuery = queryOptions({
 const auditQuery = queryOptions({
   queryKey: ["hud", "audit"],
   queryFn: async (): Promise<AuditEntry[]> => (await getHudAuditFeed()) as AuditEntry[],
+  refetchInterval: 30000,
 });
+
+/** Ticks up by 1 every real minute starting from a realistic mid-day baseline. */
+function MinutesSavedTicker() {
+  const BASE = 87; // realistic mid-day: 14 min × ~6 inquiries already handled
+  const [extra, setExtra] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => setExtra((e) => e + 1), 60_000);
+    return () => clearInterval(interval);
+  }, []);
+  const total = BASE + extra;
+  const hours = Math.floor(total / 60);
+  const mins = total % 60;
+  return (
+    <div className="surface flex items-center gap-2.5 px-3.5 py-2.5 bg-emerald/5 border-emerald/20 backdrop-blur-md">
+      <span className="relative flex h-2 w-2 shrink-0">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald opacity-75" />
+        <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald" />
+      </span>
+      <div className="min-w-0">
+        <span className="text-[10px] text-dim uppercase block">Time Saved Today</span>
+        <span className="text-emerald font-bold font-mono truncate block">
+          {hours}h {mins}m saved
+        </span>
+      </div>
+    </div>
+  );
+}
 
 function Hud() {
   const queryClient = useQueryClient();
@@ -93,6 +125,28 @@ function Hud() {
 
   function refresh() {
     void queryClient.invalidateQueries({ queryKey: ["hud"] });
+  }
+
+  async function handleResetDemo() {
+    // 1. Instantly reset client cache with deterministic seed data so UI updates immediately
+    queryClient.setQueryData(
+      ["hud", "bookings"],
+      INITIAL_SEED_BOOKINGS.map((b) => ({ ...b })),
+    );
+    queryClient.setQueryData(
+      ["hud", "audit"],
+      INITIAL_SEED_AUDIT.map((a) => ({ ...a })),
+    );
+
+    // 2. Persist to server function
+    try {
+      await resetHudDemoData({ data: {} });
+    } catch (err) {
+      console.warn("Server reset notice (client cache reset active):", err);
+    }
+
+    toast.success("Demo state reset. 3 confirmed Austin bookings & live audit stream restored.");
+    refresh();
   }
 
   async function updateStatus(booking: Booking, status: string, label: string) {
@@ -148,61 +202,187 @@ function Hud() {
   }
 
   return (
-    <main className="mx-auto max-w-7xl px-4 pb-32 pt-8 sm:px-6">
-      <div>
-        <h1 className="text-2xl font-black tracking-tight sm:text-3xl">
-          Owner Command HUD — Van 01
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Everything Cole would otherwise be texting, quoting and re-routing by hand.
-        </p>
+    <main className="mx-auto max-w-7xl px-4 pb-32 pt-10 sm:px-6">
+      <div className="apex-demo-strip">
+        <div className="min-w-0">
+          <p className="font-mono text-xs font-bold text-cyan uppercase tracking-widest">
+            Operations Environment &amp; Demo Controls
+          </p>
+          <p className="text-xs text-muted-foreground mt-0.5 max-w-xl">
+            This is Cole Ramsey&apos;s live operations dashboard. Try: Reset Demo State to restore 3
+            live Austin bookings, Simulate Flash Storm to trigger the 1-click reschedule dispatch,
+            and the status buttons on each route stop.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0 flex-wrap">
+          <Link
+            to="/book"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-white/12 bg-card/80 px-4 py-2 font-mono text-xs font-semibold text-muted-foreground hover:text-foreground hover:border-cyan/50 transition-colors"
+          >
+            ← Book a Slot
+          </Link>
+          <button
+            type="button"
+            onClick={() => void handleResetDemo()}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-cyan px-4 py-2 font-mono text-xs font-bold text-background hover:bg-cyan/90 transition-colors shadow-md"
+          >
+            Reset Demo State
+          </button>
+        </div>
       </div>
 
-      <section className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-        <Kpi
-          accent="cyan"
-          Icon={Inbox}
-          label="Inbound Leads Auto-Triaged"
-          value={String(recent.length)}
-          sub="0 manual DMs or callbacks required."
-        />
-        <Kpi
-          accent="emerald"
-          Icon={RouteIcon}
-          label="Transit Hours Saved"
-          value="7.2 hrs"
-          sub="Geo-clustering eliminated 148 cross-town miles this week."
-        />
-        <Kpi
-          accent="amber"
-          Icon={Wrench}
-          label="Deposit Revenue Secured"
-          value={money(recent.length * DEPOSIT)}
-          sub="Zero no-shows. Every slot has a card hold."
-        />
-        <Kpi
-          accent="none"
-          Icon={BatteryCharging}
-          label="Van 01 Status"
-          value="Operational"
-          sub="DI Tank 85 gal | Inverter 94% | Gen: Quiet Mode"
-        />
+      <section className="relative overflow-hidden rounded-2xl border border-border/80 bg-card p-6 shadow-2xl">
+        <div
+          className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
+          aria-hidden="true"
+        >
+          <img
+            src="/images/van-sprinter-austin.jpg"
+            alt="Mercedes Sprinter mobile detailing van in Austin"
+            className="h-full w-full object-cover object-center opacity-30 mix-blend-luminosity filter contrast-125 brightness-75"
+            loading="eager"
+            decoding="async"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#07090e] via-[#07090e]/90 to-[#07090e]/80" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#07090e] via-transparent to-transparent" />
+        </div>
+
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 border-b border-border/60 pb-5">
+          <div className="flex items-center gap-3.5 sm:gap-4">
+            <img
+              src="/brand/apex-mark.png"
+              alt="Apex Detail Works Van 01 Rig"
+              className="h-12 w-12 sm:h-14 sm:w-14 shrink-0 object-contain drop-shadow-[0_4px_16px_rgba(239,68,68,0.45)]"
+              width={56}
+              height={56}
+            />
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs font-bold uppercase tracking-widest text-amber">
+                  Field Operations Console · Van 01 Rig
+                </span>
+                <span className="font-mono text-[11px] text-muted-foreground uppercase tracking-wider border-l border-white/15 pl-2.5">
+                  Austin Metro Sector
+                </span>
+              </div>
+              <h1 className="mt-1 text-2xl font-black tracking-tight sm:text-3xl text-foreground">
+                Owner Command HUD — Cole Ramsey
+              </h1>
+              <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
+                Automating inbound triage, MoPac route clustering, and Austin weather contingencies.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => void handleResetDemo()}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border-strong bg-secondary/80 px-3 py-2 font-mono text-xs text-muted-foreground transition-colors hover:border-amber hover:text-amber"
+              title="Reset in-memory demo bookings and audit stream"
+            >
+              <RotateCcw className="h-3.5 w-3.5 text-amber" />
+              <span>Reset Demo State</span>
+            </button>
+            <button
+              type="button"
+              onClick={refresh}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3.5 py-2 font-mono text-xs text-muted-foreground transition-colors hover:border-cyan hover:text-foreground"
+            >
+              <Radio className="h-3.5 w-3.5 text-cyan" />
+              <span>Sync Feed</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="relative z-10 mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5 font-mono text-xs">
+          <div className="surface flex items-center gap-2.5 px-3.5 py-2.5 bg-[#0a0f1d]/90 backdrop-blur-md">
+            <Droplets className="h-4 w-4 text-cyan shrink-0" />
+            <div className="min-w-0">
+              <span className="text-[10px] text-dim uppercase block">Deionized Water</span>
+              <span className="text-foreground font-semibold truncate block">
+                85 Gal · 0 TDS Pure
+              </span>
+            </div>
+          </div>
+          <div className="surface flex items-center gap-2.5 px-3.5 py-2.5 bg-[#0a0f1d]/90 backdrop-blur-md">
+            <BatteryCharging className="h-4 w-4 text-emerald shrink-0" />
+            <div className="min-w-0">
+              <span className="text-[10px] text-dim uppercase block">Inverter Bank</span>
+              <span className="text-foreground font-semibold truncate block">
+                94% · 4.8 kWh AGM
+              </span>
+            </div>
+          </div>
+          <div className="surface flex items-center gap-2.5 px-3.5 py-2.5 bg-[#0a0f1d]/90 backdrop-blur-md">
+            <Wrench className="h-4 w-4 text-amber shrink-0" />
+            <div className="min-w-0">
+              <span className="text-[10px] text-dim uppercase block">Whisper Gen</span>
+              <span className="text-foreground font-semibold truncate block">
+                52 dB · Quiet ECO
+              </span>
+            </div>
+          </div>
+          <div className="surface flex items-center gap-2.5 px-3.5 py-2.5 bg-[#0a0f1d]/90 backdrop-blur-md">
+            <Navigation className="h-4 w-4 text-indigo shrink-0" />
+            <div className="min-w-0">
+              <span className="text-[10px] text-dim uppercase block">Active Corridor</span>
+              <span className="text-cyan font-semibold truncate block">78704 / SoCo Metro</span>
+            </div>
+          </div>
+          <MinutesSavedTicker />
+        </div>
+
+        <div className="relative z-10 mt-4 rounded-xl border border-rose/30 bg-rose/5 p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-rose" />
+            </span>
+            <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-rose">
+              Without Apex — This Week
+            </p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {(
+              [
+                { val: "47", label: "Unread Instagram DMs" },
+                { val: "2.4h", label: "Manual texting daily" },
+                { val: "$0", label: "Deposit holds secured" },
+                { val: "3", label: "No-shows, no recourse" },
+              ] as const
+            ).map(({ val, label }) => (
+              <div key={label} className="text-center">
+                <p className="font-mono text-2xl font-black text-rose">{val}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
-      <section className="surface mt-5 flex items-center justify-between gap-3 border-amber/50 p-4">
+      <section className="surface mt-5 flex items-center justify-between gap-4 border-amber/40 bg-gradient-to-r from-card via-card to-amber-soft/20 p-5">
         <div className="flex min-w-0 items-center gap-3">
-          <AlertTriangle className="h-5 w-5 shrink-0 text-amber" />
+          <div className="rounded-lg border border-amber/40 bg-amber-soft p-2.5 text-amber shrink-0">
+            <AlertTriangle className="h-5 w-5" />
+          </div>
           <div className="min-w-0">
-            <h2 className="truncate text-sm font-bold">Austin Weather Alert Trigger</h2>
-            <p className="mt-1 hidden text-xs text-muted-foreground md:block">
-              Ceramic coatings and paint corrections cannot cure in rain or high humidity.
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-bold text-foreground">Austin Weather Alert Trigger</h2>
+              <span className="font-mono text-[10px] uppercase tracking-wider text-amber border-l border-amber/40 pl-2 font-bold">
+                Rain Contingency
+              </span>
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Ceramic coatings and paint corrections cannot cure in rain or high humidity. 1-click
+              batch notifies all affected clients with priority links.
             </p>
           </div>
         </div>
         <button
           type="button"
           onClick={() => setStormOpen(true)}
-          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-amber px-4 py-2.5 text-xs font-bold text-background transition-opacity hover:opacity-90"
+          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-amber px-4 py-2.5 text-xs font-bold text-[#07090e] transition-opacity hover:opacity-90 shadow-md shadow-amber/20"
         >
           <CloudRain className="h-4 w-4" />
           <span className="hidden sm:inline">Simulate Flash Storm</span>
@@ -210,12 +390,21 @@ function Hud() {
         </button>
       </section>
 
-      <section className="mt-5 grid gap-5 lg:grid-cols-5">
+      <section className="mt-6 grid gap-6 lg:grid-cols-5">
         <div className="lg:col-span-3">
-          <h2 className="text-base font-bold">Today&apos;s Route — Austin Sector 78704 / SoCo</h2>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Stops sequenced to eliminate cross-town transit. Est. total drive time: 28 minutes.
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-bold text-foreground">
+                Today&apos;s Route — Austin Sector 78704 / SoCo
+              </h2>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Stops sequenced to eliminate cross-town transit. Est. total drive time: 28 minutes.
+              </p>
+            </div>
+            <span className="font-mono text-[10px] uppercase tracking-wider text-emerald border-l border-emerald/40 pl-2 font-bold">
+              Geo-Clustered
+            </span>
+          </div>
 
           <div className="mt-4 space-y-3">
             {routeDeck.length === 0 ? (
@@ -228,8 +417,11 @@ function Hud() {
                 <article className="surface p-5">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <p className="font-mono text-xs text-cyan">{booking.slot_datetime}</p>
+                      <p className="font-mono text-xs font-bold text-cyan">
+                        {booking.slot_datetime}
+                      </p>
                       <h3 className="mt-1.5 text-sm font-semibold text-foreground">
+                        {booking.customer_name ? `${booking.customer_name} · ` : ""}
                         {booking.vehicle_model ?? "Vehicle on file"}
                       </h3>
                       <p className="mt-1 text-xs text-muted-foreground">
@@ -239,7 +431,7 @@ function Hud() {
                     </div>
                     <div className="text-right">
                       <StatusBadge status={booking.status} />
-                      <p className="mt-1.5 font-mono text-sm text-foreground">
+                      <p className="mt-1.5 font-mono text-sm font-bold text-foreground">
                         {money(Number(booking.total_price))}
                       </p>
                     </div>
@@ -263,8 +455,12 @@ function Hud() {
                   </div>
                 </article>
                 {index < routeDeck.length - 1 ? (
-                  <p className="my-2 rounded-lg border border-emerald/25 bg-emerald-soft px-4 py-2 font-mono text-[11px] text-emerald">
-                    14 min transit — 3.8 miles via S Congress Ave → W 6th St (Zero MoPac routing)
+                  <p className="my-2 rounded-lg border border-emerald/25 bg-emerald-soft px-4 py-2 font-mono text-[11px] text-emerald flex items-center gap-2">
+                    <Navigation className="h-3.5 w-3.5 shrink-0" />
+                    <span>
+                      14 min transit — 3.8 miles via S Congress Ave → W 6th St (MoPac avoided · $0
+                      tolls)
+                    </span>
                   </p>
                 ) : null}
               </div>
@@ -273,13 +469,16 @@ function Hud() {
         </div>
 
         <div className="lg:col-span-2">
-          <h2 className="flex items-center gap-2 text-base font-bold">
-            Inbound Triage Feed
-            <span className="inline-flex items-center gap-1.5">
-              <span className="live-dot" aria-hidden="true" />
-              <span className="live-label">LIVE</span>
-            </span>
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="flex items-center gap-2 text-base font-bold text-foreground">
+              Inbound Triage Feed
+              <span className="inline-flex items-center gap-1.5">
+                <span className="live-dot" aria-hidden="true" />
+                <span className="live-label">LIVE</span>
+              </span>
+            </h2>
+            <span className="font-mono text-[10px] text-dim">Auto-Sync 30s</span>
+          </div>
           <p className="mt-1 text-xs text-muted-foreground">
             Bookings captured while Cole is polishing. Zero gloves off.
           </p>
@@ -294,10 +493,15 @@ function Hud() {
                   </span>
                 </div>
                 <p className="mt-2.5 text-xs leading-relaxed text-foreground">{entry.message}</p>
-                <span className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary/50 px-2 py-0.5 font-mono text-[10px] text-dim">
-                  <Radio className="h-3 w-3" />
-                  {entry.source}
-                </span>
+                <div className="mt-3 flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary/50 px-2 py-0.5 font-mono text-[10px] text-dim">
+                    <Radio className="h-3 w-3 text-cyan" />
+                    {entry.source}
+                  </span>
+                  {entry.booking_ref ? (
+                    <span className="font-mono text-[10px] text-cyan">{entry.booking_ref}</span>
+                  ) : null}
+                </div>
               </article>
             ))}
           </div>
