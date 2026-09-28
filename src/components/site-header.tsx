@@ -17,8 +17,8 @@ export function SiteHeader() {
           <img
             src="/brand/apex-logo.png"
             alt="Apex Detail Works"
-            className="h-8 sm:h-9 w-auto max-w-[170px] sm:max-w-[200px] object-contain drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)] transition-transform duration-200 group-hover:scale-[1.02]"
-            height={36}
+            className="h-9 sm:h-[42px] w-auto max-w-[190px] sm:max-w-[220px] object-contain drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)] transition-transform duration-200 group-hover:scale-[1.02]"
+            height={42}
           />
         </Link>
 
