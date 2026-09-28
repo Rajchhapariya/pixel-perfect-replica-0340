@@ -1,4 +1,6 @@
-export function AmbientBackground() {
+import { memo } from "react";
+
+export const AmbientBackground = memo(function AmbientBackground() {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#07090e]">
       <div
@@ -72,4 +74,4 @@ export function AmbientBackground() {
       <div className="absolute inset-0 bg-gradient-to-t from-[#07090e] via-transparent to-[#07090e]/70 pointer-events-none" />
     </div>
   );
-}
+});

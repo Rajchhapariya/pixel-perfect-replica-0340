@@ -105,7 +105,6 @@ function BookingWizard() {
   const [stepDir, setStepDir] = useState<"forward" | "back">("forward");
   const [submitting, setSubmitting] = useState(false);
   const startTime = useRef<number>(Date.now());
-  const [elapsed, setElapsed] = useState(0);
   const [confirmed, setConfirmed] = useState<null | {
     refCode: string;
     vehicle: string;
@@ -114,14 +113,6 @@ function BookingWizard() {
     total: number;
     bookedInSeconds: number;
   }>(null);
-
-  useEffect(() => {
-    if (confirmed) return;
-    const interval = setInterval(() => {
-      setElapsed(Math.floor((Date.now() - startTime.current) / 1000));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [confirmed]);
 
   const [vehicleClass, setVehicleClass] = useState<VehicleClass | null>(initialVehicle);
   const [vehicleModel, setVehicleModel] = useState("");
@@ -828,8 +819,7 @@ function BookingWizard() {
         step={step}
         duration={duration}
         total={total}
-        elapsed={elapsed}
-        elapsedStr={formatElapsed(elapsed)}
+        startTime={startTime.current}
         canContinue={Boolean(canContinue)}
         onBack={goBack}
         onNext={goNext}
@@ -1006,8 +996,7 @@ function StickyBar({
   step,
   duration,
   total,
-  elapsed,
-  elapsedStr,
+  startTime,
   canContinue,
   onBack,
   onNext,
@@ -1015,13 +1004,23 @@ function StickyBar({
   step: number;
   duration: number;
   total: number;
-  elapsed: number;
-  elapsedStr: string;
+  startTime: number;
   canContinue: boolean;
   onBack: () => void;
   onNext: () => void;
 }) {
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    const update = () => setElapsed(Math.floor((Date.now() - startTime) / 1000));
+    update();
+    const interval = setInterval(update, 1000);
+    return () => clearInterval(interval);
+  }, [startTime]);
+
   if (step === 5) return null;
+
+  const elapsedStr = formatElapsed(elapsed);
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-3 py-2.5 text-[12px] sm:gap-4 sm:px-6 sm:py-4 sm:text-sm">
@@ -1260,13 +1259,18 @@ function ConfirmationPass({
           <div className="relative w-full max-w-sm rounded-2xl border border-cyan/40 bg-[#0a0f1d] p-6 shadow-2xl">
             <div className="flex items-center justify-between border-b border-border/70 pb-3">
               <div className="flex items-center gap-2">
-                <img
-                  src="/brand/apex-mark.png"
-                  alt="Apex Detail Works"
-                  className="h-6 w-6 object-contain drop-shadow-[0_2px_8px_rgba(239,68,68,0.5)]"
-                  width={24}
-                  height={24}
-                />
+                <picture>
+                  <source srcSet="/brand/apex-mark.webp" type="image/webp" />
+                  <img
+                    src="/brand/apex-mark.png"
+                    alt="Apex Detail Works"
+                    className="h-6 w-6 object-contain drop-shadow-[0_2px_8px_rgba(239,68,68,0.5)]"
+                    width={24}
+                    height={24}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </picture>
                 <span
                   id="wallet-pass-modal-title"
                   className="font-mono text-xs font-bold uppercase tracking-widest text-cyan"

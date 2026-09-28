@@ -14,12 +14,18 @@ export function SiteHeader() {
           className="group flex items-center transition-opacity hover:opacity-95 shrink-0"
           aria-label="Apex Detail Works Home"
         >
-          <img
-            src="/brand/apex-logo.png"
-            alt="Apex Detail Works"
-            className="h-9 xs:h-11 sm:h-[50px] w-auto max-w-[135px] xs:max-w-[190px] sm:max-w-[250px] object-contain drop-shadow-[0_2px_14px_rgba(0,0,0,0.9)] transition-transform duration-200 group-hover:scale-[1.02] mix-blend-screen"
-            height={50}
-          />
+          <picture>
+            <source srcSet="/brand/apex-logo.webp" type="image/webp" />
+            <img
+              src="/brand/apex-logo.png"
+              alt="Apex Detail Works"
+              className="h-9 xs:h-11 sm:h-[50px] w-auto max-w-[135px] xs:max-w-[190px] sm:max-w-[250px] object-contain drop-shadow-[0_2px_14px_rgba(0,0,0,0.9)] transition-transform duration-200 group-hover:scale-[1.02] mix-blend-screen"
+              width={138}
+              height={50}
+              loading="eager"
+              decoding="async"
+            />
+          </picture>
         </Link>
 
         {/* Right controls */}

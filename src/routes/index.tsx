@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import {
   AlertCircle,
@@ -85,7 +85,7 @@ function useCountUp(target: number, duration = 1800) {
 // 6 phases: 0=idle, 1=customer msg, 2=seen tick, 3=typing dots, 4=reply, 5=second customer reaction
 type DmPhase = 0 | 1 | 2 | 3 | 4 | 5;
 
-function DmSimulator() {
+const DmSimulator = memo(function DmSimulator() {
   const [phase, setPhase] = useState<DmPhase>(0);
   const [loopKey, setLoopKey] = useState(0); // triggers re-mount for infinite loop
 
@@ -166,11 +166,18 @@ function DmSimulator() {
                 }}
               >
                 <div className="h-full w-full rounded-full bg-black p-[1px] overflow-hidden">
-                  <img
-                    src="/brand/apex-mark.png"
-                    alt="Apex Detail Works"
-                    className="h-full w-full object-cover filter drop-shadow scale-[1.05]"
-                  />
+                  <picture>
+                    <source srcSet="/brand/apex-mark.webp" type="image/webp" />
+                    <img
+                      src="/brand/apex-mark.png"
+                      alt="Apex Detail Works"
+                      width={36}
+                      height={36}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover filter drop-shadow scale-[1.05]"
+                    />
+                  </picture>
                 </div>
               </div>
               <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-[#20c15e] border-[1.5px] border-black" />
@@ -231,7 +238,18 @@ function DmSimulator() {
           {phase === 3 && (
             <div className="dm-animate-in flex items-end gap-1.5 max-w-[80%]">
               <div className="h-[24px] w-[24px] rounded-full flex-shrink-0 bg-black border border-white/15 overflow-hidden flex items-center justify-center mb-0.5 shadow-sm">
-                <img src="/brand/apex-mark.png" alt="Apex" className="h-full w-full object-cover" />
+                <picture>
+                  <source srcSet="/brand/apex-mark.webp" type="image/webp" />
+                  <img
+                    src="/brand/apex-mark.png"
+                    alt="Apex"
+                    width={24}
+                    height={24}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                  />
+                </picture>
               </div>
               <div className="rounded-[18px] rounded-bl-[4px] px-3.5 py-2.5 bg-[#262626]">
                 <div className="apex-typing-dots">
@@ -247,7 +265,18 @@ function DmSimulator() {
           {phase >= 4 && (
             <div className="dm-animate-in flex items-end gap-1.5 max-w-[90%]">
               <div className="h-[24px] w-[24px] rounded-full flex-shrink-0 bg-black border border-white/15 overflow-hidden flex items-center justify-center mb-0.5 shadow-sm">
-                <img src="/brand/apex-mark.png" alt="Apex" className="h-full w-full object-cover" />
+                <picture>
+                  <source srcSet="/brand/apex-mark.webp" type="image/webp" />
+                  <img
+                    src="/brand/apex-mark.png"
+                    alt="Apex"
+                    width={24}
+                    height={24}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                  />
+                </picture>
               </div>
               <div className="flex flex-col gap-1">
                 <div className="rounded-[18px] rounded-bl-[4px] px-3.5 py-2.5 text-[11px] text-white leading-[1.45] bg-[#262626]">
@@ -333,9 +362,9 @@ function DmSimulator() {
       </div>
     </div>
   );
-}
+});
 
-function EditorialReview({
+const EditorialReview = memo(function EditorialReview({
   name,
   vehicle,
   text,
@@ -386,7 +415,7 @@ function EditorialReview({
       </div>
     </div>
   );
-}
+});
 
 function InstagramBanner({ onDismiss }: { onDismiss: () => void }) {
   return (
@@ -413,7 +442,7 @@ function InstagramBanner({ onDismiss }: { onDismiss: () => void }) {
   );
 }
 
-function StatCell({
+const StatCell = memo(function StatCell({
   target,
   suffix,
   em,
@@ -435,7 +464,7 @@ function StatCell({
       <div className="apex-stat-label">{label}</div>
     </div>
   );
-}
+});
 
 function Landing() {
   const { src } = useSearch({ from: "/" });
@@ -743,13 +772,18 @@ function Landing() {
           <Link to="/hud" className="apex-hud-showcase block group">
             <div className="flex items-center justify-between px-4 py-3 sm:px-5 sm:py-3.5 border-b border-white/8">
               <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-                <img
-                  src="/brand/apex-mark.png"
-                  alt="Apex Detail Works"
-                  className="h-6 w-6 sm:h-7 sm:w-7 object-contain drop-shadow-[0_2px_10px_rgba(6,182,212,0.4)] shrink-0"
-                  width={28}
-                  height={28}
-                />
+                <picture>
+                  <source srcSet="/brand/apex-mark.webp" type="image/webp" />
+                  <img
+                    src="/brand/apex-mark.png"
+                    alt="Apex Detail Works"
+                    className="h-6 w-6 sm:h-7 sm:w-7 object-contain drop-shadow-[0_2px_10px_rgba(6,182,212,0.4)] shrink-0"
+                    width={28}
+                    height={28}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </picture>
                 <span className="font-mono text-[10px] xs:text-xs font-bold uppercase tracking-wider xs:tracking-widest text-amber-400 truncate">
                   Field Operations Console · Van 01
                 </span>
@@ -915,12 +949,18 @@ function Landing() {
                 className="inline-block transition-opacity hover:opacity-95"
                 aria-label="Apex Detail Works Home"
               >
-                <img
-                  src="/brand/apex-logo.png"
-                  alt="Apex Detail Works"
-                  className="h-10 xs:h-12 sm:h-[60px] w-auto max-w-[190px] xs:max-w-[230px] sm:max-w-[270px] object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)] transition-transform duration-200 hover:scale-[1.02] mix-blend-screen"
-                  height={60}
-                />
+                <picture>
+                  <source srcSet="/brand/apex-logo.webp" type="image/webp" />
+                  <img
+                    src="/brand/apex-logo.png"
+                    alt="Apex Detail Works"
+                    className="h-10 xs:h-12 sm:h-[60px] w-auto max-w-[190px] xs:max-w-[230px] sm:max-w-[270px] object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)] transition-transform duration-200 hover:scale-[1.02] mix-blend-screen"
+                    width={165}
+                    height={60}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </picture>
               </Link>
               <p className="max-w-md text-xs leading-relaxed text-muted-foreground">
                 Autonomous booking, MoPac route clustering, and high-gloss multi-stage paint

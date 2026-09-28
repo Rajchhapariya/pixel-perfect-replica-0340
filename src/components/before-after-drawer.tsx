@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2, Info, X, XCircle } from "lucide-react";
 
@@ -12,7 +12,7 @@ const ROWS: Array<[string, string]> = [
   ["No-show, no recourse", "$50 card hold on every confirmed slot"],
 ];
 
-export function BeforeAfterDrawer() {
+export const BeforeAfterDrawer = memo(function BeforeAfterDrawer() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -194,4 +194,4 @@ export function BeforeAfterDrawer() {
       )}
     </>
   );
-}
+});

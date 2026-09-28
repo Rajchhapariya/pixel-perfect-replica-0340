@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -128,11 +128,17 @@ function Hud() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [stormOpen]);
 
-  const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-  const recent = bookings.filter((b) => new Date(b.created_at).getTime() >= weekAgo);
-  const confirmed = bookings.filter((b) => b.status === "confirmed");
-  const routeDeck = confirmed.slice(0, 3);
-  const affected = confirmed.slice(0, 3);
+  const { recent, confirmed, routeDeck, affected } = useMemo(() => {
+    const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const rec = bookings.filter((b) => new Date(b.created_at).getTime() >= weekAgo);
+    const conf = bookings.filter((b) => b.status === "confirmed");
+    return {
+      recent: rec,
+      confirmed: conf,
+      routeDeck: conf.slice(0, 3),
+      affected: conf.slice(0, 3),
+    };
+  }, [bookings]);
 
   function refresh() {
     void queryClient.invalidateQueries({ queryKey: ["hud"] });
@@ -253,13 +259,18 @@ function Hud() {
 
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 border-b border-border/60 pb-5">
           <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-            <img
-              src="/brand/apex-mark.png"
-              alt="Apex Detail Works Van 01 Rig"
-              className="h-10 w-10 sm:h-14 sm:w-14 shrink-0 object-contain drop-shadow-[0_4px_16px_rgba(239,68,68,0.45)]"
-              width={56}
-              height={56}
-            />
+            <picture>
+              <source srcSet="/brand/apex-mark.webp" type="image/webp" />
+              <img
+                src="/brand/apex-mark.png"
+                alt="Apex Detail Works Van 01 Rig"
+                className="h-10 w-10 sm:h-14 sm:w-14 shrink-0 object-contain drop-shadow-[0_4px_16px_rgba(239,68,68,0.45)]"
+                width={56}
+                height={56}
+                loading="eager"
+                decoding="async"
+              />
+            </picture>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                 <span className="font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest text-amber">
