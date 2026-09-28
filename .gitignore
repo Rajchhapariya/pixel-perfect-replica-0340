@@ -33,3 +33,5 @@ dist-ssr
 *.sln
 *.sw?
 *.webm
+demo_media/
+
