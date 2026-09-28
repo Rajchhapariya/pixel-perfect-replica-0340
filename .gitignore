@@ -34,4 +34,6 @@ dist-ssr
 *.sw?
 *.webm
 demo_media/
+record*.cjs
+APEX_REQUIREMENTS_FULL.md
 

@@ -43,7 +43,7 @@ async function runTest(category, name, fn, browser, options = {}) {
 
 (async () => {
   console.log("===============================================================");
-  console.log("APEX DETAIL WORKS — COMPREHENSIVE CONTEST READINESS AUDIT");
+  console.log("APEX DETAIL WORKS — COMPREHENSIVE PRODUCTION READINESS AUDIT");
   console.log(`Target: ${BASE_URL}`);
   console.log("===============================================================\n");
 
