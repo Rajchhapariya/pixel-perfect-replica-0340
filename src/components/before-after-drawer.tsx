@@ -36,6 +36,8 @@ export function BeforeAfterDrawer() {
     return () => clearTimeout(t);
   }, [open]);
 
+  const isVisible = open || mounted;
+
   return (
     <>
       <button
@@ -51,7 +53,7 @@ export function BeforeAfterDrawer() {
         <ArrowRight className="h-3 w-3 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
       </button>
 
-      {mounted && (
+      {isVisible && (
         <div
           className="fixed inset-0 z-50"
           aria-modal="true"
