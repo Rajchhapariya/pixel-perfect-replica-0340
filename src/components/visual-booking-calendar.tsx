@@ -96,6 +96,9 @@ export function VisualBookingCalendar({
             <button
               key={day.dayName}
               type="button"
+              role="button"
+              aria-pressed={isSelected}
+              aria-label={`${day.dayName}, ${day.datePart}. ${day.isGreen ? "Green Route, $15 travel surcharge waived." : ""} ${day.slots.length} arrival windows available.`}
               onClick={() => setActiveDay(day.dayName)}
               className={`group relative rounded-xl border p-3 xs:p-4 text-left transition-all backdrop-blur-sm ${
                 isSelected
@@ -161,6 +164,9 @@ export function VisualBookingCalendar({
                 <button
                   key={slot.id}
                   type="button"
+                  role="button"
+                  aria-pressed={active}
+                  aria-label={`${slot.time} Arrival Window, ${currentDay.datePart}. ${active ? "Currently selected." : "Click to select window."}`}
                   onClick={() => onSelectSlot(slot.id)}
                   className={`flex items-center justify-between gap-2.5 xs:gap-4 rounded-xl border p-3 xs:p-4 text-left transition-all ${
                     active

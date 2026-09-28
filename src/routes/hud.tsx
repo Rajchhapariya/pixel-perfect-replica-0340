@@ -117,6 +117,17 @@ function Hud() {
   const [stormOpen, setStormOpen] = useState(false);
   const [dispatching, setDispatching] = useState(false);
 
+  useEffect(() => {
+    if (!stormOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setStormOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [stormOpen]);
+
   const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
   const recent = bookings.filter((b) => new Date(b.created_at).getTime() >= weekAgo);
   const confirmed = bookings.filter((b) => b.status === "confirmed");
@@ -377,6 +388,8 @@ function Hud() {
         <button
           type="button"
           onClick={() => setStormOpen(true)}
+          aria-haspopup="dialog"
+          aria-expanded={stormOpen}
           className="inline-flex w-full sm:w-auto shrink-0 items-center justify-center gap-2 rounded-lg bg-amber px-4 py-2.5 text-xs font-bold text-[#07090e] transition-opacity hover:opacity-90 shadow-md shadow-amber/20 min-h-[42px]"
         >
           <CloudRain className="h-4 w-4" />
@@ -503,23 +516,29 @@ function Hud() {
       </section>
 
       {stormOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="storm-modal-title"
+        >
           <button
             type="button"
             aria-label="Close dialog"
             onClick={() => setStormOpen(false)}
             className="absolute inset-0 bg-background/85 backdrop-blur-sm"
+            aria-hidden="true"
           />
           <div className="surface relative max-h-[90vh] w-full max-w-xl overflow-y-auto p-4 sm:p-6">
             <div className="flex items-start justify-between gap-4">
-              <h2 className="text-base sm:text-lg font-bold">
+              <h2 id="storm-modal-title" className="text-base sm:text-lg font-bold">
                 Travis County Precipitation Warning
               </h2>
               <button
                 type="button"
                 onClick={() => setStormOpen(false)}
                 className="rounded-md p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
-                aria-label="Close"
+                aria-label="Close dialog"
               >
                 <X className="h-4 w-4" />
               </button>

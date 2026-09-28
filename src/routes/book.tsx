@@ -18,6 +18,7 @@ import {
   Smartphone,
   Truck,
   Wallet,
+  X,
   Zap,
 } from "lucide-react";
 
@@ -612,22 +613,43 @@ function BookingWizard() {
           </div>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            <label className="block">
-              <span className="text-sm font-semibold">Your first name</span>
+            <div>
+              <label htmlFor="customer-first-name" className="block text-sm font-semibold">
+                Your first name
+              </label>
               <input
+                id="customer-first-name"
+                name="firstName"
+                autoComplete="given-name"
+                required
+                aria-required="true"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
                 placeholder="Cole"
                 className="mt-2 w-full rounded-lg border border-border bg-card px-4 py-3 text-sm outline-none transition-colors placeholder:text-dim focus:border-cyan"
               />
-            </label>
-            <label className="block">
-              <span className="text-sm font-semibold">Mobile number for SMS confirmation</span>
+            </div>
+            <div>
+              <label htmlFor="customer-phone" className="block text-sm font-semibold">
+                Mobile number for SMS confirmation
+              </label>
               <div className="mt-2 flex overflow-hidden rounded-lg border border-border bg-card focus-within:border-cyan">
                 <span className="flex items-center border-r border-border px-3 font-mono text-sm text-dim">
                   +1
                 </span>
                 <input
+                  id="customer-phone"
+                  name="phone"
+                  type="tel"
+                  autoComplete="tel-national"
+                  required
+                  aria-required="true"
+                  aria-invalid={customerPhone.length > 0 && customerPhone.length < 10}
+                  aria-describedby={
+                    customerPhone.length > 0 && customerPhone.length < 10
+                      ? "phone-error"
+                      : undefined
+                  }
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
                   inputMode="numeric"
@@ -636,11 +658,15 @@ function BookingWizard() {
                 />
               </div>
               {customerPhone.length > 0 && customerPhone.length < 10 ? (
-                <span className="mt-1.5 block font-mono text-[11px] text-amber">
+                <span
+                  id="phone-error"
+                  role="alert"
+                  className="mt-1.5 block font-mono text-[11px] text-amber"
+                >
                   10-digit number required ({customerPhone.length}/10 digits entered)
                 </span>
               ) : null}
-            </label>
+            </div>
           </div>
         </section>
       ) : null}
@@ -658,55 +684,94 @@ function BookingWizard() {
               sub="Your card is authorized, not charged. The balance is due when Cole completes the detail."
             />
             <div className="surface mt-6 space-y-4 p-4 sm:p-5">
-              <label className="block">
-                <span className="text-xs font-semibold uppercase tracking-wider text-dim">
+              <div>
+                <label
+                  htmlFor="card-number"
+                  className="block text-xs font-semibold uppercase tracking-wider text-dim"
+                >
                   Card number
-                </span>
+                </label>
                 <div className="mt-2 flex items-center gap-3 rounded-lg border border-border bg-secondary/40 px-3.5 sm:px-4 focus-within:border-cyan">
                   <CreditCard className="h-4 w-4 text-dim shrink-0" />
                   <input
+                    id="card-number"
+                    name="cardNumber"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="cc-number"
+                    required
+                    aria-required="true"
                     value={cardNumber}
                     onChange={(e) => setCardNumber(e.target.value)}
                     placeholder="4242 4242 4242 4242"
                     className="w-full bg-transparent py-3 font-mono text-sm outline-none placeholder:text-dim"
                   />
                 </div>
-              </label>
+              </div>
               <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                <label className="block">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-dim">
+                <div>
+                  <label
+                    htmlFor="card-expiry"
+                    className="block text-xs font-semibold uppercase tracking-wider text-dim"
+                  >
                     Expiry
-                  </span>
+                  </label>
                   <input
+                    id="card-expiry"
+                    name="cardExpiry"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="cc-exp"
+                    required
+                    aria-required="true"
                     value={cardExpiry}
                     onChange={(e) => setCardExpiry(e.target.value)}
                     placeholder="09/28"
                     className="mt-2 w-full rounded-lg border border-border bg-secondary/40 px-3.5 sm:px-4 py-3 font-mono text-sm outline-none placeholder:text-dim focus:border-cyan"
                   />
-                </label>
-                <label className="block">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-dim">
+                </div>
+                <div>
+                  <label
+                    htmlFor="card-cvc"
+                    className="block text-xs font-semibold uppercase tracking-wider text-dim"
+                  >
                     CVC
-                  </span>
+                  </label>
                   <input
+                    id="card-cvc"
+                    name="cardCvc"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="cc-csc"
+                    required
+                    aria-required="true"
                     value={cardCvc}
                     onChange={(e) => setCardCvc(e.target.value)}
                     placeholder="123"
                     className="mt-2 w-full rounded-lg border border-border bg-secondary/40 px-3.5 sm:px-4 py-3 font-mono text-sm outline-none placeholder:text-dim focus:border-cyan"
                   />
-                </label>
+                </div>
               </div>
-              <label className="block">
-                <span className="text-xs font-semibold uppercase tracking-wider text-dim">
+              <div>
+                <label
+                  htmlFor="card-name"
+                  className="block text-xs font-semibold uppercase tracking-wider text-dim"
+                >
                   Cardholder name
-                </span>
+                </label>
                 <input
+                  id="card-name"
+                  name="cardName"
+                  type="text"
+                  autoComplete="cc-name"
+                  required
+                  aria-required="true"
                   value={cardName}
                   onChange={(e) => setCardName(e.target.value)}
                   placeholder="Name as printed on card"
                   className="mt-2 w-full rounded-lg border border-border bg-secondary/40 px-3.5 sm:px-4 py-3 text-sm outline-none placeholder:text-dim focus:border-cyan"
                 />
-              </label>
+              </div>
 
               <button
                 type="button"
@@ -784,40 +849,51 @@ function StepHeading({ title, sub }: { title: string; sub: string }) {
 
 function ProgressBar({ step }: { step: number }) {
   return (
-    <div className="flex items-center">
-      {STEPS.map((label, index) => {
-        const num = index + 1;
-        const done = num < step;
-        const active = num === step;
-        return (
-          <div key={label} className="flex flex-1 items-center last:flex-none">
-            <div className="flex flex-col items-center gap-1">
-              <span
-                className={`flex h-7 w-7 xs:h-8 xs:w-8 items-center justify-center rounded-full border font-mono text-[11px] xs:text-xs transition-colors ${
-                  done
-                    ? "border-emerald bg-emerald-soft text-emerald"
-                    : active
-                      ? "border-cyan bg-cyan-soft text-cyan font-bold"
-                      : "border-border text-dim"
-                }`}
-              >
-                {done ? <Check className="h-3.5 w-3.5" /> : num}
-              </span>
-              <span
-                className={`text-[9.5px] xs:text-[11px] block max-w-[48px] xs:max-w-none truncate text-center ${
-                  active ? "text-foreground font-semibold" : "text-dim"
-                }`}
-              >
-                {label}
-              </span>
-            </div>
-            {num < STEPS.length ? (
-              <span className={`mx-1 xs:mx-2 h-px flex-1 ${done ? "bg-emerald" : "bg-border"}`} />
-            ) : null}
-          </div>
-        );
-      })}
-    </div>
+    <nav aria-label="Booking steps" className="w-full">
+      <ol className="flex items-center w-full" role="list">
+        {STEPS.map((label, index) => {
+          const num = index + 1;
+          const done = num < step;
+          const active = num === step;
+          return (
+            <li
+              key={label}
+              className="flex flex-1 items-center last:flex-none"
+              aria-current={active ? "step" : undefined}
+            >
+              <div className="flex flex-col items-center gap-1">
+                <span
+                  className={`flex h-7 w-7 xs:h-8 xs:w-8 items-center justify-center rounded-full border font-mono text-[11px] xs:text-xs transition-colors ${
+                    done
+                      ? "border-emerald bg-emerald-soft text-emerald"
+                      : active
+                        ? "border-cyan bg-cyan-soft text-cyan font-bold"
+                        : "border-border text-dim"
+                  }`}
+                  aria-hidden="true"
+                >
+                  {done ? <Check className="h-3.5 w-3.5" /> : num}
+                </span>
+                <span
+                  className={`text-[9.5px] xs:text-[11px] block max-w-[48px] xs:max-w-none truncate text-center ${
+                    active ? "text-foreground font-semibold" : "text-dim"
+                  }`}
+                >
+                  <span className="sr-only">Step {num}: </span>
+                  {label}
+                </span>
+              </div>
+              {num < STEPS.length ? (
+                <span
+                  className={`mx-1 xs:mx-2 h-px flex-1 ${done ? "bg-emerald" : "bg-border"}`}
+                  aria-hidden="true"
+                />
+              ) : null}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
   );
 }
 
@@ -865,12 +941,19 @@ function CheckRow({
   children?: React.ReactNode;
 }) {
   return (
-    <div className={`surface p-5 ${checked ? "surface-active" : ""}`}>
-      <button type="button" onClick={onToggle} className="flex w-full items-start gap-4 text-left">
+    <div className={`surface p-4 sm:p-5 ${checked ? "surface-active" : ""}`}>
+      <button
+        type="button"
+        role="checkbox"
+        aria-checked={checked}
+        onClick={onToggle}
+        className="flex w-full items-start gap-4 text-left"
+      >
         <span
           className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${
             checked ? "border-emerald bg-emerald" : "border-border-strong"
           }`}
+          aria-hidden="true"
         >
           {checked ? <Check className="h-3.5 w-3.5 text-background" strokeWidth={3} /> : null}
         </span>
@@ -1006,6 +1089,17 @@ function ConfirmationPass({
   onReset: () => void;
 }) {
   const [showWalletModal, setShowWalletModal] = useState(false);
+
+  useEffect(() => {
+    if (!showWalletModal) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShowWalletModal(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showWalletModal]);
 
   useEffect(() => {
     const colors = ["#ef4444", "#10b981", "#f59e0b", "#ffffff"];
@@ -1150,12 +1244,18 @@ function ConfirmationPass({
       </div>
 
       {showWalletModal ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="wallet-pass-modal-title"
+        >
           <button
             type="button"
-            aria-label="Close pass"
+            aria-label="Close pass dialog"
             onClick={() => setShowWalletModal(false)}
             className="absolute inset-0 bg-background/85 backdrop-blur-sm"
+            aria-hidden="true"
           />
           <div className="relative w-full max-w-sm rounded-2xl border border-cyan/40 bg-[#0a0f1d] p-6 shadow-2xl">
             <div className="flex items-center justify-between border-b border-border/70 pb-3">
@@ -1167,13 +1267,26 @@ function ConfirmationPass({
                   width={24}
                   height={24}
                 />
-                <span className="font-mono text-xs font-bold uppercase tracking-widest text-cyan">
+                <span
+                  id="wallet-pass-modal-title"
+                  className="font-mono text-xs font-bold uppercase tracking-widest text-cyan"
+                >
                   APEX DETAIL WORKS
                 </span>
               </div>
-              <span className="font-mono text-[10px] uppercase tracking-wider text-emerald border-l border-emerald/40 pl-2.5 font-bold">
-                Confirmed Pass
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-emerald border-l border-emerald/40 pl-2.5 font-bold">
+                  Confirmed Pass
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowWalletModal(false)}
+                  className="rounded-md p-1 text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  aria-label="Close pass dialog"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
             </div>
 
             <div className="my-5 space-y-3 font-mono text-xs">

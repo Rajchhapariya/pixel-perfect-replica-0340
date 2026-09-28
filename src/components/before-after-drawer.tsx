@@ -25,6 +25,18 @@ export function BeforeAfterDrawer() {
     return () => window.removeEventListener("apex:open-drawer", handleOpen);
   }, []);
 
+  // Close on Escape key press for keyboard accessibility
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open]);
+
   // Mount/unmount with animation
   useEffect(() => {
     let t: ReturnType<typeof setTimeout> | undefined;
@@ -44,6 +56,7 @@ export function BeforeAfterDrawer() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open Before vs After comparison"
+        aria-expanded={open}
         className={`fixed ${
           isBook
             ? "bottom-16 right-3 xs:bottom-20 xs:right-4 sm:bottom-24 sm:right-6"
@@ -61,12 +74,13 @@ export function BeforeAfterDrawer() {
           className="fixed inset-0 z-50"
           aria-modal="true"
           role="dialog"
-          aria-label="Before vs After comparison"
+          aria-labelledby="drawer-impact-title"
         >
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
             style={{ opacity: open ? 1 : 0 }}
             onClick={() => setOpen(false)}
+            aria-hidden="true"
           />
 
           <aside
@@ -80,7 +94,10 @@ export function BeforeAfterDrawer() {
                 <p className="font-mono text-[10px] uppercase tracking-widest text-cyan mb-1">
                   Apex Detail Engine · Impact Report
                 </p>
-                <h2 className="text-lg sm:text-xl font-black tracking-tight text-foreground">
+                <h2
+                  id="drawer-impact-title"
+                  className="text-lg sm:text-xl font-black tracking-tight text-foreground"
+                >
                   What we actually replaced.
                 </h2>
                 <p className="mt-1 text-xs sm:text-sm text-muted-foreground leading-relaxed">

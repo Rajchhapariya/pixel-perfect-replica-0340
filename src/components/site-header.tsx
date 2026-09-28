@@ -38,9 +38,13 @@ export function SiteHeader() {
           </span>
 
           {/* View switcher */}
-          <div className="flex items-center rounded-lg border border-border bg-card p-0.5 xs:p-1 text-[11px] xs:text-xs font-semibold">
+          <nav
+            aria-label="Views"
+            className="flex items-center rounded-lg border border-border bg-card p-0.5 xs:p-1 text-[11px] xs:text-xs font-semibold"
+          >
             <Link
               to="/"
+              aria-current={!isHud && !isBook ? "page" : undefined}
               className={`rounded-md px-2 py-1 xs:px-3 xs:py-1.5 transition-colors ${
                 !isHud && !isBook
                   ? "bg-secondary text-cyan"
@@ -52,6 +56,7 @@ export function SiteHeader() {
             </Link>
             <Link
               to="/hud"
+              aria-current={isHud ? "page" : undefined}
               className={`rounded-md px-2 py-1 xs:px-3 xs:py-1.5 transition-colors ${
                 isHud ? "bg-secondary text-amber" : "text-muted-foreground hover:text-foreground"
               }`}
@@ -59,7 +64,7 @@ export function SiteHeader() {
               <span className="xs:hidden">HUD</span>
               <span className="hidden xs:inline">Cole&apos;s HUD</span>
             </Link>
-          </div>
+          </nav>
 
           {/* Book CTA */}
           <Link

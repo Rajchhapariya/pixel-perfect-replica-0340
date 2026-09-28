@@ -149,6 +149,8 @@ function DmSimulator() {
           <div className="flex items-center gap-2.5 min-w-0">
             <button
               type="button"
+              tabIndex={-1}
+              aria-hidden="true"
               className="p-1 -ml-1 text-white hover:opacity-80 transition-opacity shrink-0"
               aria-label="Back"
             >
@@ -191,6 +193,8 @@ function DmSimulator() {
           {/* Instagram Info Icon (i) in circle - exactly matching user screenshot */}
           <button
             type="button"
+            tabIndex={-1}
+            aria-hidden="true"
             className="hover:opacity-80 transition-opacity p-1 text-white shrink-0"
             aria-label="Thread Info"
           >
@@ -378,7 +382,7 @@ function EditorialReview({
             <p className="font-mono text-[10px] text-slate-500">{vehicle}</p>
           </div>
         </div>
-        <span className="font-mono text-[10px] text-slate-600">{zip}</span>
+        <span className="font-mono text-[10px] text-slate-400">{zip}</span>
       </div>
     </div>
   );
@@ -587,13 +591,19 @@ function Landing() {
               Prices scale with vehicle surface area. No on-site haggling, no unexpected add-ons.
             </p>
           </div>
-          <div className="grid grid-cols-3 sm:flex items-center rounded-xl border border-white/8 bg-[#0c121e]/90 p-1 backdrop-blur-md shrink-0 w-full sm:w-auto">
+          <div
+            role="tablist"
+            aria-label="Vehicle classes"
+            className="grid grid-cols-3 sm:flex items-center rounded-xl border border-white/8 bg-[#0c121e]/90 p-1 backdrop-blur-md shrink-0 w-full sm:w-auto"
+          >
             {VEHICLE_OPTIONS.map((v) => {
               const active = previewTier === v.id;
               return (
                 <button
                   key={v.id}
                   type="button"
+                  role="tab"
+                  aria-selected={active}
                   onClick={() => setPreviewTier(v.id)}
                   className={`flex items-center justify-center gap-1.5 rounded-lg px-2 py-2 xs:px-3 sm:px-3.5 sm:py-2 font-mono text-[11px] xs:text-xs font-semibold transition-all min-h-[38px] ${active ? "bg-cyan text-[#07090e] shadow-md" : "text-muted-foreground hover:text-foreground"}`}
                 >
