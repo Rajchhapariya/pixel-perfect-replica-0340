@@ -4,9 +4,9 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useLocation,
   HeadContent,
   Scripts,
-  ScrollRestoration,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { Toaster } from "sonner";
@@ -306,6 +306,8 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+  const location = useLocation();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -314,16 +316,72 @@ function RootComponent() {
       window.history.scrollRestoration = "manual";
     }
 
-    const resetScroll = () => {
+    const resetToTop = (hash?: string) => {
+      if (typeof window === "undefined") return;
+
+      if (hash) {
+        const targetId = hash.replace(/^#/, "");
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          targetElement.scrollIntoView();
+          return;
+        }
+      }
+
       window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      if (document.documentElement) {
+        document.documentElement.scrollTop = 0;
+        document.documentElement.scrollLeft = 0;
+      }
+      if (document.body) {
+        document.body.scrollTop = 0;
+        document.body.scrollLeft = 0;
+      }
     };
 
-    resetScroll();
-    window.addEventListener("pageshow", resetScroll);
-    return () => {
-      window.removeEventListener("pageshow", resetScroll);
+    // Reset immediately on mount
+    resetToTop(window.location.hash);
+
+    // Reset immediately before route transition loads
+    const unsubBeforeLoad = router.subscribe("onBeforeLoad", (event) => {
+      if (!event.toLocation.hash) {
+        resetToTop();
+      }
+    });
+
+    // Reset after new route has rendered
+    const unsubRendered = router.subscribe("onRendered", (event) => {
+      resetToTop(event.toLocation.hash);
+    });
+
+    // Handle BFCache (back-forward cache) pageshow events
+    const handlePageShow = () => {
+      resetToTop(window.location.hash);
     };
-  }, []);
+    window.addEventListener("pageshow", handlePageShow);
+
+    return () => {
+      unsubBeforeLoad();
+      unsubRendered();
+      window.removeEventListener("pageshow", handlePageShow);
+    };
+  }, [router]);
+
+  // Ensure scroll resets immediately on pathname change
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!location.hash) {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      if (document.documentElement) {
+        document.documentElement.scrollTop = 0;
+        document.documentElement.scrollLeft = 0;
+      }
+      if (document.body) {
+        document.body.scrollTop = 0;
+        document.body.scrollLeft = 0;
+      }
+    }
+  }, [location.pathname, location.hash]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -331,7 +389,6 @@ function RootComponent() {
       <SiteHeader />
       <Outlet />
       <BeforeAfterDrawer />
-      <ScrollRestoration />
       <Toaster theme="dark" position="top-right" richColors closeButton />
     </QueryClientProvider>
   );
