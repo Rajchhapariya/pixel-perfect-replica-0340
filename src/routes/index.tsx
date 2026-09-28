@@ -63,7 +63,7 @@ export const Route = createFileRoute("/")({
       {
         name: "twitter:description",
         content:
-          "Scope your vehicle, lock your price, hold your slot in 90 seconds. 100-gal tank & silent inverter.",
+          "Scope your vehicle, lock your price, hold your slot in 90 seconds. 85-gal DI water tank & silent inverter.",
       },
       {
         name: "twitter:image",
@@ -273,7 +273,7 @@ const DmSimulator = memo(function DmSimulator() {
                   <source srcSet="/brand/apex-mark.webp" type="image/webp" />
                   <img
                     src="/brand/apex-mark.png"
-                    alt="Apex"
+                    alt="Apex Detail Works avatar"
                     width={24}
                     height={24}
                     loading="lazy"
@@ -300,7 +300,7 @@ const DmSimulator = memo(function DmSimulator() {
                   <source srcSet="/brand/apex-mark.webp" type="image/webp" />
                   <img
                     src="/brand/apex-mark.png"
-                    alt="Apex"
+                    alt="Apex Detail Works avatar"
                     width={24}
                     height={24}
                     loading="lazy"
@@ -590,7 +590,7 @@ function Landing() {
                     {step.num}
                   </span>
                   <div>
-                    <h4 className="text-sm font-bold text-foreground">{step.title}</h4>
+                    <h3 className="text-sm font-bold text-foreground">{step.title}</h3>
                     <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
                       {step.desc}
                     </p>

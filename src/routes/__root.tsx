@@ -119,7 +119,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         property: "og:description",
         content:
-          "Scope your vehicle, lock your package price, and reserve route-optimized arrival windows in 90 seconds. 100-gal deionized water, silent inverter & 9H ceramic bond on board.",
+          "Scope your vehicle, lock your package price, and reserve route-optimized arrival windows in 90 seconds. 85-gal pure deionized water, silent inverter & 9H ceramic bond on board.",
       },
       {
         property: "og:image",
@@ -185,65 +185,107 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 const APEX_SCHEMA_JSON = JSON.stringify({
   "@context": "https://schema.org",
-  "@type": "AutoRepair",
+  "@type": ["AutoRepair", "LocalBusiness"],
   name: "Apex Detail Works",
+  alternateName: "Apex Mobile Auto Detailing Austin",
   image: "https://pixel-perfect-replica-0340.lovable.app/brand/apex-og.png",
   logo: "https://pixel-perfect-replica-0340.lovable.app/brand/apex-logo.png",
   url: "https://pixel-perfect-replica-0340.lovable.app/",
   telephone: "+1-512-555-0142",
+  priceRange: "$140 - $700",
+  currenciesAccepted: "USD",
+  paymentAccepted: "Credit Card, Debit Card",
   description:
-    "Austin's premier autonomous mobile auto detailing rig. On-site paint correction, 9H ceramic coatings, and interior extraction with onboard deionized water and power.",
+    "Austin's premier autonomous mobile auto detailing rig. Sole proprietor and master detailer Cole Ramsey provides on-site deionized spot-free wash, multi-stage paint correction, 9H ceramic coatings, and interior steam extraction directly at customer locations with Van 01.",
+  founder: {
+    "@type": "Person",
+    name: "Cole Ramsey",
+    jobTitle: "Master Detailer & Founder",
+  },
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Austin",
+    addressRegion: "TX",
+    postalCode: "78701",
+    addressCountry: "US",
+  },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: 30.2672,
+    longitude: -97.7431,
+  },
   areaServed: [
-    { "@type": "AdministrativeArea", name: "Austin, Texas" },
+    { "@type": "City", name: "Austin" },
+    { "@type": "AdministrativeArea", name: "Travis County, Texas" },
     { "@type": "PostalCode", postalCode: "78701" },
     { "@type": "PostalCode", postalCode: "78704" },
     { "@type": "PostalCode", postalCode: "78746" },
     { "@type": "PostalCode", postalCode: "78759" },
     { "@type": "PostalCode", postalCode: "78738" },
   ],
-  address: {
-    "@type": "PostalAddress",
-    addressLocality: "Austin",
-    addressRegion: "TX",
-    addressCountry: "US",
-  },
-  priceRange: "$$$",
-  founder: {
-    "@type": "Person",
-    name: "Cole Ramsey",
-  },
   hasOfferCatalog: {
     "@type": "OfferCatalog",
-    name: "Austin Mobile Detailing Packages",
+    name: "Austin Mobile Auto Detailing Packages",
     itemListElement: [
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Interior Deep Clean + Steam Extraction",
-          description:
-            "Full interior steam sanitization, leather conditioning, hot-water carpet extraction, and zero-chemical glass.",
-        },
-      },
       {
         "@type": "Offer",
         itemOffered: {
           "@type": "Service",
           name: "Express Foam & Seal",
           description:
-            "0-TDS deionized spot-free wash, iron decontamination, clay mitt, and ceramic spray sealant.",
+            "Decontamination wash, wheel clean, tire dress, and 3-month exterior hydrophobic polymer spray seal. Base price $140 for coupe/sedan, dynamically scaled by vehicle size (1.25x for mid-size SUV, 1.55x for 3-row truck).",
         },
+        price: "140.00",
+        priceCurrency: "USD",
+        priceValidUntil: "2027-12-31",
+        availability: "https://schema.org/InStock",
+        url: "https://pixel-perfect-replica-0340.lovable.app/book?package=express",
       },
       {
         "@type": "Offer",
         itemOffered: {
           "@type": "Service",
-          name: "Full Paint Correction + Ceramic",
+          name: "Interior Steam & Deep Extraction",
           description:
-            "Multi-stage rotary compound and jeweled polish removing 85%+ swirls, topped with 9H ceramic bond.",
+            "Hot water extraction, heated leather conditioning, ozone anti-bacterial purge, carpet shampoo, and door jambs. Base price $220 for coupe/sedan, dynamically scaled by vehicle size (1.25x for mid-size SUV, 1.55x for 3-row truck).",
         },
+        price: "220.00",
+        priceCurrency: "USD",
+        priceValidUntil: "2027-12-31",
+        availability: "https://schema.org/InStock",
+        url: "https://pixel-perfect-replica-0340.lovable.app/book?package=interior",
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "1-Stage Paint Correction + Ceramic Coating",
+          description:
+            "Machine compound swirl removal, rotary polish, iron decontamination, and 2-year 9H ceramic hydrophobic bond. Base price $450 for coupe/sedan, dynamically scaled by vehicle size (1.25x for mid-size SUV, 1.55x for 3-row truck).",
+        },
+        price: "450.00",
+        priceCurrency: "USD",
+        priceValidUntil: "2027-12-31",
+        availability: "https://schema.org/InStock",
+        url: "https://pixel-perfect-replica-0340.lovable.app/book?package=ceramic",
       },
     ],
+  },
+  potentialAction: {
+    "@type": "ReserveAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: "https://pixel-perfect-replica-0340.lovable.app/book",
+      inLanguage: "en-US",
+      actionPlatform: [
+        "http://schema.org/DesktopWebPlatform",
+        "http://schema.org/MobileWebPlatform",
+      ],
+    },
+    result: {
+      "@type": "Reservation",
+      name: "Austin Mobile Auto Detailing Appointment",
+    },
   },
 });
 

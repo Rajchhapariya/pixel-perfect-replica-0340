@@ -31,6 +31,7 @@ export const Route = createFileRoute("/reschedule/$refCode")({
         content:
           "Austin weather delay priority replacement slot selection. $50 deposit fully preserved.",
       },
+      { name: "robots", content: "noindex, follow" },
       { property: "og:site_name", content: "Apex Detail Works" },
       { property: "og:type", content: "website" },
       { property: "og:locale", content: "en_US" },
@@ -39,6 +40,21 @@ export const Route = createFileRoute("/reschedule/$refCode")({
         property: "og:description",
         content:
           "Austin weather delay priority replacement slot selection. $50 deposit fully preserved.",
+      },
+      {
+        property: "og:image",
+        content: "https://pixel-perfect-replica-0340.lovable.app/brand/apex-og.png",
+      },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Priority Weather Reschedule — Apex Detail Works" },
+      {
+        name: "twitter:description",
+        content:
+          "Austin weather delay priority replacement slot selection. $50 deposit fully preserved.",
+      },
+      {
+        name: "twitter:image",
+        content: "https://pixel-perfect-replica-0340.lovable.app/brand/apex-og.png",
       },
     ],
   }),
