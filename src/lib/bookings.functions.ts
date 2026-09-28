@@ -184,7 +184,7 @@ const createBookingSchema = z.object({
   addons_price: z.number().min(0).max(100000),
   total_price: z.number().min(0).max(100000),
   duration_minutes: z.number().int().min(1).max(1440),
-  zip_code: z.string().regex(/^\d{5}$/),
+  zip_code: z.string().regex(/^(786|787)\d{2}$/, "Must be an Austin area zip code (786xx/787xx)"),
   sector_name: z.string().trim().max(80).nullable(),
   slot_datetime: z.string().trim().min(1).max(80),
   green_route: z.boolean(),

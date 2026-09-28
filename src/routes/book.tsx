@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
+  AlertCircle,
   ArrowLeft,
   ArrowRight,
   CalendarPlus,
@@ -147,7 +148,8 @@ function BookingWizard() {
   const basePrice = Math.round(pkg.price * multiplier);
   const addonsPrice =
     activeAddons.reduce((sum, a) => sum + a.price, 0) + (useTank ? TANK_SURCHARGE : 0);
-  const travelFee = zoneChecked && !greenRoute ? TRAVEL_SURCHARGE : 0;
+  const isAustin = /^(786|787)\d{2}$/.test(zipCode.trim());
+  const travelFee = zoneChecked && isAustin && !greenRoute ? TRAVEL_SURCHARGE : 0;
   const total = Math.round(basePrice + addonsPrice + travelFee);
   const duration =
     Math.round(pkg.minutes * multiplier) + activeAddons.reduce((sum, a) => sum + a.minutes, 0);
@@ -158,7 +160,7 @@ function BookingWizard() {
   const canContinue =
     (step === 1 && vehicleClass !== null) ||
     (step === 2 && Boolean(packageId)) ||
-    (step === 3 && zoneChecked && Boolean(slotId)) ||
+    (step === 3 && zoneChecked && isAustin && Boolean(slotId)) ||
     (step === 4 && preFlightPassed && customerName.trim() !== "" && isPhoneValid);
 
   function toggleAddon(id: string) {
@@ -166,6 +168,16 @@ function BookingWizard() {
   }
 
   async function checkZipDirect(zip: string) {
+    const validAustin = /^(786|787)\d{2}$/.test(zip.trim());
+    if (!validAustin) {
+      setChecking(false);
+      setZoneChecked(true);
+      setZone(null);
+      setSlotId("");
+      toast.error(`Postal code ${zip} is outside Cole's Austin, TX service area.`);
+      return;
+    }
+
     setChecking(true);
     let data: ZoneMatch | null = null;
     try {
@@ -186,6 +198,9 @@ function BookingWizard() {
       );
     } else {
       setZone(null);
+      toast.info(
+        `Austin metro location verified. $${TRAVEL_SURCHARGE} cross-town transit buffer applies.`,
+      );
     }
   }
 
@@ -523,7 +538,7 @@ function BookingWizard() {
             </button>
           </div>
 
-          {zoneChecked && zone ? (
+          {zoneChecked && isAustin && zone ? (
             <div className="mt-4 rounded-xl border border-emerald/40 bg-emerald-soft p-4 text-sm text-emerald flex items-start gap-3">
               <CheckCircle2 className="h-5 w-5 shrink-0 mt-0.5" />
               <div>
@@ -535,11 +550,14 @@ function BookingWizard() {
               </div>
             </div>
           ) : null}
-          {zoneChecked && !zone ? (
+
+          {zoneChecked && isAustin && !zone ? (
             <div className="mt-4 rounded-xl border border-amber/40 bg-amber-soft p-4 text-sm text-amber flex items-start gap-3">
               <MapPin className="h-5 w-5 shrink-0 mt-0.5" />
               <div>
-                <span className="font-bold">Outside Primary Cluster Zone</span>
+                <span className="font-bold">
+                  Outside Primary Cluster Zone (Austin Metro Fringe)
+                </span>
                 <p className="mt-0.5 text-xs text-amber/90">
                   Standard $15 MoPac/I-35 travel buffer applies. Slots are still available for
                   booking.
@@ -548,7 +566,27 @@ function BookingWizard() {
             </div>
           ) : null}
 
-          {zoneChecked ? (
+          {zoneChecked && !isAustin ? (
+            <div className="mt-4 rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <span className="font-bold">Outside Austin Metro Service Area</span>
+                <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                  Cole Ramsey's mobile rig operates exclusively within the Greater Austin, TX metro
+                  area (Travis, Williamson, and Hays counties — zip codes starting with{" "}
+                  <strong className="text-foreground font-mono">787</strong> or{" "}
+                  <strong className="text-foreground font-mono">786</strong>).
+                </p>
+                <div className="mt-2.5 rounded-lg border border-border bg-card/60 px-3 py-2 text-xs">
+                  <span className="text-amber font-mono">Postal code &quot;{zipCode}&quot;</span> is
+                  outside our physical mobile van radius. Please choose an Austin area zip code or
+                  select one of the quick sectors above.
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          {zoneChecked && isAustin ? (
             <VisualBookingCalendar
               slots={slots}
               slotId={slotId}
