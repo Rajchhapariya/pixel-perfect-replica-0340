@@ -859,8 +859,8 @@ function Landing() {
                 <img
                   src="/brand/apex-logo.png"
                   alt="Apex Detail Works"
-                  className="h-11 sm:h-14 w-auto max-w-[220px] sm:max-w-[270px] object-contain drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)] transition-transform duration-200 hover:scale-[1.02]"
-                  height={56}
+                  className="h-8 sm:h-9 w-auto max-w-[170px] sm:max-w-[200px] object-contain drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)] transition-transform duration-200 hover:scale-[1.02]"
+                  height={36}
                 />
               </Link>
               <p className="max-w-md text-xs leading-relaxed text-muted-foreground">

@@ -6,8 +6,8 @@ export function SiteHeader() {
   const isBook = pathname.startsWith("/book");
 
   return (
-    <header className="sticky top-0 z-30 w-full border-b border-border bg-background/95 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+    <header className="relative z-30 w-full border-b border-border bg-background/95 backdrop-blur">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2 sm:px-6 sm:py-2.5">
         {/* Left — Brand Logo */}
         <Link
           to="/"
@@ -17,8 +17,8 @@ export function SiteHeader() {
           <img
             src="/brand/apex-logo.png"
             alt="Apex Detail Works"
-            className="h-11 sm:h-14 w-auto max-w-[220px] sm:max-w-[270px] object-contain drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)] transition-transform duration-200 group-hover:scale-[1.02]"
-            height={56}
+            className="h-8 sm:h-9 w-auto max-w-[170px] sm:max-w-[200px] object-contain drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)] transition-transform duration-200 group-hover:scale-[1.02]"
+            height={36}
           />
         </Link>
 
