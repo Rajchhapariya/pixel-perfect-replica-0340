@@ -14,8 +14,10 @@ import {
   MapPin,
   MessageSquare,
   Search,
+  Smartphone,
   Truck,
   Wallet,
+  Zap,
 } from "lucide-react";
 
 import { createBooking, lookupZone } from "@/lib/bookings.functions";
@@ -290,8 +292,8 @@ function BookingWizard() {
     <main className="mx-auto max-w-5xl px-4 pb-44 pt-10 sm:px-6">
       <ProgressBar step={step} />
 
-      <div className="hidden sm:flex items-center gap-2 mt-4 rounded-lg border border-white/8 bg-card/40 px-4 py-2.5 text-xs text-muted-foreground">
-        <span>📱</span>
+      <div className="hidden sm:flex items-center gap-2.5 mt-4 rounded-lg border border-white/8 bg-card/40 px-4 py-2.5 text-xs text-muted-foreground">
+        <Smartphone className="h-4 w-4 text-cyan shrink-0" />
         <span>
           Built for the customer tapping your Instagram bio on their phone —{" "}
           <strong className="text-foreground font-semibold">works flawlessly on mobile</strong>.
@@ -943,8 +945,9 @@ function StickyBar({
               Est: {formatDuration(duration)}
             </span>
             {elapsed <= 90 && (
-              <span className="font-mono text-[10px] text-emerald hidden sm:inline">
-                · on track ✓
+              <span className="font-mono text-[10px] text-emerald hidden sm:inline-flex items-center gap-1">
+                <span>· on track</span>
+                <Check className="h-2.5 w-2.5 stroke-[2.5]" />
               </span>
             )}
           </div>
@@ -1048,9 +1051,14 @@ function ConfirmationPass({
           <h1 className="mt-5 text-3xl font-black tracking-tight text-foreground">
             You&apos;re Booked.
           </h1>
-          <p className="mt-2 font-mono text-[11px] text-emerald tracking-wide">
-            ⚡ Confirmed in {formatElapsed(data.bookedInSeconds)}
-            {data.bookedInSeconds <= 90 ? " — under 90s goal ✓" : ""}
+          <p className="mt-2 font-mono text-[11px] text-emerald tracking-wide flex items-center justify-center gap-1.5">
+            <Zap className="h-3.5 w-3.5 fill-emerald text-emerald shrink-0" />
+            <span>Confirmed in {formatElapsed(data.bookedInSeconds)}</span>
+            {data.bookedInSeconds <= 90 ? (
+              <span className="inline-flex items-center gap-1">
+                — under 90s goal <Check className="h-3 w-3 stroke-[2.5]" />
+              </span>
+            ) : null}
           </p>
           <p className="confirm-ref mt-1 font-mono text-sm text-cyan font-bold tracking-wide">
             Reference: {data.refCode}

@@ -247,8 +247,9 @@ function DmSimulator() {
                   hey! gloves on all day — can&apos;t stop to text mid-job 🧤 use my booking link
                   below, takes 90 sec, price locked, slot held. no back-and-forth needed
                 </div>
-                <p className="text-[8.5px] text-[#8e8e8e] pl-1">
-                  ⚡ Automated · Apex Booking Engine
+                <p className="text-[8.5px] text-[#8e8e8e] pl-1 flex items-center gap-1">
+                  <Zap className="h-2.5 w-2.5 fill-amber-400 text-amber-400 shrink-0" />
+                  <span>Automated · Apex Booking Engine</span>
                 </p>
               </div>
             </div>

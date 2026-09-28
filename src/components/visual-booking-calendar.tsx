@@ -1,5 +1,11 @@
 import { useState, useMemo } from "react";
-import { Calendar as CalendarIcon, Check, Clock, Route as RouteIcon } from "lucide-react";
+import {
+  AlertTriangle,
+  Calendar as CalendarIcon,
+  Check,
+  Clock,
+  Route as RouteIcon,
+} from "lucide-react";
 import type { SlotOption } from "@/lib/booking";
 
 interface VisualBookingCalendarProps {
@@ -139,9 +145,11 @@ export function VisualBookingCalendar({
           </div>
 
           <p className="font-mono text-[10px] text-amber mb-3 flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-amber animate-pulse" />⚠ Only{" "}
-            {Math.max(2, 7 - new Date().getDay())} route-optimized windows remaining this week for
-            your sector
+            <AlertTriangle className="h-3 w-3 text-amber shrink-0" />
+            <span>
+              Only {Math.max(2, 7 - new Date().getDay())} route-optimized windows remaining this
+              week for your sector
+            </span>
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
