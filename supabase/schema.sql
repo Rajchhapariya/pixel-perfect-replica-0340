@@ -59,23 +59,11 @@ alter table public.audit_log enable row level security;
 alter table public.route_zones enable row level security;
 
 -- Policies
-drop policy if exists "Anyone can view bookings" on public.bookings;
-create policy "Anyone can view bookings" on public.bookings for select using (true);
-
-drop policy if exists "Anyone can create bookings" on public.bookings;
-create policy "Anyone can create bookings" on public.bookings for insert with check (true);
-
-drop policy if exists "Anyone can update bookings" on public.bookings;
-create policy "Anyone can update bookings" on public.bookings for update using (true) with check (true);
-
-drop policy if exists "Anyone can view audit log" on public.audit_log;
-create policy "Anyone can view audit log" on public.audit_log for select using (true);
-
-drop policy if exists "Anyone can add audit entries" on public.audit_log;
-create policy "Anyone can add audit entries" on public.audit_log for insert with check (true);
-
-drop policy if exists "Anyone can view route zones" on public.route_zones;
-create policy "Anyone can view route zones" on public.route_zones for select using (true);
+-- No public policies: anon/authenticated have no direct table access.
+-- All reads/writes go through validated server functions using the
+-- service role (GRANT ALL ... TO service_role above), which bypasses RLS.
+-- This prevents unauthenticated callers from inserting arbitrary bookings
+-- with self-selected prices or confirmed status.
 
 -- Seed Data: Route Zones (Austin Metro)
 insert into public.route_zones (zip_code, sector_name, green_route_day, discount_active)
