@@ -69,14 +69,48 @@ export const Route = createFileRoute("/book")({
         content:
           "Five quick steps: scope your vehicle, pick a package, match a route cluster, confirm site readiness, hold your slot with a $50 authorization.",
       },
+      { property: "og:site_name", content: "Apex Detail Works" },
+      { property: "og:type", content: "website" },
+      { property: "og:locale", content: "en_US" },
+      { property: "og:url", content: "https://pixel-perfect-replica-0340.lovable.app/book" },
       { property: "og:title", content: "Book a Detail — Apex Detail Works Austin" },
       {
         property: "og:description",
-        content: "Confirmed Austin detailing slot in 90 seconds. Price locked, deposit held.",
+        content:
+          "Confirmed Austin mobile detailing slot in 90 seconds. Scope vehicle size, lock package price, deposit held.",
       },
-      { property: "og:type", content: "website" },
+      {
+        property: "og:image",
+        content: "https://pixel-perfect-replica-0340.lovable.app/brand/apex-og.png",
+      },
+      {
+        property: "og:image:secure_url",
+        content: "https://pixel-perfect-replica-0340.lovable.app/brand/apex-og.png",
+      },
+      { property: "og:image:type", content: "image/png" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      {
+        property: "og:image:alt",
+        content: "Book a Detail — Apex Detail Works Austin",
+      },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Book a Detail — Apex Detail Works Austin" },
+      {
+        name: "twitter:description",
+        content:
+          "Confirmed Austin mobile detailing slot in 90 seconds. Price locked, deposit held.",
+      },
+      {
+        name: "twitter:image",
+        content: "https://pixel-perfect-replica-0340.lovable.app/brand/apex-og.png",
+      },
+      {
+        name: "twitter:image:alt",
+        content: "Book a Detail — Apex Detail Works Austin",
+      },
     ],
+    links: [{ rel: "canonical", href: "https://pixel-perfect-replica-0340.lovable.app/book" }],
   }),
   component: BookingWizard,
 });

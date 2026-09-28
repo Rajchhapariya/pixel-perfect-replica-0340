@@ -35,14 +35,46 @@ export const Route = createFileRoute("/hud")({
         content:
           "Cole's command console: auto-triaged leads, optimized Austin route deck, weather reschedule dispatch and live inbound feed.",
       },
+      { property: "og:site_name", content: "Apex Detail Works" },
+      { property: "og:type", content: "website" },
+      { property: "og:locale", content: "en_US" },
+      { property: "og:url", content: "https://pixel-perfect-replica-0340.lovable.app/hud" },
       { property: "og:title", content: "Operations HUD — Apex Detail Works" },
       {
         property: "og:description",
         content: "Route clustering, deposit tracking and 1-click rain reschedules for Van 01.",
       },
-      { property: "og:type", content: "website" },
+      {
+        property: "og:image",
+        content: "https://pixel-perfect-replica-0340.lovable.app/brand/apex-og.png",
+      },
+      {
+        property: "og:image:secure_url",
+        content: "https://pixel-perfect-replica-0340.lovable.app/brand/apex-og.png",
+      },
+      { property: "og:image:type", content: "image/png" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      {
+        property: "og:image:alt",
+        content: "Operations HUD — Apex Detail Works",
+      },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Operations HUD — Apex Detail Works" },
+      {
+        name: "twitter:description",
+        content: "Route clustering, deposit tracking and 1-click rain reschedules for Van 01.",
+      },
+      {
+        name: "twitter:image",
+        content: "https://pixel-perfect-replica-0340.lovable.app/brand/apex-og.png",
+      },
+      {
+        name: "twitter:image:alt",
+        content: "Operations HUD — Apex Detail Works",
+      },
     ],
+    links: [{ rel: "canonical", href: "https://pixel-perfect-replica-0340.lovable.app/hud" }],
   }),
   component: Hud,
 });

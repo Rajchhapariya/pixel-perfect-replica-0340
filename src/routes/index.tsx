@@ -33,15 +33,48 @@ export const Route = createFileRoute("/")({
         content:
           "Cole Ramsey's autonomous mobile detailing rig for Austin, TX. 90-second booking, MoPac route clustering, zero phone tag, $50 locked deposit hold.",
       },
-      { property: "og:title", content: "Apex Detail Works — Austin Mobile Detailing" },
+      { property: "og:site_name", content: "Apex Detail Works" },
+      { property: "og:type", content: "website" },
+      { property: "og:locale", content: "en_US" },
+      { property: "og:url", content: "https://pixel-perfect-replica-0340.lovable.app/" },
+      { property: "og:title", content: "Apex Detail Works — Austin Mobile Auto Detailing" },
       {
         property: "og:description",
         content:
-          "Scope your vehicle, lock your price, hold your slot in 90 seconds. No callbacks required.",
+          "Scope your vehicle, lock your price, hold your slot in 90 seconds. 100-gal deionized water, silent inverter & 9H ceramic bond on board.",
       },
-      { property: "og:type", content: "website" },
+      {
+        property: "og:image",
+        content: "https://pixel-perfect-replica-0340.lovable.app/brand/apex-og.png",
+      },
+      {
+        property: "og:image:secure_url",
+        content: "https://pixel-perfect-replica-0340.lovable.app/brand/apex-og.png",
+      },
+      { property: "og:image:type", content: "image/png" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      {
+        property: "og:image:alt",
+        content: "Apex Detail Works — Austin's Autonomous Mobile Detailing Rig",
+      },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Apex Detail Works — Austin Mobile Detailing" },
+      {
+        name: "twitter:description",
+        content:
+          "Scope your vehicle, lock your price, hold your slot in 90 seconds. 100-gal tank & silent inverter.",
+      },
+      {
+        name: "twitter:image",
+        content: "https://pixel-perfect-replica-0340.lovable.app/brand/apex-og.png",
+      },
+      {
+        name: "twitter:image:alt",
+        content: "Apex Detail Works — Austin's Autonomous Mobile Detailing Rig",
+      },
     ],
+    links: [{ rel: "canonical", href: "https://pixel-perfect-replica-0340.lovable.app/" }],
   }),
   component: Landing,
 });

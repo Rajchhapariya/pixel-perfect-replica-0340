@@ -101,19 +101,65 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Book a mobile detail in Austin in 90 seconds. Vehicle scoped, price locked, deposit held.",
+          "Austin's premier autonomous mobile auto detailing rig. 90-second booking, route-clustered van transit, zero phone tag, $50 locked deposit hold.",
       },
       { name: "author", content: "Apex Detail Works" },
+      {
+        name: "keywords",
+        content:
+          "Austin mobile detailing, auto detailing Austin, ceramic coating Austin, mobile car wash, paint correction, Travis County auto detailing, Cole Ramsey",
+      },
+
+      /* Open Graph / Facebook / LinkedIn / WhatsApp */
+      { property: "og:site_name", content: "Apex Detail Works" },
+      { property: "og:type", content: "website" },
+      { property: "og:locale", content: "en_US" },
+      { property: "og:url", content: "https://pixel-perfect-replica-0340.lovable.app/" },
       { property: "og:title", content: "Apex Detail Works — Austin Mobile Auto Detailing" },
       {
         property: "og:description",
         content:
-          "Book a mobile detail in Austin in 90 seconds. Vehicle scoped, price locked, deposit held.",
+          "Scope your vehicle, lock your package price, and reserve route-optimized arrival windows in 90 seconds. 100-gal deionized water, silent inverter & 9H ceramic bond on board.",
       },
-      { property: "og:type", content: "website" },
+      {
+        property: "og:image",
+        content: "https://pixel-perfect-replica-0340.lovable.app/brand/apex-og.png",
+      },
+      {
+        property: "og:image:secure_url",
+        content: "https://pixel-perfect-replica-0340.lovable.app/brand/apex-og.png",
+      },
+      { property: "og:image:type", content: "image/png" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      {
+        property: "og:image:alt",
+        content: "Apex Detail Works — Austin's Autonomous Mobile Detailing Rig",
+      },
+
+      /* Twitter / X Cards */
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Apex Detail Works — Austin Mobile Auto Detailing" },
+      {
+        name: "twitter:description",
+        content:
+          "Austin's autonomous mobile auto detailing rig. 90-second booking, route-clustered van transit, $50 locked deposit hold.",
+      },
+      {
+        name: "twitter:image",
+        content: "https://pixel-perfect-replica-0340.lovable.app/brand/apex-og.png",
+      },
+      {
+        name: "twitter:image:alt",
+        content: "Apex Detail Works — Austin's Autonomous Mobile Detailing Rig",
+      },
     ],
     links: [
+      { rel: "canonical", href: "https://pixel-perfect-replica-0340.lovable.app/" },
+      {
+        rel: "image_src",
+        href: "https://pixel-perfect-replica-0340.lovable.app/brand/apex-og.png",
+      },
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
