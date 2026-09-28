@@ -209,10 +209,10 @@ function DmSimulator() {
 
           {/* 1. Customer's message (YOU) — RIGHT SIDE, Instagram Blue Pill */}
           {phase >= 1 && (
-            <div className="dm-animate-out flex flex-col items-end gap-0.5 max-w-[84%] ml-auto">
+            <div className="dm-animate-out flex flex-col items-end gap-0.5 max-w-[85%] ml-auto">
               <div className="rounded-[18px] rounded-br-[4px] px-3.5 py-2 text-[11px] font-normal text-white leading-[1.45] bg-[#3797f0] shadow-sm">
-                hey do you have anything open this week? need a full detail on my F-150 before the
-                weekend 🙏
+                Hey Cole! Love the work on your page. Looking to get my F-150 dialed in before a
+                road trip this weekend — any mobile slots left? 🙏
               </div>
               {/* Seen receipt — appears at phase 2 */}
               {phase >= 2 && (
@@ -241,30 +241,34 @@ function DmSimulator() {
 
           {/* 3. Apex Auto-Reply (Autonomous Engine) — LEFT SIDE, incoming grey bubble with Apex logo avatar */}
           {phase >= 4 && (
-            <div className="dm-animate-in flex items-end gap-1.5 max-w-[88%]">
+            <div className="dm-animate-in flex items-end gap-1.5 max-w-[90%]">
               <div className="h-[24px] w-[24px] rounded-full flex-shrink-0 bg-black border border-white/15 overflow-hidden flex items-center justify-center mb-0.5 shadow-sm">
                 <img src="/brand/apex-mark.png" alt="Apex" className="h-full w-full object-cover" />
               </div>
               <div className="flex flex-col gap-1">
                 <div className="rounded-[18px] rounded-bl-[4px] px-3.5 py-2.5 text-[11px] text-white leading-[1.45] bg-[#262626]">
-                  hey! gloves on all day — can&apos;t stop to text mid-job 🧤 use my booking link
-                  below, takes 90 sec, price locked, slot held. no back-and-forth needed
+                  Hey! Appreciate you reaching out. Hands are tied on a ceramic coating right now 🧤
+                  but Van 01 has 2 route slots open in Austin before Friday!
                   <Link
                     to="/book"
                     className="mt-2 flex items-center justify-between rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 px-2.5 py-1.5 text-[10px] font-semibold text-white transition-all group"
                   >
                     <span className="flex items-center gap-1 text-amber-400">
                       <Zap className="h-3 w-3 fill-current" />
-                      <span>Lock Slot (90 sec)</span>
+                      <span>Select Package & Lock Slot</span>
                     </span>
                     <span className="text-white/70 group-hover:text-white transition-colors">
                       Book →
                     </span>
                   </Link>
+                  <p className="mt-1.5 text-[9.5px] text-[#b0b0b0] leading-snug">
+                    Exact price locked in 60s & I&apos;ll review your truck notes the second I wrap
+                    up! 👍
+                  </p>
                 </div>
                 <p className="text-[8.5px] text-[#8e8e8e] pl-1 flex items-center gap-1">
                   <Zap className="h-2.5 w-2.5 fill-amber-400 text-amber-400 shrink-0" />
-                  <span>Automated · Apex Autonomous Engine</span>
+                  <span>Instant Response · Apex Autonomous Booking</span>
                 </p>
               </div>
             </div>
@@ -272,9 +276,9 @@ function DmSimulator() {
 
           {/* 4. Customer replies (YOU) — RIGHT SIDE, Instagram Blue Pill */}
           {phase >= 5 && (
-            <div className="dm-animate-out flex justify-end max-w-[74%] ml-auto">
+            <div className="dm-animate-out flex justify-end max-w-[80%] ml-auto">
               <div className="rounded-[18px] rounded-br-[4px] px-3.5 py-2 text-[11px] font-normal text-white leading-[1.45] bg-[#3797f0] shadow-sm">
-                ok booking now, thanks 🤙
+                Awesome, just locked in Friday 10 AM. Appreciate it Cole! 🤙
               </div>
             </div>
           )}
