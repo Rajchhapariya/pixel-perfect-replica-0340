@@ -87,7 +87,7 @@ export function VisualBookingCalendar({
         )}
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 xs:gap-3">
         {days.map((day) => {
           const isSelected = currentDay?.dayName === day.dayName;
           const hasSelectedSlot = day.slots.some((s) => s.id === slotId);
@@ -97,29 +97,31 @@ export function VisualBookingCalendar({
               key={day.dayName}
               type="button"
               onClick={() => setActiveDay(day.dayName)}
-              className={`group relative rounded-xl border p-4 text-left transition-all backdrop-blur-sm ${
+              className={`group relative rounded-xl border p-3 xs:p-4 text-left transition-all backdrop-blur-sm ${
                 isSelected
                   ? "border-cyan bg-cyan-soft/30 shadow-[0_0_20px_rgba(239,68,68,0.18)] ring-1 ring-cyan"
                   : "border-border bg-card/60 hover:border-border-strong hover:bg-card"
               }`}
             >
               {day.isGreen && (
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-emerald border-b border-emerald/40 pb-0.5">
+                <div className="mb-1.5 xs:mb-2 flex flex-wrap items-center justify-between gap-1">
+                  <span className="font-mono text-[9px] xs:text-[10px] font-bold uppercase tracking-wider text-emerald border-b border-emerald/40 pb-0.5">
                     $15 Waived
                   </span>
-                  <span className="font-mono text-[9px] text-emerald/80 uppercase">
+                  <span className="font-mono text-[8.5px] xs:text-[9px] text-emerald/80 uppercase">
                     Cluster Match
                   </span>
                 </div>
               )}
 
-              <p className="font-mono text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+              <p className="font-mono text-[11px] xs:text-xs font-semibold text-muted-foreground uppercase tracking-widest">
                 {day.dayName}
               </p>
-              <p className="mt-1 text-sm font-bold text-foreground truncate">{day.datePart}</p>
+              <p className="mt-0.5 xs:mt-1 text-xs xs:text-sm font-bold text-foreground truncate">
+                {day.datePart}
+              </p>
 
-              <div className="mt-3 flex items-center justify-between font-mono text-[11px] text-dim">
+              <div className="mt-2.5 xs:mt-3 flex items-center justify-between font-mono text-[10px] xs:text-[11px] text-dim">
                 <span>{day.slots.length} windows</span>
                 {hasSelectedSlot && (
                   <span className="text-cyan font-semibold flex items-center gap-1">
@@ -134,12 +136,12 @@ export function VisualBookingCalendar({
       </div>
 
       {currentDay && (
-        <div className="rounded-xl border border-border/80 bg-[#0c121e]/80 p-5 backdrop-blur-md">
-          <div className="flex items-center justify-between border-b border-border/60 pb-3 mb-4">
+        <div className="rounded-xl border border-border/80 bg-[#0c121e]/80 p-3.5 xs:p-5 backdrop-blur-md">
+          <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-1 border-b border-border/60 pb-3 mb-4">
             <span className="font-mono text-xs font-semibold uppercase tracking-wider text-foreground">
               Available Windows for {currentDay.datePart}
             </span>
-            <span className="font-mono text-[11px] text-dim">
+            <span className="font-mono text-[10.5px] xs:text-[11px] text-dim">
               {sectorName ? `Austin Sector: ${sectorName}` : "Standard Austin Metro"}
             </span>
           </div>
@@ -152,7 +154,7 @@ export function VisualBookingCalendar({
             </span>
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
             {currentDay.slots.map((slot) => {
               const active = slotId === slot.id;
               return (
@@ -160,7 +162,7 @@ export function VisualBookingCalendar({
                   key={slot.id}
                   type="button"
                   onClick={() => onSelectSlot(slot.id)}
-                  className={`flex items-center justify-between gap-4 rounded-xl border p-4 text-left transition-all ${
+                  className={`flex items-center justify-between gap-2.5 xs:gap-4 rounded-xl border p-3 xs:p-4 text-left transition-all ${
                     active
                       ? "border-cyan bg-cyan-soft/40 shadow-[0_0_24px_rgba(239,68,68,0.22)] ring-1 ring-cyan"
                       : "border-border bg-card/70 hover:border-border-strong hover:bg-card"

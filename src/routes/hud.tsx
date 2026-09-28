@@ -202,7 +202,7 @@ function Hud() {
   }
 
   return (
-    <main className="mx-auto max-w-7xl px-4 pb-32 pt-10 sm:px-6">
+    <main className="mx-auto max-w-7xl px-3 sm:px-6 pb-32 pt-6 sm:pt-10">
       <div className="apex-demo-strip">
         <div className="min-w-0">
           <p className="font-mono text-xs font-bold text-cyan uppercase tracking-widest">
@@ -214,24 +214,24 @@ function Hud() {
             and the status buttons on each route stop.
           </p>
         </div>
-        <div className="flex items-center gap-2 shrink-0 flex-wrap">
+        <div className="flex items-center gap-2 shrink-0 flex-wrap w-full sm:w-auto">
           <Link
             to="/book"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-white/12 bg-card/80 px-4 py-2 font-mono text-xs font-semibold text-muted-foreground hover:text-foreground hover:border-cyan/50 transition-colors"
+            className="flex-1 sm:flex-none justify-center inline-flex items-center gap-1.5 rounded-lg border border-white/12 bg-card/80 px-3.5 py-2 font-mono text-xs font-semibold text-muted-foreground hover:text-foreground hover:border-cyan/50 transition-colors"
           >
             ← Book a Slot
           </Link>
           <button
             type="button"
             onClick={() => void handleResetDemo()}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-cyan px-4 py-2 font-mono text-xs font-bold text-background hover:bg-cyan/90 transition-colors shadow-md"
+            className="flex-1 sm:flex-none justify-center inline-flex items-center gap-1.5 rounded-lg bg-cyan px-3.5 py-2 font-mono text-xs font-bold text-background hover:bg-cyan/90 transition-colors shadow-md"
           >
             Reset Demo State
           </button>
         </div>
       </div>
 
-      <section className="relative overflow-hidden rounded-2xl border border-border/80 bg-card p-6 shadow-2xl">
+      <section className="relative overflow-hidden rounded-2xl border border-border/80 bg-card p-4 sm:p-6 shadow-2xl">
         <div
           className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
           aria-hidden="true"
@@ -241,24 +241,24 @@ function Hud() {
         </div>
 
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 border-b border-border/60 pb-5">
-          <div className="flex items-center gap-3.5 sm:gap-4">
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
             <img
               src="/brand/apex-mark.png"
               alt="Apex Detail Works Van 01 Rig"
-              className="h-12 w-12 sm:h-14 sm:w-14 shrink-0 object-contain drop-shadow-[0_4px_16px_rgba(239,68,68,0.45)]"
+              className="h-10 w-10 sm:h-14 sm:w-14 shrink-0 object-contain drop-shadow-[0_4px_16px_rgba(239,68,68,0.45)]"
               width={56}
               height={56}
             />
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-bold uppercase tracking-widest text-amber">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                <span className="font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest text-amber">
                   Field Operations Console · Van 01 Rig
                 </span>
-                <span className="font-mono text-[11px] text-muted-foreground uppercase tracking-wider border-l border-white/15 pl-2.5">
+                <span className="font-mono text-[10px] sm:text-[11px] text-muted-foreground uppercase tracking-wider sm:border-l sm:border-white/15 sm:pl-2.5">
                   Austin Metro Sector
                 </span>
               </div>
-              <h1 className="mt-1 text-2xl font-black tracking-tight sm:text-3xl text-foreground">
+              <h1 className="mt-1 text-xl sm:text-3xl font-black tracking-tight text-foreground">
                 Owner Command HUD — Cole Ramsey
               </h1>
               <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
@@ -267,20 +267,20 @@ function Hud() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <button
               type="button"
               onClick={() => void handleResetDemo()}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-border-strong bg-secondary/80 px-3 py-2 font-mono text-xs text-muted-foreground transition-colors hover:border-amber hover:text-amber"
+              className="flex-1 sm:flex-none justify-center inline-flex items-center gap-1.5 rounded-lg border border-border-strong bg-secondary/80 px-3 py-2 font-mono text-xs text-muted-foreground transition-colors hover:border-amber hover:text-amber"
               title="Reset in-memory demo bookings and audit stream"
             >
               <RotateCcw className="h-3.5 w-3.5 text-amber" />
-              <span>Reset Demo State</span>
+              <span>Reset Demo</span>
             </button>
             <button
               type="button"
               onClick={refresh}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3.5 py-2 font-mono text-xs text-muted-foreground transition-colors hover:border-cyan hover:text-foreground"
+              className="flex-1 sm:flex-none justify-center inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3.5 py-2 font-mono text-xs text-muted-foreground transition-colors hover:border-cyan hover:text-foreground"
             >
               <Radio className="h-3.5 w-3.5 text-cyan" />
               <span>Sync Feed</span>
@@ -288,8 +288,8 @@ function Hud() {
           </div>
         </div>
 
-        <div className="relative z-10 mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5 font-mono text-xs">
-          <div className="surface flex items-center gap-2.5 px-3.5 py-2.5 bg-[#0a0f1d]/90 backdrop-blur-md">
+        <div className="relative z-10 mt-5 grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 font-mono text-xs">
+          <div className="surface flex items-center gap-2.5 p-3 sm:px-3.5 sm:py-2.5 bg-[#0a0f1d]/90 backdrop-blur-md">
             <Droplets className="h-4 w-4 text-cyan shrink-0" />
             <div className="min-w-0">
               <span className="text-[10px] text-dim uppercase block">Deionized Water</span>
@@ -336,7 +336,7 @@ function Hud() {
               Without Apex — This Week
             </p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
             {(
               [
                 { val: "47", label: "Unread Instagram DMs" },
@@ -346,21 +346,23 @@ function Hud() {
               ] as const
             ).map(({ val, label }) => (
               <div key={label} className="text-center">
-                <p className="font-mono text-2xl font-black text-rose">{val}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{label}</p>
+                <p className="font-mono text-xl sm:text-2xl font-black text-rose">{val}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 leading-tight">
+                  {label}
+                </p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="surface mt-5 flex items-center justify-between gap-4 border-amber/40 bg-gradient-to-r from-card via-card to-amber-soft/20 p-5">
+      <section className="surface mt-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-amber/40 bg-gradient-to-r from-card via-card to-amber-soft/20 p-4 sm:p-5">
         <div className="flex min-w-0 items-center gap-3">
           <div className="rounded-lg border border-amber/40 bg-amber-soft p-2.5 text-amber shrink-0">
             <AlertTriangle className="h-5 w-5" />
           </div>
           <div className="min-w-0">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <h2 className="text-sm font-bold text-foreground">Austin Weather Alert Trigger</h2>
               <span className="font-mono text-[10px] uppercase tracking-wider text-amber border-l border-amber/40 pl-2 font-bold">
                 Rain Contingency
@@ -375,11 +377,10 @@ function Hud() {
         <button
           type="button"
           onClick={() => setStormOpen(true)}
-          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-amber px-4 py-2.5 text-xs font-bold text-[#07090e] transition-opacity hover:opacity-90 shadow-md shadow-amber/20"
+          className="inline-flex w-full sm:w-auto shrink-0 items-center justify-center gap-2 rounded-lg bg-amber px-4 py-2.5 text-xs font-bold text-[#07090e] transition-opacity hover:opacity-90 shadow-md shadow-amber/20 min-h-[42px]"
         >
           <CloudRain className="h-4 w-4" />
-          <span className="hidden sm:inline">Simulate Flash Storm</span>
-          <span className="sm:hidden">Trigger</span>
+          <span>Simulate Flash Storm</span>
         </button>
       </section>
 
@@ -401,19 +402,19 @@ function Hud() {
 
           <div className="mt-4 space-y-3">
             {routeDeck.length === 0 ? (
-              <p className="surface p-5 text-sm text-muted-foreground">
+              <p className="surface p-4 sm:p-5 text-sm text-muted-foreground">
                 No confirmed stops on the deck. New bookings land here automatically.
               </p>
             ) : null}
             {routeDeck.map((booking, index) => (
               <div key={booking.id}>
-                <article className="surface p-5">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
+                <article className="surface p-4 sm:p-5">
+                  <div className="flex flex-col xs:flex-row xs:items-start justify-between gap-2 xs:gap-3">
                     <div>
                       <p className="font-mono text-xs font-bold text-cyan">
                         {booking.slot_datetime}
                       </p>
-                      <h3 className="mt-1.5 text-sm font-semibold text-foreground">
+                      <h3 className="mt-1 text-sm font-semibold text-foreground">
                         {booking.customer_name ? `${booking.customer_name} · ` : ""}
                         {booking.vehicle_model ?? "Vehicle on file"}
                       </h3>
@@ -422,14 +423,14 @@ function Hud() {
                         {booking.sector_name ?? "Unclustered"}
                       </p>
                     </div>
-                    <div className="text-right">
+                    <div className="flex xs:flex-col items-center xs:items-end justify-between xs:justify-start gap-1">
                       <StatusBadge status={booking.status} />
-                      <p className="mt-1.5 font-mono text-sm font-bold text-foreground">
+                      <p className="font-mono text-sm font-bold text-foreground">
                         {money(Number(booking.total_price))}
                       </p>
                     </div>
                   </div>
-                  <div className="mt-4 flex flex-wrap gap-2">
+                  <div className="mt-4 grid grid-cols-1 xs:grid-cols-3 gap-2">
                     <JobButton
                       Icon={Send}
                       label="En Route SMS"
@@ -442,13 +443,13 @@ function Hud() {
                     />
                     <JobButton
                       Icon={Droplets}
-                      label="Complete & Invoice"
+                      label="Complete &amp; Invoice"
                       onClick={() => void updateStatus(booking, "completed", "Completed")}
                     />
                   </div>
                 </article>
                 {index < routeDeck.length - 1 ? (
-                  <p className="my-2 rounded-lg border border-emerald/25 bg-emerald-soft px-4 py-2 font-mono text-[11px] text-emerald flex items-center gap-2">
+                  <p className="my-2 rounded-lg border border-emerald/25 bg-emerald-soft px-3 py-2 sm:px-4 font-mono text-[10px] sm:text-[11px] text-emerald flex items-center gap-2 leading-relaxed">
                     <Navigation className="h-3.5 w-3.5 shrink-0" />
                     <span>
                       14 min transit — 3.8 miles via S Congress Ave → W 6th St (MoPac avoided · $0
@@ -502,16 +503,18 @@ function Hud() {
       </section>
 
       {stormOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
           <button
             type="button"
             aria-label="Close dialog"
             onClick={() => setStormOpen(false)}
             className="absolute inset-0 bg-background/85 backdrop-blur-sm"
           />
-          <div className="surface relative max-h-[90vh] w-full max-w-xl overflow-y-auto p-6">
+          <div className="surface relative max-h-[90vh] w-full max-w-xl overflow-y-auto p-4 sm:p-6">
             <div className="flex items-start justify-between gap-4">
-              <h2 className="text-lg font-bold">Travis County Precipitation Warning</h2>
+              <h2 className="text-base sm:text-lg font-bold">
+                Travis County Precipitation Warning
+              </h2>
               <button
                 type="button"
                 onClick={() => setStormOpen(false)}
@@ -521,26 +524,26 @@ function Hud() {
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <p className="mt-3 text-sm text-muted-foreground">
+            <p className="mt-2.5 text-xs sm:text-sm text-muted-foreground">
               85% rain probability forecasted for Thursday in Travis County. The following{" "}
               {affected.length} exterior appointments are affected:
             </p>
 
-            <ul className="mt-4 space-y-2">
+            <ul className="mt-3.5 space-y-2">
               {affected.map((b) => (
                 <li
                   key={b.id}
-                  className="flex items-center justify-between gap-3 rounded-lg border border-border bg-secondary/40 p-3"
+                  className="flex items-center justify-between gap-3 rounded-lg border border-border bg-secondary/40 p-2.5 sm:p-3"
                 >
-                  <span className="text-xs text-foreground">
+                  <span className="text-xs text-foreground truncate">
                     {b.customer_name ?? "Client"} — {b.vehicle_model ?? b.package_name}
                   </span>
-                  <span className="font-mono text-[11px] text-cyan">{b.ref_code}</span>
+                  <span className="font-mono text-[11px] text-cyan shrink-0">{b.ref_code}</span>
                 </li>
               ))}
             </ul>
 
-            <div className="mt-4 rounded-lg border border-border bg-background/80 p-4 font-mono text-[11px] leading-relaxed text-muted-foreground">
+            <div className="mt-4 rounded-lg border border-border bg-background/80 p-3 sm:p-4 font-mono text-[11px] leading-relaxed text-muted-foreground break-all sm:break-normal">
               Hi {affected[0]?.customer_name ?? "[customer_name]"}, Cole from Apex Detail Works.
               Heavy rain is forecasted for Austin on Thursday — ceramic coatings cannot bond in wet
               conditions. Tap your exclusive priority slot link to reschedule:
@@ -551,7 +554,7 @@ function Hud() {
               <button
                 type="button"
                 onClick={() => setStormOpen(false)}
-                className="rounded-lg border border-border bg-card px-4 py-2.5 text-xs font-semibold text-muted-foreground hover:text-foreground"
+                className="min-h-[40px] rounded-lg border border-border bg-card px-4 py-2 text-xs font-semibold text-muted-foreground hover:text-foreground"
               >
                 Cancel
               </button>
@@ -559,7 +562,7 @@ function Hud() {
                 type="button"
                 disabled={dispatching}
                 onClick={() => void executeReschedule()}
-                className="btn-primary hover:btn-primary-hover px-5 py-2.5 text-xs disabled:opacity-60"
+                className="btn-primary hover:btn-primary-hover min-h-[40px] px-5 py-2 text-xs disabled:opacity-60 justify-center"
               >
                 Execute 1-Click Reschedule
               </button>
@@ -657,10 +660,10 @@ function JobButton({
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-2 text-[11px] font-semibold text-muted-foreground transition-colors hover:border-cyan hover:text-foreground"
+      className="inline-flex min-h-[40px] items-center justify-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-2.5 py-2 text-[11px] font-semibold text-muted-foreground transition-colors hover:border-cyan hover:text-foreground active:scale-[0.98]"
     >
-      <Icon className="h-3.5 w-3.5" />
-      {label}
+      <Icon className="h-3.5 w-3.5 shrink-0" />
+      <span className="truncate">{label}</span>
     </button>
   );
 }

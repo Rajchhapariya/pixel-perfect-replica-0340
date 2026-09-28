@@ -9,6 +9,7 @@ import {
   Car,
   Check,
   CheckCircle2,
+  Clock,
   CreditCard,
   Loader2,
   MapPin,
@@ -318,7 +319,7 @@ function BookingWizard() {
                   key={option.id}
                   type="button"
                   onClick={() => setVehicleClass(option.id)}
-                  className={`surface apex-vehicle-card relative p-5 text-left transition-all hover:border-border-strong ${
+                  className={`surface apex-vehicle-card relative p-4 sm:p-5 text-left transition-all hover:border-border-strong ${
                     active ? "surface-active active ring-1 ring-cyan" : ""
                   }`}
                 >
@@ -341,12 +342,14 @@ function BookingWizard() {
                     </span>
                   </div>
 
-                  <h3 className="mt-4 text-base font-bold text-foreground">{option.title}</h3>
-                  <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                  <h3 className="mt-3 sm:mt-4 text-base font-bold text-foreground">
+                    {option.title}
+                  </h3>
+                  <p className="mt-1.5 sm:mt-2 text-xs leading-relaxed text-muted-foreground">
                     {option.examples}
                   </p>
 
-                  <div className="mt-4 flex items-center gap-1.5 font-mono text-[11px] text-dim">
+                  <div className="mt-3 sm:mt-4 flex items-center gap-1.5 font-mono text-[11px] text-dim">
                     <span className="text-cyan font-bold tracking-wider">SCALE:</span>
                     <span>{option.multiplier}x base</span>
                   </div>
@@ -381,7 +384,7 @@ function BookingWizard() {
                   key={option.id}
                   type="button"
                   onClick={() => setPackageId(option.id)}
-                  className={`surface flex w-full items-start gap-4 p-5 text-left transition-all hover:border-border-strong ${
+                  className={`surface flex w-full items-start gap-3 sm:gap-4 p-4 sm:p-5 text-left transition-all hover:border-border-strong ${
                     active ? "surface-active ring-1 ring-cyan" : ""
                   }`}
                 >
@@ -394,17 +397,19 @@ function BookingWizard() {
                       <Check className="h-3.5 w-3.5 text-background" strokeWidth={3} />
                     ) : null}
                   </span>
-                  <span className="flex-1">
+                  <span className="flex-1 min-w-0">
                     <span className="flex flex-wrap items-baseline justify-between gap-2">
-                      <span className="text-base font-bold text-foreground">{option.name}</span>
-                      <span className="font-mono text-sm text-cyan font-semibold">
+                      <span className="text-sm sm:text-base font-bold text-foreground">
+                        {option.name}
+                      </span>
+                      <span className="font-mono text-xs sm:text-sm text-cyan font-semibold">
                         {money(pkgAdjusted)}{" "}
-                        <span className="text-xs text-muted-foreground font-normal">
+                        <span className="text-[11px] sm:text-xs text-muted-foreground font-normal">
                           · {Math.round(option.minutes * multiplier)} mins
                         </span>
                       </span>
                     </span>
-                    <span className="mt-2 block text-xs leading-relaxed text-muted-foreground">
+                    <span className="mt-1.5 sm:mt-2 block text-xs leading-relaxed text-muted-foreground">
                       {option.description}
                     </span>
                   </span>
@@ -413,9 +418,9 @@ function BookingWizard() {
             })}
           </div>
 
-          <div className="my-8 flex items-center gap-4">
+          <div className="my-8 flex items-center gap-2 sm:gap-4">
             <span className="h-px flex-1 bg-border" />
-            <span className="text-[11px] font-bold uppercase tracking-widest text-dim font-mono">
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-dim font-mono text-center">
               Real-World Condition Flags (toggle all that apply)
             </span>
             <span className="h-px flex-1 bg-border" />
@@ -427,7 +432,7 @@ function BookingWizard() {
               return (
                 <div
                   key={addon.id}
-                  className={`surface flex items-start justify-between gap-4 p-5 transition-all ${
+                  className={`surface flex items-start justify-between gap-3 sm:gap-4 p-4 sm:p-5 transition-all ${
                     active ? "surface-active" : ""
                   }`}
                 >
@@ -464,8 +469,10 @@ function BookingWizard() {
             sub="Cole's van operates in geographic sectors to cut cross-town MoPac and I-35 transit. Booking in his active sector waives the $15 travel surcharge."
           />
 
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            <span className="font-mono text-[11px] text-dim">Quick Austin Sectors:</span>
+          <div className="mt-4 flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <span className="font-mono text-[10px] sm:text-[11px] text-dim w-full sm:w-auto">
+              Quick Austin Sectors:
+            </span>
             {[
               { zip: "78704", name: "South Congress" },
               { zip: "78701", name: "Downtown" },
@@ -484,7 +491,7 @@ function BookingWizard() {
                     void checkZipDirect(sector.zip);
                   }, 50);
                 }}
-                className={`rounded-full border px-2.5 py-1 font-mono text-[11px] transition-colors ${
+                className={`rounded-full border px-2.5 py-1 font-mono text-[10px] sm:text-[11px] transition-colors ${
                   zipCode === sector.zip
                     ? "border-cyan bg-cyan-soft text-cyan"
                     : "border-border bg-secondary/60 text-muted-foreground hover:border-cyan/40 hover:text-foreground"
@@ -495,7 +502,7 @@ function BookingWizard() {
             ))}
           </div>
 
-          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-4 flex flex-col gap-2.5 sm:gap-3 sm:flex-row">
             <div className="relative flex-1">
               <MapPin className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-dim" />
               <input
@@ -507,13 +514,13 @@ function BookingWizard() {
                 }}
                 inputMode="numeric"
                 placeholder="Enter 5-digit zip (e.g. 78704)"
-                className="w-full rounded-lg border border-border bg-card py-4 pl-11 pr-4 font-mono text-lg outline-none transition-colors placeholder:text-dim focus:border-cyan focus:shadow-[var(--shadow-glow)]"
+                className="w-full rounded-lg border border-border bg-card py-3.5 sm:py-4 pl-11 pr-4 font-mono text-base sm:text-lg outline-none transition-colors placeholder:text-dim focus:border-cyan focus:shadow-[var(--shadow-glow)]"
               />
             </div>
             <button
               type="button"
               onClick={() => void checkZip()}
-              className="btn-primary hover:btn-primary-hover inline-flex items-center justify-center gap-2 px-6 py-4 text-sm"
+              className="btn-primary hover:btn-primary-hover inline-flex items-center justify-center gap-2 px-6 py-3.5 sm:py-4 text-xs sm:text-sm min-h-[44px]"
             >
               {checking ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -650,13 +657,13 @@ function BookingWizard() {
               title="Secure $50 Hold — No Charge Until Service Day"
               sub="Your card is authorized, not charged. The balance is due when Cole completes the detail."
             />
-            <div className="surface mt-6 space-y-4 p-5">
+            <div className="surface mt-6 space-y-4 p-4 sm:p-5">
               <label className="block">
                 <span className="text-xs font-semibold uppercase tracking-wider text-dim">
                   Card number
                 </span>
-                <div className="mt-2 flex items-center gap-3 rounded-lg border border-border bg-secondary/40 px-4 focus-within:border-cyan">
-                  <CreditCard className="h-4 w-4 text-dim" />
+                <div className="mt-2 flex items-center gap-3 rounded-lg border border-border bg-secondary/40 px-3.5 sm:px-4 focus-within:border-cyan">
+                  <CreditCard className="h-4 w-4 text-dim shrink-0" />
                   <input
                     value={cardNumber}
                     onChange={(e) => setCardNumber(e.target.value)}
@@ -665,7 +672,7 @@ function BookingWizard() {
                   />
                 </div>
               </label>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <label className="block">
                   <span className="text-xs font-semibold uppercase tracking-wider text-dim">
                     Expiry
@@ -674,7 +681,7 @@ function BookingWizard() {
                     value={cardExpiry}
                     onChange={(e) => setCardExpiry(e.target.value)}
                     placeholder="09/28"
-                    className="mt-2 w-full rounded-lg border border-border bg-secondary/40 px-4 py-3 font-mono text-sm outline-none placeholder:text-dim focus:border-cyan"
+                    className="mt-2 w-full rounded-lg border border-border bg-secondary/40 px-3.5 sm:px-4 py-3 font-mono text-sm outline-none placeholder:text-dim focus:border-cyan"
                   />
                 </label>
                 <label className="block">
@@ -685,7 +692,7 @@ function BookingWizard() {
                     value={cardCvc}
                     onChange={(e) => setCardCvc(e.target.value)}
                     placeholder="123"
-                    className="mt-2 w-full rounded-lg border border-border bg-secondary/40 px-4 py-3 font-mono text-sm outline-none placeholder:text-dim focus:border-cyan"
+                    className="mt-2 w-full rounded-lg border border-border bg-secondary/40 px-3.5 sm:px-4 py-3 font-mono text-sm outline-none placeholder:text-dim focus:border-cyan"
                   />
                 </label>
               </div>
@@ -697,7 +704,7 @@ function BookingWizard() {
                   value={cardName}
                   onChange={(e) => setCardName(e.target.value)}
                   placeholder="Name as printed on card"
-                  className="mt-2 w-full rounded-lg border border-border bg-secondary/40 px-4 py-3 text-sm outline-none placeholder:text-dim focus:border-cyan"
+                  className="mt-2 w-full rounded-lg border border-border bg-secondary/40 px-3.5 sm:px-4 py-3 text-sm outline-none placeholder:text-dim focus:border-cyan"
                 />
               </label>
 
@@ -705,7 +712,7 @@ function BookingWizard() {
                 type="button"
                 disabled={submitting}
                 onClick={() => void confirmBooking()}
-                className="btn-primary hover:btn-primary-hover mt-2 inline-flex w-full items-center justify-center gap-2 px-6 py-4 text-sm disabled:opacity-60"
+                className="btn-primary hover:btn-primary-hover mt-2 inline-flex w-full items-center justify-center gap-2 px-4 py-3.5 sm:px-6 sm:py-4 text-xs sm:text-sm font-bold disabled:opacity-60 min-h-[44px]"
               >
                 {submitting ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -717,8 +724,10 @@ function BookingWizard() {
             </div>
           </div>
 
-          <aside className="surface order-1 h-fit p-5 lg:order-2">
-            <h3 className="text-sm font-bold uppercase tracking-widest text-dim">Order summary</h3>
+          <aside className="surface order-1 h-fit p-4 sm:p-5 lg:order-2">
+            <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-dim">
+              Order summary
+            </h3>
             <dl className="mt-4 space-y-2.5 text-sm">
               <Line label={vehicle?.title ?? "Vehicle"} value={`${multiplier}x`} />
               <Line label={pkg.name} value={money(basePrice)} />
@@ -767,8 +776,8 @@ function BookingWizard() {
 function StepHeading({ title, sub }: { title: string; sub: string }) {
   return (
     <div>
-      <h1 className="text-3xl font-black tracking-tight sm:text-4xl">{title}</h1>
-      <p className="mt-2 max-w-3xl text-sm text-muted-foreground">{sub}</p>
+      <h1 className="text-2xl font-black tracking-tight sm:text-4xl">{title}</h1>
+      <p className="mt-1.5 sm:mt-2 max-w-3xl text-xs sm:text-sm text-muted-foreground">{sub}</p>
     </div>
   );
 }
@@ -782,26 +791,28 @@ function ProgressBar({ step }: { step: number }) {
         const active = num === step;
         return (
           <div key={label} className="flex flex-1 items-center last:flex-none">
-            <div className="flex flex-col items-center gap-1.5">
+            <div className="flex flex-col items-center gap-1">
               <span
-                className={`flex h-8 w-8 items-center justify-center rounded-full border font-mono text-xs ${
+                className={`flex h-7 w-7 xs:h-8 xs:w-8 items-center justify-center rounded-full border font-mono text-[11px] xs:text-xs transition-colors ${
                   done
                     ? "border-emerald bg-emerald-soft text-emerald"
                     : active
-                      ? "border-cyan bg-cyan-soft text-cyan"
+                      ? "border-cyan bg-cyan-soft text-cyan font-bold"
                       : "border-border text-dim"
                 }`}
               >
-                {done ? <Check className="h-4 w-4" /> : num}
+                {done ? <Check className="h-3.5 w-3.5" /> : num}
               </span>
               <span
-                className={`text-[11px] block ${active ? "text-foreground font-semibold" : "text-dim"}`}
+                className={`text-[9.5px] xs:text-[11px] block max-w-[48px] xs:max-w-none truncate text-center ${
+                  active ? "text-foreground font-semibold" : "text-dim"
+                }`}
               >
                 {label}
               </span>
             </div>
             {num < STEPS.length ? (
-              <span className={`mx-2 h-px flex-1 ${done ? "bg-emerald" : "bg-border"}`} />
+              <span className={`mx-1 xs:mx-2 h-px flex-1 ${done ? "bg-emerald" : "bg-border"}`} />
             ) : null}
           </div>
         );
@@ -930,15 +941,16 @@ function StickyBar({
   if (step === 5) return null;
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur-md">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-3 py-3 text-[12px] sm:gap-4 sm:px-6 sm:py-4 sm:text-sm">
+      <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-3 py-2.5 text-[12px] sm:gap-4 sm:px-6 sm:py-4 sm:text-sm">
         <div className="min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5 xs:gap-2 flex-wrap">
             <span
-              className={`font-mono text-[10px] sm:text-[11px] truncate ${
+              className={`inline-flex items-center font-mono text-[10px] sm:text-[11px] truncate ${
                 elapsed > 90 ? "text-amber" : "text-emerald"
               }`}
             >
-              ⏱ {elapsedStr} elapsed
+              <Clock className="h-3 w-3 mr-1 shrink-0" />
+              <span>{elapsedStr} elapsed</span>
             </span>
             <span className="font-mono text-[10px] text-dim hidden sm:inline">·</span>
             <span className="font-mono text-[10px] text-dim hidden sm:inline truncate">
@@ -958,7 +970,7 @@ function StickyBar({
             <button
               type="button"
               onClick={onBack}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground sm:px-4 sm:py-2.5 sm:text-sm"
+              className="inline-flex items-center justify-center gap-1 rounded-lg border border-border bg-card px-2.5 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground sm:gap-1.5 sm:px-4 sm:py-2.5 sm:text-sm min-h-[38px]"
             >
               <ArrowLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               <span>Back</span>
@@ -968,7 +980,7 @@ function StickyBar({
             type="button"
             disabled={!canContinue}
             onClick={onNext}
-            className="btn-primary hover:btn-primary-hover inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40 sm:px-6 sm:py-2.5 sm:text-sm shadow-md"
+            className="btn-primary hover:btn-primary-hover inline-flex items-center justify-center gap-1 px-3.5 py-2 text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40 sm:gap-1.5 sm:px-6 sm:py-2.5 sm:text-sm shadow-md min-h-[38px]"
           >
             <span>Continue</span>
             <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />

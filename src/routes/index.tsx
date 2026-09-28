@@ -448,13 +448,13 @@ function Landing() {
       {showBanner && <InstagramBanner onDismiss={() => setBannerDismissed(true)} />}
       <section className="apex-hero-v2">
         <div className="apex-grid-floor" aria-hidden="true" />
-        <div className="relative z-10 flex flex-col items-center w-full max-w-5xl mx-auto">
-          <div className="flex items-center gap-3 mb-2.5">
-            <span className="block w-10 h-px bg-gradient-to-r from-transparent to-red-500" />
-            <span className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-red-400">
+        <div className="relative z-10 flex flex-col items-center w-full max-w-5xl mx-auto px-3 sm:px-0">
+          <div className="flex items-center gap-2 xs:gap-3 mb-2.5">
+            <span className="hidden xs:block w-8 sm:w-10 h-px bg-gradient-to-r from-transparent to-red-500" />
+            <span className="font-mono text-[10px] xs:text-[11px] font-bold uppercase tracking-[0.12em] xs:tracking-[0.2em] text-red-400 text-center">
               Austin Metro · Van 01 · Zero Hookups
             </span>
-            <span className="block w-10 h-px bg-gradient-to-l from-transparent to-red-500" />
+            <span className="hidden xs:block w-8 sm:w-10 h-px bg-gradient-to-l from-transparent to-red-500" />
           </div>
           <h1 className="apex-display">
             <span className="block">Austin&apos;s Mobile</span>
@@ -465,11 +465,11 @@ function Landing() {
             Cole Ramsey arrives with 85 gallons of pure deionized water and onboard power. Scoped to
             your vehicle, price locked, slot held in 90 seconds. No phone tag required.
           </p>
-          <div className="apex-cta-row">
+          <div className="apex-cta-row w-full sm:w-auto">
             <Link
               to="/book"
               search={fromInstagram ? { src: "instagram" } : {}}
-              className="btn-primary hover:btn-primary-hover inline-flex items-center justify-center gap-2 px-7 py-3 text-sm font-bold rounded-xl shadow-xl transition-all"
+              className="btn-primary hover:btn-primary-hover inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 text-sm font-bold rounded-xl shadow-xl transition-all min-h-[44px]"
               id="hero-cta-btn"
             >
               <span>Book Your Slot — 90 Seconds</span>
@@ -477,7 +477,7 @@ function Landing() {
             </Link>
             <Link
               to="/hud"
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/4 px-5 py-3 font-mono text-xs font-semibold text-slate-400 backdrop-blur-sm transition-colors hover:border-cyan/50 hover:text-white"
+              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto rounded-xl border border-white/10 bg-white/4 px-5 py-3 font-mono text-xs font-semibold text-slate-400 backdrop-blur-sm transition-colors hover:border-cyan/50 hover:text-white min-h-[44px]"
             >
               <span>Cole&apos;s Operations HUD</span>
               <ArrowRight className="h-3 w-3" />
@@ -536,7 +536,7 @@ function Landing() {
             </div>
             {/* Inline Before / After Comparison — always visible */}
             <div className="pt-4 border-t border-white/8">
-              <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono font-bold uppercase tracking-widest mb-2">
+              <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider mb-2">
                 <span className="text-rose-400">Before — Manual</span>
                 <span className="text-emerald-400">After — Apex Engine</span>
               </div>
@@ -549,10 +549,10 @@ function Landing() {
                   ["No-show, no recourse", "$50 card hold every slot"],
                 ].map(([before, after]) => (
                   <div key={before} className="grid grid-cols-2 gap-1.5">
-                    <p className="rounded-lg border border-rose-500/20 bg-rose-500/8 px-2.5 py-2 text-[11px] text-rose-300/80">
+                    <p className="rounded-lg border border-rose-500/20 bg-rose-500/8 px-2 py-1.5 xs:px-2.5 xs:py-2 text-[10.5px] xs:text-[11px] text-rose-300/80 leading-snug">
                       {before}
                     </p>
-                    <p className="rounded-lg border border-emerald-500/20 bg-emerald-500/8 px-2.5 py-2 text-[11px] text-emerald-300/80">
+                    <p className="rounded-lg border border-emerald-500/20 bg-emerald-500/8 px-2 py-1.5 xs:px-2.5 xs:py-2 text-[10.5px] xs:text-[11px] text-emerald-300/80 leading-snug">
                       {after}
                     </p>
                   </div>
@@ -561,7 +561,7 @@ function Landing() {
               <button
                 type="button"
                 onClick={() => window.dispatchEvent(new CustomEvent("apex:open-drawer"))}
-                className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-secondary/50 px-3 py-1.5 font-mono text-[11px] font-semibold text-muted-foreground transition-colors hover:border-cyan hover:text-foreground"
+                className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-secondary/50 px-3 py-2 font-mono text-[11px] font-semibold text-muted-foreground transition-colors hover:border-cyan hover:text-foreground min-h-[38px]"
               >
                 <span>Open Full Comparison Drawer</span>
                 <ArrowRight className="h-3 w-3 text-cyan" />
@@ -587,7 +587,7 @@ function Landing() {
               Prices scale with vehicle surface area. No on-site haggling, no unexpected add-ons.
             </p>
           </div>
-          <div className="flex items-center rounded-xl border border-white/8 bg-[#0c121e]/90 p-1.5 backdrop-blur-md shrink-0">
+          <div className="grid grid-cols-3 sm:flex items-center rounded-xl border border-white/8 bg-[#0c121e]/90 p-1 backdrop-blur-md shrink-0 w-full sm:w-auto">
             {VEHICLE_OPTIONS.map((v) => {
               const active = previewTier === v.id;
               return (
@@ -595,14 +595,14 @@ function Landing() {
                   key={v.id}
                   type="button"
                   onClick={() => setPreviewTier(v.id)}
-                  className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-mono text-xs font-semibold transition-all ${active ? "bg-cyan text-[#07090e] shadow-md" : "text-muted-foreground hover:text-foreground"}`}
+                  className={`flex items-center justify-center gap-1.5 rounded-lg px-2 py-2 xs:px-3 sm:px-3.5 sm:py-2 font-mono text-[11px] xs:text-xs font-semibold transition-all min-h-[38px] ${active ? "bg-cyan text-[#07090e] shadow-md" : "text-muted-foreground hover:text-foreground"}`}
                 >
                   {v.id === "suv_full" ? (
-                    <Truck className="h-3.5 w-3.5" />
+                    <Truck className="h-3.5 w-3.5 shrink-0" />
                   ) : (
-                    <Car className="h-3.5 w-3.5" />
+                    <Car className="h-3.5 w-3.5 shrink-0" />
                   )}
-                  <span>{v.title.split("&")[0]}</span>
+                  <span className="truncate">{(v.title.split("&")[0] ?? v.title).trim()}</span>
                 </button>
               );
             })}
@@ -724,27 +724,27 @@ function Landing() {
             </ul>
             <Link
               to="/hud"
-              className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-secondary/60 px-5 py-3 font-mono text-xs font-semibold text-muted-foreground transition-colors hover:border-cyan hover:text-foreground"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-secondary/60 px-5 py-3 font-mono text-xs font-semibold text-muted-foreground transition-colors hover:border-cyan hover:text-foreground w-full sm:w-auto min-h-[42px]"
             >
               <span>Open Owner Operations Cockpit</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
           <Link to="/hud" className="apex-hud-showcase block group">
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/8">
-              <div className="flex items-center gap-2.5">
+            <div className="flex items-center justify-between px-4 py-3 sm:px-5 sm:py-3.5 border-b border-white/8">
+              <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
                 <img
                   src="/brand/apex-mark.png"
                   alt="Apex Detail Works"
-                  className="h-7 w-7 object-contain drop-shadow-[0_2px_10px_rgba(6,182,212,0.4)]"
+                  className="h-6 w-6 sm:h-7 sm:w-7 object-contain drop-shadow-[0_2px_10px_rgba(6,182,212,0.4)] shrink-0"
                   width={28}
                   height={28}
                 />
-                <span className="font-mono text-xs font-bold uppercase tracking-widest text-amber-400">
+                <span className="font-mono text-[10px] xs:text-xs font-bold uppercase tracking-wider xs:tracking-widest text-amber-400 truncate">
                   Field Operations Console · Van 01
                 </span>
               </div>
-              <span className="font-mono text-[10px] text-slate-500 border border-white/8 rounded-full px-2 py-0.5">
+              <span className="font-mono text-[10px] text-slate-500 border border-white/8 rounded-full px-2 py-0.5 shrink-0 ml-2">
                 LIVE
               </span>
             </div>
@@ -754,15 +754,22 @@ function Landing() {
                 { label: "Revenue", val: "$1,340", accent: "text-emerald-400" },
                 { label: "Deposit Held", val: "$150", accent: "text-amber-400" },
               ].map(({ label, val, accent }) => (
-                <div key={label} className="px-4 py-4 border-r border-white/8 last:border-r-0">
-                  <p className="font-mono text-[9px] uppercase tracking-widest text-slate-500">
+                <div
+                  key={label}
+                  className="px-2.5 py-3 sm:px-4 sm:py-4 border-r border-white/8 last:border-r-0"
+                >
+                  <p className="font-mono text-[9px] uppercase tracking-wider text-slate-500 truncate">
                     {label}
                   </p>
-                  <p className={`font-mono text-xl font-black mt-1 ${accent}`}>{val}</p>
+                  <p
+                    className={`font-mono text-base xs:text-lg sm:text-xl font-black mt-1 ${accent}`}
+                  >
+                    {val}
+                  </p>
                 </div>
               ))}
             </div>
-            <div className="p-4 space-y-2">
+            <div className="p-3 sm:p-4 space-y-2">
               {[
                 {
                   time: "9:00 AM",
@@ -788,9 +795,9 @@ function Landing() {
               ].map((stop, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between gap-3 rounded-lg border border-white/6 bg-white/2 px-3.5 py-3"
+                  className="flex items-center justify-between gap-2.5 rounded-lg border border-white/6 bg-white/2 px-3 py-2.5 sm:px-3.5 sm:py-3"
                 >
-                  <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex items-center gap-2.5 min-w-0">
                     <span className="font-mono text-[10px] text-cyan shrink-0 font-bold">
                       {stop.time}
                     </span>
@@ -808,7 +815,7 @@ function Landing() {
               ))}
               <div className="pt-2 text-center">
                 <span className="font-mono text-[10px] text-slate-500 group-hover:text-cyan transition-colors">
-                  Click to open full Operations HUD ?
+                  Click to open full Operations HUD →
                 </span>
               </div>
             </div>
@@ -824,7 +831,7 @@ function Landing() {
             <span className="apex-eyebrow">Field Verified</span>
             <h2 className="apex-section-h2">Austin owners who skip the callbacks.</h2>
           </div>
-          <span className="font-mono text-xs text-slate-600">
+          <span className="font-mono text-[11px] xs:text-xs text-slate-500">
             Serving 78701 · 78704 · 78746 · 78759 · MoPac Corridors
           </span>
         </div>
@@ -872,7 +879,7 @@ function Landing() {
             <Link
               to="/book"
               search={fromInstagram ? { src: "instagram" } : {}}
-              className="btn-primary hover:btn-primary-hover inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-bold shadow-xl rounded-xl"
+              className="btn-primary hover:btn-primary-hover inline-flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3.5 text-sm font-bold shadow-xl rounded-xl min-h-[44px]"
               id="footer-cta-btn"
             >
               <span>Book Now — Lock Your Price</span>
@@ -880,7 +887,7 @@ function Landing() {
             </Link>
             <Link
               to="/hud"
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-card/60 px-6 py-4 font-mono text-xs font-semibold text-muted-foreground transition-colors hover:border-cyan hover:text-foreground"
+              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto rounded-xl border border-white/10 bg-card/60 px-6 py-3.5 font-mono text-xs font-semibold text-muted-foreground transition-colors hover:border-cyan hover:text-foreground min-h-[44px]"
             >
               <span>View Cole&apos;s Operations HUD</span>
               <ArrowRight className="h-3.5 w-3.5" />
@@ -901,7 +908,7 @@ function Landing() {
                 <img
                   src="/brand/apex-logo.png"
                   alt="Apex Detail Works"
-                  className="h-12 sm:h-[60px] w-auto max-w-[230px] sm:max-w-[270px] object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)] transition-transform duration-200 hover:scale-[1.02] mix-blend-screen"
+                  className="h-10 xs:h-12 sm:h-[60px] w-auto max-w-[190px] xs:max-w-[230px] sm:max-w-[270px] object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)] transition-transform duration-200 hover:scale-[1.02] mix-blend-screen"
                   height={60}
                 />
               </Link>
@@ -909,7 +916,7 @@ function Landing() {
                 Autonomous booking, MoPac route clustering, and high-gloss multi-stage paint
                 correction for Austin&apos;s most discerning vehicle owners.
               </p>
-              <div className="flex flex-wrap items-center gap-2 font-mono text-[11px] text-slate-600">
+              <div className="flex flex-wrap items-center gap-2 font-mono text-[11px] text-slate-500">
                 <span className="relative flex items-center gap-1.5 font-semibold text-foreground">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#20c15e] opacity-75" />
@@ -923,7 +930,7 @@ function Landing() {
                 <span>(512) 555-0142</span>
               </div>
             </div>
-            <div className="md:col-span-6 grid grid-cols-2 gap-8 font-mono text-xs sm:gap-12">
+            <div className="md:col-span-6 grid grid-cols-1 xs:grid-cols-2 gap-6 sm:gap-12 font-mono text-xs">
               <div>
                 <p className="font-bold uppercase tracking-wider text-foreground">Navigation</p>
                 <ul className="mt-3 space-y-2">
@@ -948,7 +955,7 @@ function Landing() {
                 <p className="font-bold uppercase tracking-wider text-foreground">
                   Service Clusters
                 </p>
-                <ul className="mt-3 space-y-2 text-slate-600">
+                <ul className="mt-3 space-y-2 text-slate-500">
                   <li>Central &amp; Downtown (78701)</li>
                   <li>South Congress &amp; SoCo (78704)</li>
                   <li>Westlake Hills (78746)</li>
@@ -957,12 +964,14 @@ function Landing() {
               </div>
             </div>
           </div>
-          <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/8 pt-6 text-[11px] text-slate-600 font-mono">
+          <div className="mt-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-t border-white/8 pt-6 text-[10.5px] xs:text-[11px] text-slate-500 font-mono">
             <p>
               &copy; {new Date().getFullYear()} Apex Detail Works LLC · All Rights Reserved · Built
               for Austin, TX
             </p>
-            <p className="text-right">Autonomous Booking &amp; Weather-Aware Operations Engine</p>
+            <p className="text-left sm:text-right">
+              Autonomous Booking &amp; Weather-Aware Operations Engine
+            </p>
           </div>
         </div>
       </footer>
