@@ -32,9 +32,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Local workspace cache and temporary files
+.local/
+.cache/
+*.tmp
+*.bak
 *.webm
 demo_media/
-record*.cjs
-APEX_REQUIREMENTS_FULL.md
-CONTEST_SUBMISSION_POSTS.txt
 
