@@ -7,9 +7,13 @@ import {
   Car,
   Check,
   CloudRain,
+  Image as ImageIcon,
+  Info,
   MapPin,
+  Mic,
   Phone,
   Route as RouteIcon,
+  Smile,
   Star,
   Truck,
   Video,
@@ -107,31 +111,54 @@ function DmSimulator() {
 
   return (
     <div
-      className="w-full h-[510px] rounded-[46px] border-[3.5px] border-[#2c2c2e] bg-black p-2.5 shadow-[0_40px_80px_rgba(0,0,0,0.98),0_0_60px_rgba(239,68,68,0.10)] ring-1 ring-white/10 flex flex-col justify-between select-none relative overflow-hidden"
+      className="w-full max-w-[292px] h-[636px] rounded-[44px] border-[3px] border-[#2c2e35] bg-[#0c0d12] p-2 shadow-[0_35px_75px_rgba(0,0,0,0.98),0_0_50px_rgba(239,68,68,0.12)] ring-1 ring-white/10 flex flex-col justify-between select-none relative overflow-hidden"
       aria-label="Instagram DM simulation"
     >
-      {/* Dynamic Island */}
-      <div className="shrink-0 mx-auto mb-1 flex h-[18px] w-[86px] items-center justify-center rounded-full bg-black border border-[#1e1e1e]">
-        <span className="h-[6px] w-[6px] rounded-full bg-[#111] ring-1 ring-white/5" />
+      {/* Realme GT Neo 3T Top Bezel & Status Bar (6.62" 120Hz FHD+ AMOLED) */}
+      <div className="shrink-0 flex items-center justify-between px-3 pt-1 pb-1 text-white select-none">
+        {/* Top-Left Punch Hole Camera & Time */}
+        <div className="flex items-center gap-2">
+          {/* Realme GT Neo 3T Punch Hole Selfie Camera */}
+          <div className="h-3 w-3 rounded-full bg-black ring-[1.5px] ring-[#1f222d] flex items-center justify-center shadow-inner">
+            <div className="h-1 w-1 rounded-full bg-[#081524] ring-[0.5px] ring-[#3b82f6]/40" />
+          </div>
+          <span className="text-[10px] font-semibold tracking-tight text-white/90">9:14</span>
+        </div>
+
+        {/* Status Icons: 120Hz badge, Wi-Fi, Battery */}
+        <div className="flex items-center gap-1.5 text-white/80">
+          <span className="text-[7.5px] font-mono font-bold px-1 py-0.5 rounded bg-white/10 text-white/70 leading-none">
+            120Hz
+          </span>
+          <svg className="h-2.5 w-2.5 fill-current text-white/90" viewBox="0 0 24 24">
+            <path d="M12 3c-4.97 0-9.42 2.06-12 5.38l12 12.62 12-12.62c-2.58-3.32-7.03-5.38-12-5.38z" />
+          </svg>
+          <div className="flex items-center gap-0.5">
+            <div className="h-2.5 w-3.5 rounded-[2px] border border-white/70 p-[1px] flex items-center">
+              <div className="h-full w-2 bg-white/90 rounded-[0.5px]" />
+            </div>
+            <div className="h-1 w-[1px] bg-white/70 rounded-r-[0.5px]" />
+          </div>
+        </div>
       </div>
 
-      {/* Instagram DM Screen */}
-      <div className="flex-1 flex flex-col justify-between rounded-[36px] bg-black overflow-hidden border border-white/5">
-        {/* Instagram Header: Back Arrow, Avatar on LEFT of Username, Call buttons on Right */}
-        <div className="shrink-0 flex items-center justify-between px-3 pt-2 pb-2 border-b border-[#1c1c1c]">
-          <div className="flex items-center gap-2 min-w-0">
+      {/* Instagram DM Screen (True AMOLED Black) */}
+      <div className="flex-1 flex flex-col justify-between rounded-[36px] bg-black overflow-hidden border border-white/5 relative">
+        {/* Instagram Header: Back Arrow, Filled Profile Logo to the LEFT of apexdetailworks, Info Icon on Right */}
+        <div className="shrink-0 flex items-center justify-between px-3 pt-2.5 pb-2.5 border-b border-[#1c1c1c] bg-black">
+          <div className="flex items-center gap-2.5 min-w-0">
             <button
               type="button"
               className="p-1 -ml-1 text-white hover:opacity-80 transition-opacity shrink-0"
               aria-label="Back"
             >
-              <ArrowLeft className="h-4.5 w-4.5" />
+              <ArrowLeft className="h-5 w-5 stroke-[2]" />
             </button>
 
-            {/* Profile Avatar with Apex Detail Works Logo to the LEFT of apexdetailworks */}
+            {/* Profile Avatar with Apex Detail Works Shield Logo (edge-to-edge filled) */}
             <div className="relative shrink-0">
               <div
-                className="h-8 w-8 rounded-full p-[1.5px]"
+                className="h-9 w-9 rounded-full p-[1.5px]"
                 style={{
                   background: "linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)",
                 }}
@@ -144,67 +171,53 @@ function DmSimulator() {
                   />
                 </div>
               </div>
-              <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-[#20c15e] border-[1.5px] border-black" />
+              <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-[#20c15e] border-[1.5px] border-black" />
             </div>
 
-            {/* Username to the RIGHT of the logo, with verified badge and Active now */}
+            {/* Username & Verified Badge & Status */}
             <div className="min-w-0 text-left">
               <div className="flex items-center gap-1 leading-tight">
-                <span className="text-white text-[11.5px] font-bold truncate">apexdetailworks</span>
-                <svg
-                  className="h-2.5 w-2.5 text-[#0095f6] fill-current shrink-0"
-                  viewBox="0 0 24 24"
-                >
+                <span className="text-white text-[12px] font-bold truncate">Apex Detail Works</span>
+                <svg className="h-3 w-3 text-[#0095f6] fill-current shrink-0" viewBox="0 0 24 24">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                 </svg>
               </div>
-              <p className="text-[#8e8e8e] text-[9px] leading-tight mt-0.5">Active now</p>
+              <p className="text-[#8e8e8e] text-[9.5px] leading-tight mt-0.5">
+                apexdetailworks · Active now
+              </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5 shrink-0 text-white">
-            <button
-              type="button"
-              className="hover:opacity-80 transition-opacity p-0.5"
-              aria-label="Voice call"
-            >
-              <Phone className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              className="hover:opacity-80 transition-opacity p-0.5"
-              aria-label="Video call"
-            >
-              <Video className="h-4 w-4" />
-            </button>
-          </div>
+          {/* Instagram Info Icon (i) in circle - exactly matching user screenshot */}
+          <button
+            type="button"
+            className="hover:opacity-80 transition-opacity p-1 text-white shrink-0"
+            aria-label="Thread Info"
+          >
+            <Info className="h-5 w-5 stroke-[1.8]" />
+          </button>
         </div>
 
-        {/* Chat message thread - pinned to bottom, fixed within phone screen */}
-        <div className="flex-1 px-3 py-2 flex flex-col gap-2 justify-end overflow-hidden">
+        {/* Chat message thread - AMOLED black background */}
+        <div className="flex-1 px-3 py-2 flex flex-col gap-2.5 justify-end overflow-hidden bg-black">
           {/* Timestamp */}
           {phase >= 1 && (
-            <p className="dm-animate-in text-center text-[9px] text-[#8e8e8e] mb-0.5">
+            <p className="dm-animate-in text-center text-[9.5px] text-[#737373] mb-0.5 font-normal">
               Today 9:14 AM
             </p>
           )}
 
-          {/* 1. Customer's message (YOU) — RIGHT SIDE, Instagram signature gradient */}
+          {/* 1. Customer's message (YOU) — RIGHT SIDE, Instagram Blue Pill */}
           {phase >= 1 && (
             <div className="dm-animate-out flex flex-col items-end gap-0.5 max-w-[84%] ml-auto">
-              <div
-                className="rounded-[18px] rounded-br-[4px] px-3.5 py-2 text-[11px] font-medium text-white leading-[1.45]"
-                style={{
-                  background: "linear-gradient(135deg,#833ab4 0%,#fd1d1d 55%,#fcb045 100%)",
-                }}
-              >
+              <div className="rounded-[18px] rounded-br-[4px] px-3.5 py-2 text-[11px] font-normal text-white leading-[1.45] bg-[#3797f0] shadow-sm">
                 hey do you have anything open this week? need a full detail on my F-150 before the
                 weekend 🙏
               </div>
               {/* Seen receipt — appears at phase 2 */}
               {phase >= 2 && (
                 <p className="dm-animate-out text-[9px] text-[#8e8e8e] text-right pr-1 leading-none">
-                  Seen · 9:14 AM ✓✓
+                  Seen · 9:14 AM
                 </p>
               )}
             </div>
@@ -213,10 +226,10 @@ function DmSimulator() {
           {/* 2. Typing indicator (Apex Bot) — LEFT SIDE, incoming grey bubble with Apex logo avatar */}
           {phase === 3 && (
             <div className="dm-animate-in flex items-end gap-1.5 max-w-[80%]">
-              <div className="h-[22px] w-[22px] rounded-full flex-shrink-0 bg-black border border-white/15 overflow-hidden flex items-center justify-center mb-0.5 shadow-sm">
+              <div className="h-[24px] w-[24px] rounded-full flex-shrink-0 bg-black border border-white/15 overflow-hidden flex items-center justify-center mb-0.5 shadow-sm">
                 <img src="/brand/apex-mark.png" alt="Apex" className="h-full w-full object-cover" />
               </div>
-              <div className="rounded-[18px] rounded-bl-[4px] px-3.5 py-2 bg-[#262626]">
+              <div className="rounded-[18px] rounded-bl-[4px] px-3.5 py-2.5 bg-[#262626]">
                 <div className="apex-typing-dots">
                   <span style={{ background: "rgba(255,255,255,0.85)" }} />
                   <span style={{ background: "rgba(255,255,255,0.85)" }} />
@@ -226,92 +239,88 @@ function DmSimulator() {
             </div>
           )}
 
-          {/* 3. Apex Auto-Reply (Cole's Autonomous Engine) — LEFT SIDE, incoming grey bubble with Apex logo avatar */}
+          {/* 3. Apex Auto-Reply (Autonomous Engine) — LEFT SIDE, incoming grey bubble with Apex logo avatar */}
           {phase >= 4 && (
-            <div className="dm-animate-in flex items-end gap-1.5 max-w-[86%]">
-              <div className="h-[22px] w-[22px] rounded-full flex-shrink-0 bg-black border border-white/15 overflow-hidden flex items-center justify-center mb-0.5 shadow-sm">
+            <div className="dm-animate-in flex items-end gap-1.5 max-w-[88%]">
+              <div className="h-[24px] w-[24px] rounded-full flex-shrink-0 bg-black border border-white/15 overflow-hidden flex items-center justify-center mb-0.5 shadow-sm">
                 <img src="/brand/apex-mark.png" alt="Apex" className="h-full w-full object-cover" />
               </div>
-              <div className="flex flex-col gap-0.5">
-                <div className="rounded-[18px] rounded-bl-[4px] px-3.5 py-2 text-[11px] text-white leading-[1.45] bg-[#262626]">
+              <div className="flex flex-col gap-1">
+                <div className="rounded-[18px] rounded-bl-[4px] px-3.5 py-2.5 text-[11px] text-white leading-[1.45] bg-[#262626]">
                   hey! gloves on all day — can&apos;t stop to text mid-job 🧤 use my booking link
                   below, takes 90 sec, price locked, slot held. no back-and-forth needed
+                  <Link
+                    to="/book"
+                    className="mt-2 flex items-center justify-between rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 px-2.5 py-1.5 text-[10px] font-semibold text-white transition-all group"
+                  >
+                    <span className="flex items-center gap-1 text-amber-400">
+                      <Zap className="h-3 w-3 fill-current" />
+                      <span>Lock Slot (90 sec)</span>
+                    </span>
+                    <span className="text-white/70 group-hover:text-white transition-colors">
+                      Book →
+                    </span>
+                  </Link>
                 </div>
                 <p className="text-[8.5px] text-[#8e8e8e] pl-1 flex items-center gap-1">
                   <Zap className="h-2.5 w-2.5 fill-amber-400 text-amber-400 shrink-0" />
-                  <span>Automated · Apex Booking Engine</span>
+                  <span>Automated · Apex Autonomous Engine</span>
                 </p>
               </div>
             </div>
           )}
 
-          {/* 4. Customer replies (YOU) — RIGHT SIDE, Instagram signature gradient */}
+          {/* 4. Customer replies (YOU) — RIGHT SIDE, Instagram Blue Pill */}
           {phase >= 5 && (
             <div className="dm-animate-out flex justify-end max-w-[74%] ml-auto">
-              <div
-                className="rounded-[18px] rounded-br-[4px] px-3.5 py-2 text-[11px] font-medium text-white leading-[1.45]"
-                style={{
-                  background: "linear-gradient(135deg,#833ab4 0%,#fd1d1d 55%,#fcb045 100%)",
-                }}
-              >
+              <div className="rounded-[18px] rounded-br-[4px] px-3.5 py-2 text-[11px] font-normal text-white leading-[1.45] bg-[#3797f0] shadow-sm">
                 ok booking now, thanks 🤙
               </div>
             </div>
           )}
         </div>
 
-        {/* Instagram Message Input Bar */}
-        <div className="shrink-0 px-3 pb-3 pt-1.5 border-t border-[#1a1a1a]">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              aria-label="Camera"
-              className="text-[#8e8e8e] hover:text-white transition-colors shrink-0"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                className="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 0 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                <circle cx="12" cy="13" r="4" />
-              </svg>
-            </button>
+        {/* Instagram Message Input Bar & Android Gesture Indicator */}
+        <div className="shrink-0 px-3 pb-2 pt-2 bg-black border-t border-[#1a1a1a]">
+          {/* Pill input container matching user screenshot */}
+          <div className="rounded-full border border-[#2c2c2c] bg-[#141414] px-3.5 py-1.5 flex items-center justify-between gap-2">
+            {/* Blinking cursor and Message... placeholder */}
             <Link
               to="/book"
-              className="flex-1 min-w-0 rounded-full border border-[#363636] bg-[#1a1a1a] px-3 py-1.5 text-[11px] text-[#8e8e8e] flex items-center justify-between hover:border-white/20 transition-colors"
+              className="flex-1 min-w-0 flex items-center text-[11px] text-[#737373] hover:text-white/80 transition-colors"
             >
-              <span className="truncate mr-1 text-[10.5px]">Book slot · 90s</span>
-              <span
-                className="text-[10px] font-bold whitespace-nowrap shrink-0"
-                style={{
-                  background: "linear-gradient(90deg,#833ab4,#fd1d1d,#fcb045)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              >
-                Book →
-              </span>
+              <span className="inline-block w-[1.5px] h-3.5 bg-white/90 mr-1 animate-pulse" />
+              <span className="truncate">Message...</span>
             </Link>
-            <button
-              type="button"
-              aria-label="Like"
-              className="text-[#8e8e8e] hover:text-rose-500 transition-colors shrink-0"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                className="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
+
+            {/* Right icons: Mic, Image, Smile (exact match to screenshot) */}
+            <div className="flex items-center gap-2.5 text-white/90 shrink-0">
+              <button
+                type="button"
+                aria-label="Voice Message"
+                className="hover:text-white transition-colors p-0.5"
               >
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-              </svg>
-            </button>
+                <Mic className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                aria-label="Send Photo"
+                className="hover:text-white transition-colors p-0.5"
+              >
+                <ImageIcon className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                aria-label="Stickers & Emojis"
+                className="hover:text-white transition-colors p-0.5"
+              >
+                <Smile className="h-4 w-4" />
+              </button>
+            </div>
           </div>
+
+          {/* Android Home Gesture Indicator Bar (Realme GT Neo 3T) */}
+          <div className="w-24 h-1 rounded-full bg-white/35 mx-auto mt-2 mb-0.5" />
         </div>
       </div>
     </div>
@@ -556,7 +565,7 @@ function Landing() {
             </div>
           </div>
           <div className="lg:col-span-5 flex justify-center">
-            <div className="w-full max-w-[300px] drop-shadow-[0_40px_60px_rgba(0,0,0,0.9)]">
+            <div className="w-full max-w-[296px] drop-shadow-[0_40px_60px_rgba(0,0,0,0.9)]">
               <DmSimulator />
             </div>
           </div>
