@@ -7,17 +7,15 @@ import {
   BatteryCharging,
   CloudRain,
   Droplets,
-  Inbox,
   Navigation,
   Radio,
   RotateCcw,
-  Route as RouteIcon,
   Send,
   Wrench,
   X,
 } from "lucide-react";
 
-import { DEPOSIT, money, relativeTime } from "@/lib/booking";
+import { money, relativeTime } from "@/lib/booking";
 import {
   executeStormReschedule,
   getHudAuditFeed,

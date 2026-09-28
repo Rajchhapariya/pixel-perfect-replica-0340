@@ -11,12 +11,10 @@ import {
   Info,
   MapPin,
   Mic,
-  Phone,
   Route as RouteIcon,
   Smile,
   Star,
   Truck,
-  Video,
   X,
   Zap,
 } from "lucide-react";

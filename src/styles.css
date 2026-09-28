@@ -291,52 +291,6 @@
   animation: confirm-ref-in 300ms ease-out 200ms both;
 }
 
-/* Live feed indicator */
-
-@keyframes live-dot-pulse {
-  0%,
-  100% {
-    opacity: 1;
-    box-shadow: 0 0 0 0 oklch(0.66 0.21 12 / 0.5);
-  }
-  50% {
-    opacity: 0.55;
-    box-shadow: 0 0 0 4px oklch(0.66 0.21 12 / 0);
-  }
-}
-
-.live-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 9999px;
-  background: var(--rose);
-  animation: live-dot-pulse 1.5s ease-in-out infinite;
-}
-
-.live-label {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: var(--rose);
-}
-
-/* Mobile responsiveness */
-
-@media (max-width: 640px) {
-  .hero-headline {
-    font-size: clamp(2rem, 8vw, 3rem);
-  }
-
-  .stats-section {
-    grid-template-columns: 1fr;
-  }
-
-  .hero-pills {
-    flex-wrap: wrap;
-  }
-}
-
 /* ════════════════════════════════════════════════════
    APEX UPGRADE — CINEMATIC HOMEPAGE V2 ANIMATIONS
    ════════════════════════════════════════════════════ */
