@@ -136,14 +136,12 @@ function DmSimulator() {
                   background: "linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)",
                 }}
               >
-                <div className="h-full w-full rounded-full bg-black p-[1px]">
-                  <div className="h-full w-full rounded-full bg-gradient-to-br from-[#181818] to-[#262626] flex items-center justify-center overflow-hidden p-[2px]">
-                    <img
-                      src="/brand/apex-mark.png"
-                      alt="Apex Detail Works"
-                      className="h-full w-full object-contain filter drop-shadow"
-                    />
-                  </div>
+                <div className="h-full w-full rounded-full bg-black p-[1px] overflow-hidden">
+                  <img
+                    src="/brand/apex-mark.png"
+                    alt="Apex Detail Works"
+                    className="h-full w-full object-cover filter drop-shadow scale-[1.05]"
+                  />
                 </div>
               </div>
               <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-[#20c15e] border-[1.5px] border-black" />
@@ -215,12 +213,8 @@ function DmSimulator() {
           {/* 2. Typing indicator (Apex Bot) — LEFT SIDE, incoming grey bubble with Apex logo avatar */}
           {phase === 3 && (
             <div className="dm-animate-in flex items-end gap-1.5 max-w-[80%]">
-              <div className="h-[22px] w-[22px] rounded-full flex-shrink-0 bg-black border border-white/15 overflow-hidden flex items-center justify-center p-0.5 mb-0.5 shadow-sm">
-                <img
-                  src="/brand/apex-mark.png"
-                  alt="Apex"
-                  className="h-full w-full object-contain"
-                />
+              <div className="h-[22px] w-[22px] rounded-full flex-shrink-0 bg-black border border-white/15 overflow-hidden flex items-center justify-center mb-0.5 shadow-sm">
+                <img src="/brand/apex-mark.png" alt="Apex" className="h-full w-full object-cover" />
               </div>
               <div className="rounded-[18px] rounded-bl-[4px] px-3.5 py-2 bg-[#262626]">
                 <div className="apex-typing-dots">
@@ -235,12 +229,8 @@ function DmSimulator() {
           {/* 3. Apex Auto-Reply (Cole's Autonomous Engine) — LEFT SIDE, incoming grey bubble with Apex logo avatar */}
           {phase >= 4 && (
             <div className="dm-animate-in flex items-end gap-1.5 max-w-[86%]">
-              <div className="h-[22px] w-[22px] rounded-full flex-shrink-0 bg-black border border-white/15 overflow-hidden flex items-center justify-center p-0.5 mb-0.5 shadow-sm">
-                <img
-                  src="/brand/apex-mark.png"
-                  alt="Apex"
-                  className="h-full w-full object-contain"
-                />
+              <div className="h-[22px] w-[22px] rounded-full flex-shrink-0 bg-black border border-white/15 overflow-hidden flex items-center justify-center mb-0.5 shadow-sm">
+                <img src="/brand/apex-mark.png" alt="Apex" className="h-full w-full object-cover" />
               </div>
               <div className="flex flex-col gap-0.5">
                 <div className="rounded-[18px] rounded-bl-[4px] px-3.5 py-2 text-[11px] text-white leading-[1.45] bg-[#262626]">
