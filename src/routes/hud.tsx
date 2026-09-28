@@ -236,15 +236,8 @@ function Hud() {
           className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
           aria-hidden="true"
         >
-          <img
-            src="/images/van-sprinter-austin.jpg"
-            alt="Mercedes Sprinter mobile detailing van in Austin"
-            className="h-full w-full object-cover object-center opacity-30 mix-blend-luminosity filter contrast-125 brightness-75"
-            loading="eager"
-            decoding="async"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#07090e] via-[#07090e]/90 to-[#07090e]/80" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#07090e] via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0b0e14] via-[#07090e] to-[#0b0e14]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(239,68,68,0.08),transparent_70%)]" />
         </div>
 
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 border-b border-border/60 pb-5">
