@@ -1,5 +1,7 @@
 # Apex Detail Works — Austin Mobile Auto Detailing Engine
 
+> **Lovable.dev UI Challenge Submission:** Rapid-prototyping competition entry demonstrating autonomous mobile service scheduling, geofence validation, and an operator HUD cockpit.
+
 Apex Detail Works is an autonomous mobile auto detailing web application engineered for **Cole Ramsey**, an independent mobile detailer in **Austin, Texas**.
 
 The system solves the trade-specific **"Nitrile Glove Lockout"** dilemma: when an operator's hands are coated in compound and chemical ceramics for hours at a time, inbound inquiries often go unanswered and are lost to delayed callbacks. Apex Detail Works autonomously converts inbound leads into confirmed, route-clustered bookings with locked pricing and card holds in under 90 seconds—eliminating phone tag and manual texting without taking gloves off.
